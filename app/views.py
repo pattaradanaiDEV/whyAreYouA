@@ -11,6 +11,7 @@ def home():
 def index():
     return app.send_static_file('phonebook.html')
 # This route serves the dictionary d at the route /data
+
 @app.route("/api/data")
 def data():
     # define some data
@@ -19,6 +20,7 @@ def data():
         "Bob": "(305) 734-0429"
     }
     return jsonify(d)  # convert your data to JSON and return
+
 @app.route('/lab02')
 def resume():
     return app.send_static_file('lab02_resume.html')
