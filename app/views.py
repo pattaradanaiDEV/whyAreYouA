@@ -11,7 +11,6 @@ def home():
 def index():
     return app.send_static_file('phonebook.html')
 # This route serves the dictionary d at the route /data
-
 @app.route("/api/data")
 def data():
     # define some data
