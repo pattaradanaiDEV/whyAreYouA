@@ -1,0 +1,17 @@
+body {
+    background-color : rgb(240, 240, 240) ;
+    font-family: Arial;
+}
+.top {
+    text-align : center ;
+    padding : 20px ;
+    background-color : rgb(32, 30, 30) ;
+    color : rgb(154, 144, 144) ;
+}
+.LB {
+    padding-bottom : 10px ;
+    border-bottom : 4px solid black ;
+}
+.textLc {
+    line-height: 5px;
+}
