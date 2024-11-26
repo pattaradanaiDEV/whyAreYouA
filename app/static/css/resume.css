@@ -4,16 +4,14 @@ body {
 }
 .top {
     text-align : center ;
-    padding : 5px ;
+    padding : 20px ;
     background-color : rgb(32, 30, 30) ;
     color : rgb(154, 144, 144) ;
 }
 .LB {
-    border-bottom : 5px solid black ;
+    padding-bottom : 10px ;
+    border-bottom : 4px solid black ;
 }
-.lineH {
-    line-height: 2px;
-}
-p {
-    text-align: center;
+.textLc {
+    line-height: 5px;
 }
