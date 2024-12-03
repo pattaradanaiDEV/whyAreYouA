@@ -55,4 +55,6 @@ def lab03_comments():
                 'This is the second comment.',
                 'This is the third comment.',
                 'This is the fourth comment.']
+
+                
     return render_template('lab03/comments.html', comments=comments)

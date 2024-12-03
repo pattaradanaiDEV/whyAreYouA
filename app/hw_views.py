@@ -27,3 +27,7 @@ def api_weather():
         "Time": data['data']['time']['iso']
     }
     return jsonify(weather)
+
+@app.route('/hw03/pm25/')
+def hw03_pm25():
+    return app.send_static_file('hw03_pm25.html')
