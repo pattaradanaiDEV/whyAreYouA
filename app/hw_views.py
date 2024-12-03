@@ -5,7 +5,7 @@
 
 import json
 from urllib.request import urlopen
-from flask import jsonify
+from flask import jsonify,render_template
 from app import app
 
 
@@ -30,4 +30,4 @@ def api_weather():
 
 @app.route('/hw03/pm25/')
 def hw03_pm25():
-    return app.send_static_file('hw03_pm25.html')
+    return render_template('lab03/hw03_pm25.html')
