@@ -1,3 +1,10 @@
+th.chSize {
+   
+}
+
+td {
+   text-align: center;
+}
 td.good {
    background-color: #00e400;
    color: #ffffff;
