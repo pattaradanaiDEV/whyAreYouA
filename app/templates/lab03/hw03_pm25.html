@@ -12,9 +12,323 @@
 
 <body>
   <h2 style="text-align: center;">PM 2.5 Calendar</h2>
+  <table style="width: 100%;">
+    <tr>
+      <th>Sun</th>
+      <th>Mon</th>
+      <th>Tue</th>
+      <th>Wed</th>
+      <th>Thu</th>
+      <th>Fri</th>
+      <th>Sat</th>
+    </tr>
+    <tr>
+      <!-- head  -->
+      {% for i in range(7) %}
+        {% if i < fday %}
+          <td style="text-align: center;"></td>
+        {% endif %}
+      {%endfor%}
+      {% if pmData[0]['avg']<=50 %}
+      <td class="good" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% elif pmData[0]['avg']<=100 %}
+      <td class="moderate" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% elif pmData[0]['avg']<=150 %}
+      <td class="unhealthy-sensitive" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% elif pmData[0]['avg']<=200 %}
+      <td class="unhealthy" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% elif pmData[0]['avg']<=300 %}
+      <td class="very-unhealthy" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% else %}
+      <td class="hazardous" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        <p>-</p>
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      
+      {% for i in range(7-fday) %}
+      {% if pmData[i]['avg']<=50 %}
+      <td class="good" style="text-align: center;">
+        <p>{{ pmData[i+1]['day'] }}</p>
+        {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+              <p>↑</p>
+            {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+              <p>↓</p>
+            {% else %}
+              <p>↔</p>
+            {% endif %}
+        <p>{{ pmData[i+1]['avg'] }}</p>
+      </td>
+      {% elif pmData[i]['avg']<=100 %}
+      <td class="moderate" style="text-align: center;">
+        <p>{{ pmData[i+1]['day'] }}</p>
+          {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+                <p>↑</p>
+              {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+                <p>↓</p>
+              {% else %}
+                <p>↔</p>
+              {% endif %}
+        <p>{{ pmData[i+1]['avg'] }}</p>
+      </td>
+      {% elif pmData[i+1]['avg']<=150 %}
+      <td class="unhealthy-sensitive" style="text-align: center;">
+        <p>{{ pmData[i+1]['day'] }}</p>
+        {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+              <p>↑</p>
+            {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+              <p>↓</p>
+            {% else %}
+              <p>↔</p>
+            {% endif %}
+        <p>{{ pmData[i+1]['avg'] }}</p>
+      </td>
+      {% elif pmData[i+1]['avg']<=200 %}
+      <td class="unhealthy" style="text-align: center;">
+        {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+        <p>↑</p>
+      {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+        <p>↓</p>
+      {% else %}
+        <p>↔</p>
+      {% endif %}
+        <p>{{ pmData[i+1]['avg'] }}</p>
+      </td>
+      {% elif pmData[i+1]['avg']<=300 %}
+      <td class="very-unhealthy" style="text-align: center;">
+        <p>{{ pmData[i+1]['day'] }}</p>
+        {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+        <p>↑</p>
+      {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+        <p>↓</p>
+      {% else %}
+        <p>↔</p>
+      {% endif %}
+        <p>{{ pmData[i+1]['avg'] }}</p>
+      </td>
+      {% else %}
+      <td class="hazardous" style="text-align: center;">
+        <p>{{ pmData[0]['day'] }}</p>
+        {% if pmData[i-1]['avg']<pmData[i]['avg'] %}
+        <p>↑</p>
+      {% elif pmData[i-1]['avg']>pmData[i]['avg'] %}
+        <p>↓</p>
+      {% else %}
+        <p>↔</p>
+      {% endif %}
+        <p>{{ pmData[0]['avg'] }}</p>
+      </td>
+      {% endif %}
+      {%endfor%}
+    </tr>
+
+    <!-- body  -->
+    {% for i in range(num_ow) %}
+    <tr>
+      {% for j in range((7*i)+fday-1,7*(i+1)) %}
+        {% if pmData[j]['avg']<=50 %}
+        <td class="good" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+            {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+              <p>↑</p>
+            {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+              <p>↓</p>
+            {% else %}
+              <p>↔</p>
+            {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% elif pmData[j]['avg']<=100 %}
+        <td class="moderate" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+          {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+          <p>↑</p>
+          {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+          <p>↓</p>
+          {% else %}
+          <p>↔</p>
+          {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% elif pmData[j]['avg']<=150 %}
+        <td class="unhealthy-sensitive" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+            {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+            <p>↑</p>
+            {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+            <p>↓</p>
+            {% else %}
+            <p>↔</p>
+            {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% elif pmData[j]['avg']<=200 %}
+        <td class="unhealthy" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+            {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+            <p>↑</p>
+            {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+            <p>↓</p>
+            {% else %}
+            <p>↔</p>
+            {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% elif pmData[j]['avg']<=300 %}
+        <td class="very-unhealthy" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+            {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+            <p>↑</p>
+            {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+            <p>↓</p>
+            {% else %}
+            <p>↔</p>
+            {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% else %}
+        <td class="hazardous" style="text-align: center;">
+          <p>{{ pmData[j]['day'] }}</p>
+
+            {% if pmData[j-1]['avg']<pmData[j]['avg'] and j!=fday-6 %}
+            <p>↑</p>
+            {% elif pmData[j-1]['avg']>pmData[j]['avg'] and j!=fday-6 %}
+            <p>↓</p>
+            {% else %}
+            <p>↔</p>
+            {% endif %}
+
+          <p>{{ pmData[j]['avg'] }}</p>
+        </td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
 
 
+    <!-- tail  -->
+      <p>{{fday}}</p>
+    <tr>
+      {% for i in range(din_lw-1) %}
+        {% if i <= din_lw-1 %}
+            {% if pmData[i+(7-fday+1)+(num_ow*7)]['avg']<=50 %}
+            <td class="good" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+              {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                <p>↑</p>
+              {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                <p>↓</p>
+              {% else %}
+                <p>↔</p>
+              {% endif %}
+
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% elif pmData[i+(7-fday+1)+(num_ow*7)]['avg']<=100 %}
+            <td class="moderate" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+                {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                  <p>↑</p>
+                {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                  <p>↓</p>
+                {% else %}
+                  <p>↔</p>
+                {% endif %}
+
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% elif pmData[i+(7-fday+1)+(num_ow*7)]['avg']<=150 %}
+            <td class="unhealthy-sensitive" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+                {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                  <p>↑</p>
+                {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                  <p>↓</p>
+                {% else %}
+                  <p>↔</p>
+                {% endif %}
+
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% elif pmData[i+(7-fday+1)+(num_ow*7)]['avg']<=200 %}
+            <td class="unhealthy" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+              {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+              <p>↑</p>
+              {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                <p>↓</p>
+              {% else %}
+                <p>↔</p>
+              {% endif %}
+              
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% elif pmData[i+(7-fday+1)+(num_ow*7)]['avg']<=300 %}
+            <td class="very-unhealthy" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+              {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+              <p>↑</p>
+              {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                <p>↓</p>
+              {% else %}
+                <p>↔</p>
+              {% endif %}
+
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% else %}
+            <td class="hazardous" style="text-align: center;">
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['day'] }}</p>
+
+              {% if pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']<pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+              <p>↑</p>
+              {% elif pmData[i-1+(7-fday+1)+(num_ow*7)]['avg']>pmData[i+(7-fday+1)+(num_ow*7)]['avg']%}
+                <p>↓</p>
+              {% else %}
+                <p>↔</p>
+              {% endif %}
+
+              <p>{{ pmData[i+(7-fday+1)+(num_ow*7)]['avg'] }}</p>
+            </td>
+            {% endif %}
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
 </body>
-
-
 </html>
