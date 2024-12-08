@@ -30,9 +30,7 @@ def hw03_pm25():
     apigot=json.load(urlopen(api))
     data=apigot['data']['forecast']['daily']['pm25']
     first_day=int(data[0]['day'].split("-")[-1])
-    if( first_day>7 ):
-        first_day=first_day%7
-    day_left=len(data)-(7-first_day)
-    num_of_week=(day_left-1)//7
+    day_left=len(data)-(7-first_day)-1
+    num_of_week=day_left//7
     id_fdlw=(7*(day_left//7))+(7-first_day)+1
     return render_template('lab03/hw03_pm25.html',pmData=data,fday=first_day,num_ow=num_of_week,fd_inlw=id_fdlw,dl=day_left,dataLen=len(data))
