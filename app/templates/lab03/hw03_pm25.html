@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -341,7 +339,7 @@
     </tr>
     <!-- lastweek  -->
     <tr>
-      {% for i in range(fd_inlw,len(pmData)): %}
+      {% for i in range(fd_inlw,dataLen) %}
         {% if pmData[i]['avg']<=50 %}
         <td class="good" style="text-align: center;">
           <p>{{ pmData[i]['day'] }}</p>
