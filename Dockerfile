@@ -1,4 +1,3 @@
-
 # pull official base image
 FROM python:3.10-alpine3.17
 
@@ -38,4 +37,3 @@ ENTRYPOINT [ "./gunicorn_starter.sh" ]
 
 # keep the Docker process running even when crashes
 CMD ["tail", "-f", "/dev/null"]
-
