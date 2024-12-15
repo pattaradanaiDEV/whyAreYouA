@@ -40,25 +40,3 @@ td.hazardous {
    background-color: #7e0023;
    color: #ffffff;
 }
-.tweet {
-   background-color: #ffffff;
-   padding-top: 10px;
-   padding-bottom: 10px;
-   border-bottom: 1px solid #edf1f4;
-}
-
-
-.tweet-username {
-   font-weight: bold;
-}
-
-
-.tweet-arrow {
-   padding-right: 25px;
-}
-
-
-.tweet-text,
-.tweet-media {
-   padding-right: 10px;
-}
