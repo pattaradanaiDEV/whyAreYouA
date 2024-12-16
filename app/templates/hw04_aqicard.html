@@ -14,11 +14,13 @@
     <div class="row all">      
         <!-- card1 -->
         <!--col-xl-3 == 12/4 = 4 card per screen -->
-    {% for i in range(4)%}
+        {% for i in range(4)%}
         <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-title">
-                    <p style="text-align:left;">&nbsp;&nbsp;{{data[i]['city']}}&nbsp;air quality index</p>
+                    <p style="text-align:left;">
+                        &nbsp;&nbsp;{{data[i]['city']}}&nbsp;air quality index
+                    </p>
                 </div>
                 <div class="card-body {{data[i]['quality-class']}}">
                     <div class="row">
@@ -59,10 +61,10 @@
                 </div>
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
+        <a href="https://youtu.be/GBIIQ0kP15E?si=4SEHwuJHDeWvh4wU">
+            <div class="noooo"></div>
+        </a>
     </div>
-    <a href="https://youtu.be/GBIIQ0kP15E?si=4SEHwuJHDeWvh4wU">
-        <div class="noooo"></div>
-    </a>
 </body>
 </html>
