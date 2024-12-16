@@ -13,341 +13,56 @@
 <body>
     <div class="row all">      
         <!-- card1 -->
-    <!--col-xl-3 == 12/4 = 4 card per screen -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>{{CM['city']}}&nbsp;air quality index</p>
-            </div>
-            <div class="card-body {{CM['quality-class']}}">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{CM['date']}}</h5>
-                        <h5>{{CM['year']}}</h5>
-                        <h1>{{CM['aqi']}}</h1>
+        <!--col-xl-3 == 12/4 = 4 card per screen -->
+    {% for i in range(4)%}
+        <div class="col-sm-12 col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-title">
+                    <p style="text-align:left;">&nbsp;&nbsp;{{data[i]['city']}}&nbsp;air quality index</p>
+                </div>
+                <div class="card-body {{data[i]['quality-class']}}">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{data[i]['date']}}</h5>
+                            <h5>{{data[i]['year']}}</h5>
+                            <h2>{{data[i]['aqi']}}</h2>
+                        </div>
+                        <div class="col icon-{{data[i]['quality-class']}}"></div>
                     </div>
-                    <div class="col icon-{{CM['quality-class']}}">
+                    <div class="row">
+                        <div class="col">
+                            {% if data[i]['quality-class']=="unhealthy-sensitive" %}
+                                <p>Unhealthy for sensitive groups</p>
+                            {% elif data[i]['quality-class']=="very-unhealthy" %}
+                                <p>Very unhealthy</p>
+                            {% else %}
+                                <p>{{data[i]['quality-class-cap']}}</p>
+                            {%endif%}
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>{{CM['quality-class']}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>{{CM['forecast'][0]['day']}}<br></h5>
-                        <h5 class="{{CM['forecast'][0]['quality-class']}}">{{CM['forecast'][0]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{CM['forecast'][1]['day']}}<br></h5>
-                        <h5 class="{{CM['forecast'][1]['quality-class']}}">{{CM['forecast'][1]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{CM['forecast'][2]['day']}}<br></h5>
-                        <h5 class="{{CM['forecast'][2]['quality-class']}}">{{CM['forecast'][2]['aqi']}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- card2 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>{{UB['city']}}&nbsp;air quality index</p>
-            </div>
-            <div class="card-body {{UB['quality-class']}}">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{UB['date']}}</h5>
-                        <h5>{{UB['year']}}</h5>
-                        <h1>{{UB['aqi']}}</h1>
-                    </div>
-                    <div class="col icon-{{UB['quality-class']}}">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>{{UB['quality-class']}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>{{UB['forecast'][0]['day']}}<br></h5>
-                        <h5 class="{{UB['forecast'][0]['quality-class']}}">{{UB['forecast'][0]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{UB['forecast'][1]['day']}}<br></h5>
-                        <h5 class="{{UB['forecast'][1]['quality-class']}}">{{UB['forecast'][1]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{UB['forecast'][2]['day']}}<br></h5>
-                        <h5 class="{{UB['forecast'][2]['quality-class']}}">{{UB['forecast'][2]['aqi']}}</h5>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-4">
+                            <h6>{{data[i]['forecast'][0]['day']}}<br></h6>
+                            <h5 class="{{data[i]['forecast'][0]['quality-class']}}">{{data[i]['forecast'][0]['aqi']}}</h5>
+                        </div>
+                        <div class="col-4">
+                            <h6>{{data[i]['forecast'][1]['day']}}<br></h6>
+                            <h5 class="{{data[i]['forecast'][1]['quality-class']}}">{{data[i]['forecast'][1]['aqi']}}</h5>
+                        </div>
+                        <div class="col-4">
+                            <h6>{{data[i]['forecast'][2]['day']}}<br></h6>
+                            <h5 class="{{data[i]['forecast'][2]['quality-class']}}">{{data[i]['forecast'][2]['aqi']}}</h5>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    {% endfor %}
     </div>
-
-
-    <!-- card3 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>&nbsp;&nbsp;{{PK['city']}}&nbsp;air quality index</p>
-            </div>
-            <div class="card-body {{PK['quality-class']}}">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{PK['date']}}</h5>
-                        <h5>{{PK['year']}}</h5>
-                        <h1>{{PK['aqi']}}</h1>
-                    </div>
-                    <div class="col icon-{{PK['quality-class']}}">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>{{PK['quality-class']}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>{{PK['forecast'][0]['day']}}<br></h5>
-                        <h5 class="{{PK['forecast'][0]['quality-class']}}">{{PK['forecast'][0]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{PK['forecast'][1]['day']}}<br></h5>
-                        <h5 class="{{PK['forecast'][1]['quality-class']}}">{{PK['forecast'][1]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{PK['forecast'][2]['day']}}<br></h5>
-                        <h5 class="{{PK['forecast'][2]['quality-class']}}">{{PK['forecast'][2]['aqi']}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- card4 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>&nbsp;&nbsp;{{BKK['city']}}&nbsp;air quality index</p>
-            </div>
-            <div class="card-body {{BKK['quality-class']}}">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{BKK['date']}}</h5>
-                        <h5>{{BKK['year']}}</h5>
-                        <h1>{{BKK['aqi']}}</h1>
-                    </div>
-                    <div class="col icon-{{BKK['quality-class']}}">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>{{BKK['quality-class']}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>{{BKK['forecast'][0]['day']}}<br></h5>
-                        <h5 class="{{BKK['forecast'][0]['quality-class']}}">{{BKK['forecast'][0]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{BKK['forecast'][1]['day']}}<br></h5>
-                        <h5 class="{{BKK['forecast'][1]['quality-class']}}">{{BKK['forecast'][1]['aqi']}}</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>{{BKK['forecast'][2]['day']}}<br></h5>
-                        <h5 class="{{BKK['forecast'][2]['quality-class']}}">{{BKK['forecast'][2]['aqi']}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    
-    <!-- card5 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>Card 5</p>
-            </div>
-            <div class="card-body very-unhealthy">
-                <div class="row">
-                    <div class="col">
-                        <h5>09 December 2077</h5>
-                        <h5></h5>
-                        <h1>5000</h1>
-                    </div>
-                    <div class="col icon-very-unhealthy">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>very unhealthy</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>10<br></h5>
-                        <h5 class="good">50</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>20<br></h5>
-                        <h5 class="unhealthy">167</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>30<br></h5>
-                        <h5 class="unhealthy">178</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- card6 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>Card 6</p>
-            </div>
-            <div class="card-body hazardous">
-                <div class="row">
-                    <div class="col">
-                        <h5>09 December 2077</h5>
-                        <h5></h5>
-                        <h1>5000</h1>
-                    </div>
-                    <div class="col icon-hazardous">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>hazardous</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>10<br></h5>
-                        <h5 class="good">50</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>20<br></h5>
-                        <h5 class="unhealthy">167</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>30<br></h5>
-                        <h5 class="unhealthy">178</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- card7 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>Card 7</p>
-            </div>
-            <div class="card-body unhealthy">
-                <div class="row">
-                    <div class="col">
-                        <h5>09 December 2077</h5>
-                        <h5></h5>
-                        <h1>5000</h1>
-                    </div>
-                    <div class="col icon-unhealthy">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>unhealthy</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>10<br></h5>
-                        <h5 class="good">50</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>20<br></h5>
-                        <h5 class="unhealthy">167</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>30<br></h5>
-                        <h5 class="unhealthy">178</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- card8 -->
-    <div class="col-sm-12 col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-title">
-                <p>Card 8</p>
-            </div>
-            <div class="card-body good">
-                <div class="row">
-                    <div class="col">
-                        <h5>09 December 2077</h5>
-                        <h5></h5>
-                        <h1>5000</h1>
-                    </div>
-                    <div class="col icon-good">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h5>good</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-4">
-                        <h5>10<br></h5>
-                        <h5 class="good">50</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>20<br></h5>
-                        <h5 class="unhealthy">167</h5>
-                    </div>
-                    <div class="col-4">
-                        <h5>30<br></h5>
-                        <h5 class="unhealthy">178</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    </div>
+    <a href="https://youtu.be/GBIIQ0kP15E?si=4SEHwuJHDeWvh4wU">
+        <div class="noooo"></div>
+    </a>
 </body>
 </html>

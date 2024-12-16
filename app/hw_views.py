@@ -70,7 +70,7 @@ def hw04_aqicard():
     BkkDate=BkkDateStr.split("-")
     Bkkfc=Bkk['data']['forecast']['daily']['pm25']
     Bkk=mkJson(Bkkfc,BkkDate,BkkDateStr,"Bangkok")
-    return render_template('hw04_aqicard.html',CM=Cnx,UB=Ubon,PK=Pk,BKK=Bkk)
+    return render_template('hw04_aqicard.html',data=[Cnx,Ubon,Pk,Bkk])
 
 
 def monthName(date,isShort):
@@ -151,18 +151,22 @@ def mkJson(data,today,dayStr,province):
             {
             "aqi": data[findToday(data,dayStr)+1]['avg'],
             "day": monthName(data[findToday(data,dayStr)+1]['day'].split('-')[1:],True),
-            "quality-class": qualityChecker(data[findToday(data,dayStr)+1]['avg'])
+            "quality-class": qualityChecker(data[findToday(data,dayStr)+1]['avg']),
+            "quality-class-cap": qualityChecker(data[findToday(data,dayStr)+1]['avg']).capitalize()
             },
             {
             "aqi": data[findToday(data,dayStr)+2]['avg'],
             "day":  monthName(data[findToday(data,dayStr)+2]['day'].split('-')[1:],True),
-            "quality-class": qualityChecker(data[findToday(data,dayStr)+2]['avg'])
+            "quality-class": qualityChecker(data[findToday(data,dayStr)+2]['avg']),
+            "quality-class-cap": qualityChecker(data[findToday(data,dayStr)+2]['avg']).capitalize()
             },
             {
             "aqi": data[findToday(data,dayStr)+3]['avg'],
             "day":  monthName(data[findToday(data,dayStr)+3]['day'].split('-')[1:],True),
-            "quality-class": qualityChecker(data[findToday(data,dayStr)+3]['avg'])
+            "quality-class": qualityChecker(data[findToday(data,dayStr)+3]['avg']),
+            "quality-class-cap": qualityChecker(data[findToday(data,dayStr)+3]['avg']).capitalize()
             }
         ],
-        "quality-class": qualityChecker(data[findToday(data,dayStr)]['avg'])
+        "quality-class": qualityChecker(data[findToday(data,dayStr)]['avg']),
+        "quality-class-cap": qualityChecker(data[findToday(data,dayStr)]['avg']).capitalize()
     }
