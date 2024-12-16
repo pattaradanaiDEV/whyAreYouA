@@ -54,22 +54,23 @@ def hw04_aqicard():
     CnxDateStr=(Cnx['data']['time']['s'].split(" ")[0])
     CnxDate=CnxDateStr.split("-")
     Cnxfc=Cnx['data']['forecast']['daily']['pm25']
-    Cnx=mkJson(Cnxfc,CnxDate,CnxDateStr,"Chiang Mai")
+    Cnx=mkJson(Cnxfc,CnxDate,CnxDateStr,"Chiang Mai",Cnx['data']['aqi'])
     #make Ubon Json data
     UbonDateStr=(Ubon['data']['time']['s'].split(" ")[0])
     UbonDate=UbonDateStr.split("-")
     Ubonfc=Ubon['data']['forecast']['daily']['pm25']
-    Ubon=mkJson(Ubonfc,UbonDate,UbonDateStr,"Ubon Ratchathani")
+    Ubon=mkJson(Ubonfc,UbonDate,UbonDateStr,"Ubon Ratchathani",Ubon['data']['aqi'])
     #make Pk Json data
     PkDateStr=(Pk['data']['time']['s'].split(" ")[0])
     PkDate=PkDateStr.split("-")
     Pkfc=Pk['data']['forecast']['daily']['pm25']
-    Pk=mkJson(Pkfc,PkDate,PkDateStr,"Phuket")
+    Pk=mkJson(Pkfc,PkDate,PkDateStr,"Phuket",Pk['data']['aqi'])
     #make Bkk Json data
+    
     BkkDateStr=(Bkk['data']['time']['s'].split(" ")[0])
     BkkDate=BkkDateStr.split("-")
     Bkkfc=Bkk['data']['forecast']['daily']['pm25']
-    Bkk=mkJson(Bkkfc,BkkDate,BkkDateStr,"Bangkok")
+    Bkk=mkJson(Bkkfc,BkkDate,BkkDateStr,"Bangkok",Bkk['data']['aqi'])
     return render_template('hw04_aqicard.html',data=[Cnx,Ubon,Pk,Bkk])
 
 
@@ -141,9 +142,9 @@ def qualityChecker(avg):
         return "very-unhealthy"
     else:
         return "hazardous"
-def mkJson(data,today,dayStr,province):
+def mkJson(data,today,dayStr,province,aqi):
     return {
-        "aqi": data['aqi'],
+        "aqi": aqi,
         "city": province,
         "date": monthName(today[1:],False),
         "year": today[0],
