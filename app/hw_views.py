@@ -143,7 +143,7 @@ def qualityChecker(avg):
         return "hazardous"
 def mkJson(data,today,dayStr,province):
     return {
-        "aqi": data[findToday(data,dayStr)]['avg'],
+        "aqi": data['aqi'],
         "city": province,
         "date": monthName(today[1:],False),
         "year": today[0],
