@@ -19,15 +19,15 @@
             <div class="card">
                 <div class="card-title">
                     <p style="text-align:left;">
-                        &nbsp;&nbsp;{{data[i]['city']}}&nbsp;air quality index
+                        &nbsp{{data[i]['city']}} air quality index
                     </p>
                 </div>
                 <div class="card-body {{data[i]['quality-class']}}">
                     <div class="row">
                         <div class="col">
-                            <h5>{{data[i]['date']}}</h5>
-                            <h5>{{data[i]['year']}}</h5>
-                            <h2>{{data[i]['aqi']}}</h2>
+                            <p>{{data[i]['date']}}</p>
+                            <p>{{data[i]['year']}}</p>
+                            <h5>{{data[i]['aqi']}}</h5>
                         </div>
                         <div class="col icon-{{data[i]['quality-class']}}"></div>
                     </div>

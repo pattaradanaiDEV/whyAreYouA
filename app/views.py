@@ -1,5 +1,7 @@
 import datetime
+import json
 from flask import jsonify, render_template
+
 from app import app
 from app import hw_views
 
@@ -7,14 +9,11 @@ from app import hw_views
 def home():
     return "Flask says 'Hello world!'"
 
-
 @app.route('/phonebook')
 def index():
     return app.send_static_file('phonebook.html')
 # This route serves the dictionary d at the route /data
-
 # This route serves the dictionary d at the route /api/data
-
 @app.route("/api/data")
 def data():
     # define some data
@@ -22,13 +21,8 @@ def data():
         "Alice": "(708) 727-2377",
         "Bob": "(305) 734-0429"
     }
-
-
     app.logger.debug(str(len(d)) + " entries in phonebook")
-
-
     return jsonify(d)  # convert your data to JSON and return
-
 
 @app.route('/lab02')
 def resume():
@@ -47,18 +41,28 @@ def lab03_home():
 def lab03_about():
     return render_template('lab03/about.html')
 
-
-
 @app.route('/lab03/comments/')
 def lab03_comments():
-    comments = ['This is the first comment.',
-                'This is the second comment.',
-                'This is the third comment.',
-                'This is the fourth comment.']
-
-                
+    raw_json = read_file('data/messages.json')
+    messages = json.loads(raw_json)
     return render_template('lab03/comments.html', comments=comments)
 
 @app.route('/lab04')
 def lab04_bootstrap():
     return app.send_static_file('lab04_bootstrap.html')
+
+
+
+
+
+
+def read_file(filename, mode="rt"):
+    with open(filename, mode, encoding='utf-8') as fin:
+        return fin.read()
+
+
+
+
+def write_file(filename, contents, mode="wt"):
+    with open(filename, mode, encoding="utf-8") as fout:
+        fout.write(contents)

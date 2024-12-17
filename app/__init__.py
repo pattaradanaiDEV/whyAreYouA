@@ -2,7 +2,7 @@ from flask import Flask
 
 
 app = Flask(__name__, static_folder='static')
-
+app.url_map.strict_slashes = False
 
 app.jinja_options = app.jinja_options.copy()
 app.jinja_options.update({

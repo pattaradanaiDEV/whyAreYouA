@@ -5,8 +5,9 @@ body {
 }
 p,h1,h2,h3,h5,h4,h6{
    text-align: center;
-   color:black;
    border-radius: 12px;
+   text-transform: capitalize;
+   font-weight: bold;
 }
 @keyframes dontclickmee{
    0% {
@@ -27,19 +28,18 @@ p,h1,h2,h3,h5,h4,h6{
 }
 @keyframes iamWalking {
    0% {
-      transform: translateX(20%) rotateY(0deg);
+      transform: translateX(0) ;
   }
    100% {
-         transform: translateX(40%) rotateY(180deg);
+      transform: translateX(100%) ;
    }
 }
 a{
    width: 80%;
    max-width: 300px;
    height: 100px;
-   animation: iamWalking 2s ease-in-out infinite;
+   animation: iamWalking 1s ease-in-out infinite alternate;
    position: relative;
-   animation-direction: alternate;
 }
 .noooo {
    background-size: cover;
@@ -53,7 +53,7 @@ a{
    content: "  !Dont click me!  ";
    color:white;
    left: 84px;
-   position: absolute;
+   position: fixed;
    font-size: 20px;
    padding-left: 15px;
    padding-right: 15px;
