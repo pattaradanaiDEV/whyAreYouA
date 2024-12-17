@@ -18,9 +18,10 @@
         <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-title">
-                    <p style="text-align:left;font-size: 14px;">
+                    <p style="text-align:left;font-size:15px;">
                         &nbsp{{data[i]['city']}} air quality index
                     </p>
+
                 </div>
                 <div class="card-body {{data[i]['quality-class']}}">
                     <div class="row">
@@ -33,11 +34,14 @@
                     <div class="row">
                         <div class="col">
                             {% if data[i]['quality-class']=="unhealthy-sensitive" %}
-                                <p>Unhealthy for sensitive groups</p>
+                                <h4>Unhealthy for</h4>
+                                <h4>sensitive groups</h4>
                             {% elif data[i]['quality-class']=="very-unhealthy" %}
-                                <p>Very unhealthy</p>
+                                <h4>Very unhealthy</h4>
+                                <h4>&nbsp</h4>
                             {% else %}
-                                <p>{{data[i]['quality-class-cap']}}</p>
+                                <h4>{{data[i]['quality-class-cap']}}</h4>
+                                <h4>&nbsp</h4>
                             {%endif%}
                         </div>
                     </div>
