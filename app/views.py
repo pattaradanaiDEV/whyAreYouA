@@ -1,6 +1,8 @@
 import datetime
 import json
-from flask import jsonify, render_template
+from flask import (jsonify, render_template,
+                   request, url_for, flash, redirect)
+
 
 from app import app
 from app import hw_views
@@ -41,28 +43,25 @@ def lab03_home():
 def lab03_about():
     return render_template('lab03/about.html')
 
-@app.route('/lab03/comments/')
-def lab03_comments():
-    raw_json = read_file('data/messages.json')
-    messages = json.loads(raw_json)
-    return render_template('lab03/comments.html', comments=comments)
-
-@app.route('/lab04')
-def lab04_bootstrap():
-    return app.send_static_file('lab04_bootstrap.html')
-
-
-
-
-
 
 def read_file(filename, mode="rt"):
     with open(filename, mode, encoding='utf-8') as fin:
         return fin.read()
 
-
-
-
 def write_file(filename, contents, mode="wt"):
     with open(filename, mode, encoding="utf-8") as fout:
         fout.write(contents)
+
+@app.route('/lab03/comments/')
+def lab03_comments():
+    raw_json = read_file('data/messages.json')
+    messages = json.loads(raw_json)
+    return render_template('lab03/comments.html', comments=messages)
+
+@app.route('/lab04')
+def lab04_bootstrap():
+    return app.send_static_file('lab04_bootstrap.html')
+
+@app.route('/lab03/create/', methods=('GET', 'POST'))
+def lab03_create():
+    return render_template('lab03/create.html')
