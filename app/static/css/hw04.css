@@ -31,7 +31,7 @@ p,h1,h2,h3,h5,h4,h6{
       transform: translateX(0) ;
   }
    100% {
-      transform: translateX(100%) ;
+      transform: translateX(50%) ;
    }
 }
 a{
@@ -50,11 +50,11 @@ a{
    position: relative;
 }
 .noooo:hover::after { 
-   content: "  !Dont click me!  ";
+   content: "Dont click me";
    color:white;
-   left: 84px;
-   position: fixed;
-   font-size: 20px;
+   left: 70px;
+   position: relative;
+   font-size: 10px;
    padding-left: 15px;
    padding-right: 15px;
    background-color: #1d0471;
@@ -70,7 +70,7 @@ a{
 }
 .card {
    border-radius: 10px;
-   margin:6% 1% 2% 1%;
+   margin:6% 2px 6% 2px;
    position: relative;
 }
 @property --angle{
