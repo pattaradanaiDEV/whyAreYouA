@@ -14,7 +14,7 @@ app.jinja_options.update({
 
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = \
-    '3767930db74fb5b80f7b412010f5e10c4be15d4597961895'
+    '4b81b99132ad25fa7bf6ea42af95889ca6dcf6ccd36c00aa'
 
 
 from app import views  # noqa

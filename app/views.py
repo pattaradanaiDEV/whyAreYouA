@@ -68,7 +68,6 @@ def lab03_create():
         title = request.form['title']
         content = request.form['content']
 
-
         if not title:
             flash('Title is required!')
         elif not content:
@@ -80,4 +79,5 @@ def lab03_create():
             write_file('data/messages.json',
                        json.dumps(messages, indent=4))
             return redirect(url_for('lab03_comments'))
+        
     return render_template('lab03/create.html')
