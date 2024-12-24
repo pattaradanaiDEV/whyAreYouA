@@ -6,7 +6,7 @@ from flask import (jsonify, render_template,
 
 from app import app
 from app import hw_views
-
+from app.forms import forms
 @app.route('/')
 def home():
     return "Flask says 'Hello world!'"
@@ -81,3 +81,26 @@ def lab03_create():
             return redirect(url_for('lab03_comments'))
         
     return render_template('lab03/create.html')
+
+@app.route('/lab06/', methods=('GET', 'POST'))
+def lab06_index():
+    form = forms.CourseForm()
+    if form.validate_on_submit():
+        raw_json = read_file('data/course_list.json')
+        course_list = json.loads(raw_json)
+        course_list.append({'title': form.title.data,
+                            'description': form.description.data,
+                            'price': form.price.data,
+                            'available': form.available.data,
+                            'level': form.level.data
+                            })
+        write_file('data/course_list.json',
+                   json.dumps(course_list, indent=4))
+        return redirect(url_for('lab06_courses'))
+    return render_template('lab06/index.html', form=form)
+
+@app.route('/lab06/courses/')
+def lab06_courses():
+    raw_json = read_file('data/course_list.json')
+    course_list = json.loads(raw_json)
+    return render_template('lab06/courses.html', course_list=course_list)
