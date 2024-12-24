@@ -1,0 +1,75 @@
+<!--{% extends 'lab06/base.html' %}
+
+{% block content %}
+<h1>{% block title %} Add a New Course {% endblock %}</h1>
+
+
+
+
+<form method="POST" action="/lab06/">
+  {{ form.csrf_token }}
+
+  <p>
+    {{ form.username.label }}
+    {{ form.username(size=40) }}
+  </p>
+
+  {% if form.username.errors %}
+  <ul class="errors">
+    {% for error in form.username.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <p>
+    {{ form.email.label }}
+    {{ form.email(size=40) }}
+  </p>
+
+  {% if form.email.errors %}
+  <ul class="errors">
+    {% for error in form.email.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+ 
+  <p>
+    {{ form.password.label }}
+    {{ form.password(size=40) }}
+  </p>
+
+  {% if form.password.errors %}
+  <ul class="errors">
+    {% for error in form.password.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <p>
+    {{ form.comfirmP.label }}
+    {{ form.comfirmP(size=40) }}
+  </p>
+
+  {% if form.comfirmP.errors %}
+  <ul class="errors">
+    {% for error in form.comfirmP.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  
+
+  
+
+
+
+  <p>
+    <input type="submit" value="Sign up">
+  </p>
+</form>
+
+{% endblock %}-->

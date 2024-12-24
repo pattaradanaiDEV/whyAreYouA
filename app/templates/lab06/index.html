@@ -15,9 +15,6 @@
     {{ form.title(size=20) }}
   </p>
 
-
-
-
   {% if form.title.errors %}
   <ul class="errors">
     {% for error in form.title.errors %}
@@ -26,16 +23,10 @@
   </ul>
   {% endif %}
 
-
-
-
   <p>
     {{ form.description.label }}
   </p>
   {{ form.description(rows=10, cols=50) }}
-
-
-
 
   {% if form.description.errors %}
   <ul class="errors">
@@ -45,16 +36,10 @@
   </ul>
   {% endif %}
 
-
-
-
   <p>
     {{ form.price.label }}
     {{ form.price() }}
   </p>
-
-
-
 
   {% if form.price.errors %}
   <ul class="errors">
@@ -64,15 +49,9 @@
   </ul>
   {% endif %}
 
-
-
-
   <p>
     {{ form.available() }} {{ form.available.label }}
   </p>
-
-
-
 
   {% if form.available.errors %}
   <ul class="errors">
@@ -82,16 +61,10 @@
   </ul>
   {% endif %}
 
-
-
-
   <p>
     {{ form.level.label }}
     {{ form.level() }}
   </p>
-
-
-
 
   {% if form.level.errors %}
   <ul class="errors">
