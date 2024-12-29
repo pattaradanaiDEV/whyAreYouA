@@ -85,16 +85,16 @@ def hw06_register():
                 flash('Username already exists')
                 return redirect(url_for('hw06_register'))
             elif (form.email.data).lower() == user[i]['email']:
-                flash('Content is required!')
+                flash('Email already exists')
                 return redirect(url_for('hw06_register'))
-            else:
-                user.append({   'username': (form.username.data).lower(),
-                                'email': (form.email.data).lower(),
-                                'password': form.password.data
-                            })
-                write_file('data/users.json',
-                        json.dumps(user, indent=3))
-                return redirect(url_for('hw06_users'))
+           
+        user.append({   'username': (form.username.data).lower(),
+                        'email': (form.email.data).lower(),
+                        'password': form.password.data
+                    })
+        write_file('data/users.json',
+                json.dumps(user, indent=3))
+        return redirect(url_for('hw06_users'))
     return render_template('lab06/hw06_register.html', form=form)
 
 @app.route('/hw06/users')
