@@ -1,75 +1,61 @@
-<!--{% extends 'lab06/base.html' %}
-
+{% extends 'lab06/base.html' %}
 {% block content %}
-<h1>{% block title %} Add a New Course {% endblock %}</h1>
 
+<h1 class="register-user">{% block title %} Register New User {% endblock %}</h1>
 
-
-
-<form method="POST" action="/lab06/">
+<form method="POST" action="/hw06/register">
   {{ form.csrf_token }}
+  <div class='form-container '>
+    <div class='form-group'>
+      <p>
+        {{ form.username.label }}
+        {{ form.username() }}
+      </p>
+      
+      <p>
+        {{ form.email.label }}
+        {{ form.email() }}
+      </p>
 
-  <p>
-    {{ form.username.label }}
-    {{ form.username(size=40) }}
-  </p>
-
-  {% if form.username.errors %}
-  <ul class="errors">
-    {% for error in form.username.errors %}
-    <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
-  <p>
-    {{ form.email.label }}
-    {{ form.email(size=40) }}
-  </p>
-
-  {% if form.email.errors %}
-  <ul class="errors">
-    {% for error in form.email.errors %}
-    <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
+      {%if form.email.errors%}
+      <ul class="errors">
+        {% for error in form.email.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {%endif%}
  
-  <p>
-    {{ form.password.label }}
-    {{ form.password(size=40) }}
-  </p>
 
-  {% if form.password.errors %}
-  <ul class="errors">
-    {% for error in form.password.errors %}
-    <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+      <p>
+        {{ form.password.label }}
+        {{ form.password() }}
+      </p>
+      
+      {%if form.password.errors%}
+      <ul class="errors">
+        {% for error in form.password.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {%endif%}
 
-  <p>
-    {{ form.comfirmP.label }}
-    {{ form.comfirmP(size=40) }}
-  </p>
-
-  {% if form.comfirmP.errors %}
-  <ul class="errors">
-    {% for error in form.comfirmP.errors %}
-    <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+      <p>
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password() }} 
+      </p>
   
+      {%if form.confirm_password.errors%}
+      <ul class="errors">
+        {% for error in form.confirm_password.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {%endif%}
+      <p>
+        <input type="submit" value="Sign up">
+      </p>
+    </div>
+  </div>
 
-  
-
-
-
-  <p>
-    <input type="submit" value="Sign up">
-  </p>
 </form>
-
-{% endblock %}-->
+{% endblock %}

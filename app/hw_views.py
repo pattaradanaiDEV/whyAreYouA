@@ -3,9 +3,11 @@
 # sec002
 
 import json
+from urllib import request
 from urllib.request import urlopen
-from flask import jsonify,render_template
+from flask import jsonify,render_template,redirect,url_for,flash
 from app import app
+from app.forms import forms
 
 @app.route('/weather')
 def hw01_localweather():
@@ -38,7 +40,6 @@ def hw03_pm25():
 @app.route('/hw04')
 def hw04_rwd():
     return app.send_static_file('hw04_rwd.html')
-
 
 @app.route('/hw04/aqicard/')
 def hw04_aqicard():
@@ -73,6 +74,43 @@ def hw04_aqicard():
     Bkk=mkJson(Bkkfc,BkkDate,BkkDateStr,"Bangkok",Bkk['data']['iaqi']['pm25']['v'])
     return render_template('hw04_aqicard.html',data=[Cnx,Ubon,Pk,Bkk])
 
+@app.route('/hw06/register', methods=('GET', 'POST'))
+def hw06_register():
+    form = forms.RegistrationForm()
+    if form.validate_on_submit():
+        raw_json = read_file('data/users.json')
+        user = json.loads(raw_json)
+        for i in range(len(user)):
+            if (form.username.data).lower() == user[i]['username']:
+                flash('Username already exists')
+                return redirect(url_for('hw06_register'))
+            elif (form.email.data).lower() == user[i]['email']:
+                flash('Content is required!')
+                return redirect(url_for('hw06_register'))
+            else:
+                user.append({   'username': (form.username.data).lower(),
+                                'email': (form.email.data).lower(),
+                                'password': form.password.data
+                            })
+                write_file('data/users.json',
+                        json.dumps(user, indent=3))
+                return redirect(url_for('hw06_users'))
+    return render_template('lab06/hw06_register.html', form=form)
+
+@app.route('/hw06/users')
+def hw06_users():
+    raw_json = read_file('data/users.json')
+    user = json.loads(raw_json)
+    user_l=len(user)
+    return render_template('lab06/hw06_users.html', user=user ,user_l=user_l)
+
+def read_file(filename, mode="rt"):
+    with open(filename, mode, encoding='utf-8') as fin:
+        return fin.read()
+
+def write_file(filename, contents, mode="wt"):
+    with open(filename, mode, encoding="utf-8") as fout:
+        fout.write(contents)
 
 def monthName(date,isShort):
     d=date[1]
