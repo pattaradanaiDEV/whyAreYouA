@@ -1,0 +1,10 @@
+{% extends 'lab06/base.html' %}
+{% block content %}
+<h1>Registered Users</h1>
+<ul>
+{% for i in range(user_l)%}
+    <li>{{user[i]['username']}} - {{user[i]['email']}}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

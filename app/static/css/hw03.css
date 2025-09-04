@@ -1,0 +1,42 @@
+
+td {
+   text-align: center;
+   background-color: #f9f9f9;
+   width: 13%;
+   height: 25%;
+   border-radius: 15%;
+}
+td.good {
+   background-color: #00e400;
+   color: #ffffff;
+}
+
+
+td.moderate {
+   background-color: #ffff00;
+   color: #333333;
+}
+
+
+td.unhealthy-sensitive {
+   background-color: #ff7e00;
+   color: #ffffff;
+}
+
+
+td.unhealthy {
+   background-color: #ff0000;
+   color: #ffffff;
+}
+
+
+td.very-unhealthy {
+   background-color: #8f3f97;
+   color: #ffffff;
+}
+
+
+td.hazardous {
+   background-color: #7e0023;
+   color: #ffffff;
+}

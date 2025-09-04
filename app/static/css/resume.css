@@ -1,0 +1,71 @@
+html,body {
+    background-color : rgba(255, 255, 255, 0.892) ;
+    font-family: Arial, sans-serif;
+}
+.top {
+    text-align : center ;
+    padding : 20px ;
+    background-color : rgb(32, 30, 30) ;
+    color : rgb(255, 255, 255) ;
+}
+p {
+    text-align: left;
+    text-indent: 30px;
+    padding: 1px 1px 1px 1px;
+}
+.mid {
+    text-align: center;
+}
+table.S {
+    height: 300px;
+    width: 800px;
+    border: solid 1px;border-collapse: collapse;
+    }
+table.nested {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.nested td.m {
+    background-color: rgb(244, 100, 100);
+    border: 1px solid rgb(0, 0, 0);
+    font-size: 12px;
+  }
+  table.nested td.d {
+    background-color: rgb(240, 176, 74);
+    border: 1px solid rgb(0, 0, 0);
+    font-size: 12px;
+  }
+  table.nested td.e {
+    background-color: rgb(67, 215, 53);
+    border: 1px solid rgb(0, 0, 0);
+    font-size: 12px;
+  }
+th {
+    height: 75px;
+    width: 200px;
+    border: solid;
+    background-color: rgba(0, 0, 0, 0.911);    
+}
+tr,td {
+    width: 50px;
+    height: 20px;
+    text-align: center;
+    border: solid;
+}
+td.color{
+    background-color: rgb(216, 228, 238);
+}
+
+.opac {
+    opacity: 0.7 ;
+}
+.LB {
+    padding-bottom : 10px ;
+    border-bottom : 4px solid black ;
+}
+.textLc {
+    line-height: 10px;
+}
+ul.a {
+  list-style-type: disc;
+}
