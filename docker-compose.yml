@@ -1,0 +1,16 @@
+name: "whyareyouA5"
+services:
+  flask:
+    build: flask
+    ports:
+      - "56733:8000"
+    volumes:
+      - ./flask:/flask_app
+    env_file:
+      - .env.dev
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
