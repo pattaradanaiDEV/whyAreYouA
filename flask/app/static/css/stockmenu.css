@@ -1,0 +1,15 @@
+.mobilescreen {
+  width: 430px;
+  height: 883px;
+  background: #000000;
+  border: 1px solid #AAAAAA;
+}
+.mainbox {
+  width: 368px;
+  height: 520px;
+  padding: 8px;
+  box-shadow: 0px 24px 30px #00000040;
+  background: radial-gradient(circle at 0% 0%, #FFFFFF 0%, #DAA865 100%);
+  border: 1px solid transparent;
+  border-radius: 20px;
+}
