@@ -1,15 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../static/css/stockmenu.css">
 </head>
 
-<body>
-    <a href="{{ url_for('homepage') }}">logo</a>
-    <h1>Stock Menu</h1>
-    <nav>
-        <a href="{{ url_for('catagory') }}">Catagory</a>
-        <a href="{{ url_for('newstock') }}">New stock</a>
-    </nav>
-
+<body class="mobilescreen">
+    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <div class="mainbox">
+        <div class="row">
+            <span class="recName"></span>
+            <h1>Stock Menu</h1>
+        </div>
+        <div class="column card">
+            <div class = "nav-box"><a href="{{ url_for('catagory') }}" >Catagory<img src="../static/ico/catagory.png" class="category-icon"></a>
+            </div>
+            <div class="nav-box"><a href="{{ url_for('newstock') }}" >New stock</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
