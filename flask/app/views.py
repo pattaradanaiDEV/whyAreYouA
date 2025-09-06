@@ -16,6 +16,28 @@ def home():
                 </h1>\
             </div>\
         </body>'
+@app.route('/homepage')
+def homepage():
+    return '\
+        <body style="background-color: black">\
+            <div style="text-align: center">\
+                <h1 style="color: gray">\
+                    นี่เป็นhome!\
+                </h1>\
+            </div>\
+        </body>'
+
+@app.route('/catagory')
+def catagory():
+    return render_template('category.html')
+
+@app.route('/newstock')
+def newstock():
+    return render_template('newstock.html')
+
+@app.route('/stockmenu')
+def stockmenu():
+    return render_template('stockmenu.html')
 
 @app.route('/db')
 def db_connection():
@@ -39,7 +61,4 @@ def db_connection():
                     </h1>\
                 </div>\
             </body>'
-
-
-
 

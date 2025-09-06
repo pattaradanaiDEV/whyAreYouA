@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../static/css/stockmenu.css">
+</head>
+
+<body class="mobilescreen">
+    
+    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <div class="mainbox">
+        <div class="row">
+            <span class="recName"></span>
+            <h1>Stock Menu</h1>
+        </div>
+        <div class="column card">
+            <button type="button" class="nav-box" onclick="navigateTo('{{ url_for('catagory') }}')">
+                <span>Catagory</span>
+                <img src="../static/ico/catagory.png" class="category-icon">
+            </button>
+           <button type="button" class="nav-box" onclick="navigateTo('{{ url_for('newstock') }}')">
+                <span>New Stock</span>
+                <img src="../static/ico/addStock.png" class="addStock-icon">
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+function navigateTo(url) {
+    window.location.href = url;
+}
+</script>
