@@ -48,18 +48,20 @@ img{
     border: 1px solid #000000;
 }
 .nav-box{
-   width:75%;
-   padding:  30px;
-   justify-content: center;
-   align-items: center;
-   display: flex;
-   margin:5% 0% 15% 0%;
-   background: #FFFFFF;
-   border-radius: 20px;
-   border: none;
-   font-weight: bold;
-   font-size: 30px;
-   position: relative;
+   	width:75%;
+   	padding:  30px;
+   	justify-content: center;
+   	align-items: center;
+   	display: flex;
+   	margin:5% 0% 15% 0%;
+   	background: #FFFFFF;
+   	border-radius: 20px;
+   	border: none;
+   	font-weight: bold;
+   	font-size: 30px;
+   	position: relative;
+	cursor: pointer;
+	transition-duration: 0.5s;
 }
 .category-icon {
 	width: 52px;
