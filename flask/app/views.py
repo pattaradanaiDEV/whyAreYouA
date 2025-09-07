@@ -12,7 +12,7 @@ def home():
         <body style="background-color: black">\
             <div style="text-align: center">\
                 <h1 style="color: gray">\
-                    Flask says "Hello world!\
+                    Flask says "Hello world!"\
                 </h1>\
             </div>\
         </body>'
@@ -22,12 +22,12 @@ def homepage():
         <body style="background-color: black">\
             <div style="text-align: center">\
                 <h1 style="color: gray">\
-                    นี่เป็นhome!\
+                    This is homepage!\
                 </h1>\
             </div>\
         </body>'
 
-@app.route('/catagory')
+@app.route('/category')
 def catagory():
     return render_template('category.html')
 
