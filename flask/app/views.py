@@ -10,26 +10,11 @@ from app import db
 def home():
     return '\
         <style>\
-            .a-tag{\
-                border: 2px solid gray;\
-                border-radius: 5px\
-            }\
-            .a-tag:link{\
-                color: aqua;\
-                background-color: gray;\
-            }\
-            .a-tag:hover{\
-                color: aquamarine;\
-                background-color: gray;\
-            }\
-            .a-tag:visited{\
-                color: indigo;\
-                background-color: gray;\
-            }\
-            .a-tag:active{\
-                color: blue;\
-                background-color: gray;\
-            }\
+            .a-tag{border: 2px solid gray; border-radius: 5px}\
+            .a-tag:link{color: aqua; background-color: gray;}\
+            .a-tag:hover{color: aquamarine; background-color: gray;}\
+            .a-tag:visited{color: indigo; background-color: gray;}\
+            .a-tag:active{color: blue; background-color: gray;}\
         </style>\
         <body style="background-color: black">\
             <div style="text-align: center">\
@@ -47,26 +32,11 @@ def home():
 def homepage():
     return '\
         <style>\
-            .a-tag{\
-                border: 2px solid gray;\
-                border-radius: 5px\
-            }\
-            .a-tag:link{\
-                color: aqua;\
-                background-color: gray;\
-            }\
-            .a-tag:hover{\
-                color: aquamarine;\
-                background-color: gray;\
-            }\
-            .a-tag:visited{\
-                color: indigo;\
-                background-color: gray;\
-            }\
-            .a-tag:active{\
-                color: blue;\
-                background-color: gray;\
-            }\
+            .a-tag{border: 2px solid gray; border-radius: 5px}\
+            .a-tag:link{color: aqua; background-color: gray;}\
+            .a-tag:hover{color: aquamarine; background-color: gray;}\
+            .a-tag:visited{color: indigo; background-color: gray;}\
+            .a-tag:active{color: blue; background-color: gray;}\
         </style>\
         <body style="background-color: black">\
             <div>\
@@ -102,26 +72,11 @@ def db_connection():
             conn.execute(text("SELECT 1"))
         return '\
             <style>\
-                .a-tag{\
-                    border: 2px solid gray;\
-                    border-radius: 5px\
-                }\
-                .a-tag:link{\
-                    color: aqua;\
-                    background-color: gray;\
-                }\
-                .a-tag:hover{\
-                    color: aquamarine;\
-                    background-color: gray;\
-                }\
-                .a-tag:visited{\
-                    color: indigo;\
-                    background-color: gray;\
-                }\
-                .a-tag:active{\
-                    color: blue;\
-                    background-color: gray;\
-                }\
+                .a-tag{border: 2px solid gray; border-radius: 5px}\
+                .a-tag:link{color: aqua; background-color: gray;}\
+                .a-tag:hover{color: aquamarine; background-color: gray;}\
+                .a-tag:visited{color: indigo; background-color: gray;}\
+                .a-tag:active{color: blue; background-color: gray;}\
             </style>\
             <body style="background-color: black">\
                 <div>\
@@ -131,14 +86,21 @@ def db_connection():
                         </h1>\
                     </div>\
                     <div style="text-align: center">\
-                        <a href="/homepage" class="a-tag">\
-                            Go back to homepage\
+                        <a href="/" class="a-tag">\
+                            Go back to landing page\
                         </a>\
                     </div>\
                 </div>\
             </body>'
     except Exception as e:
         return '\
+            <style>\
+                .a-tag{border: 2px solid gray; border-radius: 5px}\
+                .a-tag:link{color: aqua; background-color: gray;}\
+                .a-tag:hover{color: aquamarine; background-color: gray;}\
+                .a-tag:visited{color: indigo; background-color: gray;}\
+                .a-tag:active{color: blue; background-color: gray;}\
+            </style>\
             <body style="background-color: black">\
                 <div style="text-align: center">\
                     <h1 style="color:gray">\
@@ -146,8 +108,8 @@ def db_connection():
                     </h1>\
                 </div>\
                 <div style="text-align: center">\
-                    <a href="/homepage" class="a-tag">\
-                        Go back to homepage\
+                    <a href="/" class="a-tag">\
+                        Go back to landing page\
                     </a>\
                 </div>\
             </body>'
