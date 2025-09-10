@@ -2,6 +2,7 @@ import qrcode
 import base64
 from io import BytesIO
 from app import db
+from sqlalchemy_serializer import SerializerMixin
 
 class Item(db.Model,SerializerMixin):
     __tablename__ = "Item"
