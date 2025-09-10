@@ -14,6 +14,7 @@ class Item(db.Model,SerializerMixin):
     itemPicture = db.Column(db.String(255))
     QR_Barcode = db.Column(db.Text)
     category = db.relationship("Category", back_populates="items")
+    withdraw_history = db.relationship("WithdrawHistory", back_populate="Item")
     
     def __init__(self,name,amount,picture):
         self.ItemName = name
