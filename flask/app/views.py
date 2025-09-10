@@ -54,7 +54,7 @@ def homepage():
         </body>'
 
 @app.route('/category')
-def catagory():
+def category():
     return render_template('category.html')
 
 @app.route('/newstock')
