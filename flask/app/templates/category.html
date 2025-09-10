@@ -7,6 +7,66 @@
 </head>
 
 <body>
-<h1>CT page</h1>
+<div class="row">
+    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <div class="column">
+        <img src="">
+        <h3>Category</h3>
+    </div>
+    <div class="column">
+        <img src="">
+        <p>Waiting list</p>
+    </div>
+</div>
+
+<div class="search-bar">
+    <img src="/static/ico/search.png" class="search-icon">
+    <input type="text" placeholder="| Type to Search">
+</div>
+
+<div class="show_Category">
+    
+</div>
+
 </body>
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var category;
+    var admin;
+    var current_admin=$("#current_admin").val();
+    $.when(
+        $.get("/admin"),
+        $.get("/category")
+    ).done(function(admin, category) {
+        admin = admin[0];  
+        category = category[0];
+        showCategory(admin, category);
+    });
+    function navigateTo(url){
+        window.location.href = url;
+    }
+    function showCategory(admin,category){
+        category.forEach(
+            function(cte_list) {
+                let show = `<div class="category-box" data-id="${cte_list.categoryID}">
+                    <div style= "display : flex ;">
+                       
+                    </div>
+                </div>`;
+                $('.show_Category').append(show);
+        }
+        )
+    }
+    function searchCategory(query) {
+        const filteredData = category.filter(entry => 
+            entry.category_name.toLowerCase().includes(query.toLowerCase())
+        );
+        $('.show_Category').empty();
+
+        showCategory(admin,filteredData);
+    }
+    document.querySelector('.search-bar input').addEventListener('input', function(event) {
+        searchCategory(event.target.value.trim());
+    });
+</script>
