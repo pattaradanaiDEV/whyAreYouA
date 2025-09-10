@@ -1,6 +1,6 @@
 from app import db
-
-class Category(db.Model):
+from sqlalchemy_serializer import SerializerMixin
+class Category(db.Model,SerializerMixin):
     __tablename__ = "Category"
 
 

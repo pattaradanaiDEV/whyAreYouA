@@ -3,7 +3,7 @@ import base64
 from io import BytesIO
 from app import db
 
-class Item(db.Model):
+class Item(db.Model,SerializerMixin):
     __tablename__ = "Item"
 
     itemID = db.Column(db.Integer, primary_key=True)
