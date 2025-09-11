@@ -3,25 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../static/css/stockmenu.css">
-</head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/category.css">
 
 <body>
-<div class="row">
-    <a href="{{ url_for('stockmenu') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
-    <div class="column">
-        <img src="/static/ico/category.png">
-        <h3>Category</h3>
+<div class="top-bar">
+    <div class="back">
+        <a href="{{ url_for('stockmenu') }}"></a>
+        <span class="material-icons">arrow_back</span> 
     </div>
-    <div class="column">
-        <img src="/static/ico/cart.png">
-        <p>Waiting list</p>
+    
+    <div class="category">
+        <span class="material-icons">list_alt</span>
+        <span>Category</span>
+    </div>
+
+    <div class="cart">
+        <span class="material-icons">shopping_cart_checkout</span>
+        <span>Wating list</span>
     </div>
 </div>
 
 <div class="search-bar">
-    <img src="/static/ico/search.png" class="search-icon">
-    <input type="text" placeholder="| Type to Search">
+    <span class="material-icons">search</span>
+    <input type="search" class="search-input" placeholder="Search...">
 </div>
 
 <div class="show_Category">
