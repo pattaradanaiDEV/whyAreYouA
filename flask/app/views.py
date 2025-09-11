@@ -5,7 +5,7 @@ from flask import (jsonify, render_template,
 from sqlalchemy.sql import text
 from app import app
 from app import db
-
+from app.models.category import Category
 @app.route('/')
 def home():
     return '\
@@ -55,7 +55,8 @@ def homepage():
 
 @app.route('/category')
 def category():
-    return render_template('category.html')
+    categories = Category.query.all()
+    return render_template('category.html', categories=categories)
 
 @app.route('/newstock')
 def newstock():

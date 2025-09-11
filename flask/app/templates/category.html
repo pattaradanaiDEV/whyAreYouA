@@ -30,9 +30,11 @@
 
 </body>
 </html>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    var category;
+    const categories = {{ categories | tojson }};
+    console.log(categories);
     var admin;
     var current_admin=$("#current_admin").val();
     $.when(

@@ -12,7 +12,7 @@ class WithdrawHistory(db.Model, SerializerMixin):
     UserID = db.Column(db.Integer, db.ForeignKey("user.UserId"), nullable=False)
     User = db.relationship("User", back_populates = "withdraw_history")
     ItemID = db.Column(db.Integer, db.ForeignKey("Item.itemId"), nullable=False)
-    Item = db.relationship("Item", back_populates = "withdraw_history")
+    items = db.relationship("Item", back_populates = "withdraw_history")
     Quantity = db.Column(db.Integer)
     DateTime = db.Column(DateTime, nullable=False, default=func.utcnow())
     

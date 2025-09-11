@@ -12,14 +12,16 @@ class Item(db.Model,SerializerMixin):
     itemAmount = db.Column(db.Integer)
     itemName = db.Column(db.String(100))
     itemPicture = db.Column(db.String(255))
+    itemMin =db.Column(db.Integer)
     QR_Barcode = db.Column(db.Text)
     category = db.relationship("Category", back_populates="items")
-    withdraw_history = db.relationship("WithdrawHistory", back_populate="Item")
-    
-    def __init__(self,name,amount,picture):
+    withdraw_history = db.relationship("WithdrawHistory", back_populate="items")
+    serialize_only = ("itemID", "itemName", "itemAmount", "itemPicture","itemMin", "QR_Barcode", "QR_Barcode","categoryID")
+    def __init__(self,name,amount,picture,min):
         self.ItemName = name
         self.ItemAmount = amount
         self.ItemPicture = picture
+        self.itemMin = min
         self.QR_Barcode = self.generate_qr(name)
     
     def generate_qr(self, data):
@@ -30,8 +32,8 @@ class Item(db.Model,SerializerMixin):
         return qr_b64
         
         
-    def update(self,name,amount,picture):
-        self.itemName=name
+    def update(self,amount,picture,min):
         self.itemAmount=amount
         self.itemPicture=picture
+        self.itemMin=min
         
