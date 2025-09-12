@@ -5,34 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/category.css">
+</head>
 
 <body>
-<div class="top-bar">
-    <div class="back">
-        <a href="{{ url_for('stockmenu') }}"></a>
-        <span class="material-icons">arrow_back</span> 
-    </div>
-    
-    <div class="category">
-        <span class="material-icons">list_alt</span>
-        <span>Category</span>
-    </div>
-
-    <div class="cart">
-        <span class="material-icons">shopping_cart_checkout</span>
-        <span>Wating list</span>
-    </div>
-</div>
-
-<div class="search-bar">
-    <span class="material-icons">search</span>
-    <input type="search" class="search-input" placeholder="Search...">
-</div>
-
-<div class="show_Category">
-    
-</div>
-
+	<div class="top-bar">
+    	<div class="back">
+        	<a href="{{ url_for('stockmenu') }}"></a>
+        	<span class="material-icons">arrow_back</span> 
+    	</div>
+    	<div class="category">
+        	<span class="material-icons">list_alt</span>
+        	<span>Category</span>
+    	</div>
+        <div class="cart">
+        	<span class="material-icons">shopping_cart_checkout</span>
+        	<span>Wating list</span>
+    	</div>
+	</div>
+	<div class="search-bar">
+    	<span class="material-icons">search</span>
+    	<input type="search" class="search-input" placeholder="Search...">
+	</div>
+	<div class="show_Category">
+	</div>
 </body>
 </html>
 
@@ -77,3 +72,4 @@
         searchCategory(event.target.value.trim());
     });
 </script>
+
