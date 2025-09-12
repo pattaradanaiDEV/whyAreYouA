@@ -1,0 +1,33 @@
+body {
+    background-color: #FEFAC0;
+}
+
+.center-screen {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.text {
+    font-size: 20px;
+}
+
+.border {
+    border: 3px solid black;
+    border-radius: 30px;
+    margin: auto;
+    width: 20%;
+    background-color: FEFAC0;
+}
+
+.circle {
+    border: 2px solid gray;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 5px;
+}
