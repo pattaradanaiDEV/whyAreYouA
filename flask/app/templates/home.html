@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/home.css">
+    <title>Home page</title>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="profile-wrapper">
+            <div class="profile-circle">
+               <img src="../static/ico/profile.png" class="profile"> 
+            </div>
+            <div class="profile-text">
+                <span>Welcome!<br></span>
+                <span>John Doe</span>
+            </div>
+        </div>
+
+        
+        <div class="notification-wrapper notification-circle">
+            <img src="../static/ico/notification.png" class="notification">
+            <span class="notification-badge">3</span>
+        </div>
+    </div>
+    
+
+    <div class="search-container">
+        <img src="../static/ico/search_icon.png">
+        <input type="search" class="search-input" id="search-input" name="query" placeholder="Search...">
+    </div>
+    
+    <div class="category-container">
+        <div>
+            <button class="circle-button">
+            <img src="../static/ico/stock.png" alt="stock">
+        </button>
+            <span>Stock</span>
+        </div>
+        
+        <div>
+            <button class="circle-button">
+                <img src="../static/ico/stock.png" alt="stock">
+            </button>
+            <span>Stock</span>
+        </div>
+
+        <div>
+            <button class="circle-button">
+                <img src="../static/ico/stock.png" alt="stock">
+            </button>
+            <span>Stock</span>
+        </div>
+
+        <div>
+            <button class="circle-button">
+                <img src="../static/ico/stock.png" alt="stock">
+            </button>
+            <span>Stock</span>
+        </div>
+    </div>
+
+    <div class="graph-container">
+
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item">
+            <a href="{{ url_for('stockmenu') }}"></a>
+            <img src="../static/ico/stock.png">
+            <span>Stock</span>
+        </div>
+        <div id="qr-scan" class="nav-item">
+            <img src="../static/ico/qr_icon.png">
+            <span>QR Scan</span>
+            <script src="../static/home.js"></script>
+        </div>
+        <div class="nav-item">
+            <img src="../static/ico/person_add2.png">
+            <span>Manage Admin</span>
+        </div>
+    </div>
+
+    <div class="topused-container">
+        <img src="../static/img/pen.webp">
+    </div>
+
+    
+    
+</body>
+</html>
