@@ -7,14 +7,14 @@ body {
 }
 
 .material-icons {
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 .top-bar{
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  padding: 10px;
+  padding: 20px;
 }
 
 .back, .category, .cart{
