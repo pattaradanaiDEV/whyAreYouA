@@ -1,11 +1,11 @@
 body {
     /* background-color: white; */
-    background: linear-gradient(360deg,#bb8245 , white);
-    font-family: 'Nunito', sans-serif;
+    /* background-color: #f9f9f9; */
+    background: linear-gradient(to bottom, #ffffff, #f6f1eb);    
+    font-family: 'Inter', sans-serif;
     background-position: center center;
     background-attachment: fixed;
     background-size: cover;
-    min-height: 100%;
 }
 
 .center-screen {
@@ -28,19 +28,22 @@ body {
     background-color: white;
 }
 
-button {
-    background-color: transparent;
+.button {
+    background-color: white;
     background-repeat: no-repeat;
-    border-radius: 100px;
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 12px;
     overflow: hidden;
-    width: 100%;
-    font-family: 'Nunito', sans-serif;
+    width: 50%;
+    padding: 12px 20px;
+    /* font-family: 'Nunito', sans-serif; */
+    font-size: 1.65rem;
+    transition: all 0.2s ease-in-out;
 }
 
-.button-text{
-    font-size: 1.65rem;
-}
+.button:hover {
+    background-color: #f5f5f5;
+  }
 
 img {
     width: 65%;

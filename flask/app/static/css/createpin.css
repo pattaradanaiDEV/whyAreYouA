@@ -30,6 +30,11 @@ body {
     color: #333;
   }
 
+  .pin-title {
+    font-size: 1.5rem;
+    font-weight: 100;
+  }
+
   .pin-container {
     margin: 4vh 0;
   }
