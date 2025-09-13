@@ -28,6 +28,16 @@ def home():
                 </a>\
             </div>\
         </body>'
+<<<<<<< HEAD
+=======
+
+@app.route('/test_DB')
+def test_DB():
+    data_category = Category.query.all()
+    categories = list(map(lambda x: x.to_dict(), data_category))
+    return jsonify(categories)
+
+>>>>>>> refs/remotes/origin/main
 @app.route('/homepage')
 def homepage():
     return '\
@@ -55,8 +65,25 @@ def homepage():
 
 @app.route('/category')
 def category():
+<<<<<<< HEAD
     categories = Category.query.all()
     return render_template('category.html', categories=categories)
+=======
+    categories = categories = [
+        "Stationery",
+        "Electrical",
+        "IT",
+        "Consumables",
+        "Tools",
+        "Safety Equipment",
+        "Medical Equipment",
+        "Construction Materials",
+        "Machine Parts",
+        "Others"
+    ]
+    categories = list(map(lambda x: x.to_dict(), categories))
+    return jsonify(categories)#, categories=categories)
+>>>>>>> refs/remotes/origin/main
 
 @app.route('/newstock')
 def newstock():

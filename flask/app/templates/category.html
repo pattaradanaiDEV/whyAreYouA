@@ -33,7 +33,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    const categories = {{ categories | tojson }};
+    const categories =  categories | tojson ;
     console.log(categories);
     var admin;
     var current_admin=$("#current_admin").val();
