@@ -1,0 +1,43 @@
+/* Style the container for layout and alignment */
+.search-container {
+    display: flex; /* Use flexbox for easy alignment of input and button */
+    align-items: center; /* Vertically center items */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Style the input field */
+  .search-input {
+    flex-grow: 1; /* Allow input to take up available space */
+    border: none;
+    padding: 8px 10px;
+    font-size: 16px;
+    outline: none; /* Remove default focus outline */
+    background-color: transparent; /* Make input background transparent */
+  }
+  
+  /* Style the search button */
+  .search-button {
+    background-color: #007bff; /* Example background color */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; /* For centering icon if used */
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Style the icon within the button (if using Font Awesome or similar) */
+  .search-button i {
+    margin-right: 5px; /* Add some space between icon and text if present */
+  }
+  
+  /* Hover effect for the button */
+  .search-button:hover {
+    background-color: #0056b3;
+  }
