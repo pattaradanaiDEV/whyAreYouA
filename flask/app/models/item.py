@@ -1,4 +1,4 @@
-import qrcode
+#import qrcode
 import base64
 from io import BytesIO
 from app import db
@@ -14,8 +14,8 @@ class Item(db.Model,SerializerMixin):
     itemPicture = db.Column(db.String(255))
     itemMin =db.Column(db.Integer)
     QR_Barcode = db.Column(db.Text)
-    category = db.relationship("Category", back_populates="items")
-    withdraw_history = db.relationship("WithdrawHistory", back_populate="items")
+    category = db.relationship("Category", back_populates = "items")
+    withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
     serialize_only = ("itemID", "itemName", "itemAmount", "itemPicture","itemMin", "QR_Barcode", "QR_Barcode","categoryID")
     def __init__(self,name,amount,picture,min):
         self.ItemName = name

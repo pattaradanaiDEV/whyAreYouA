@@ -13,7 +13,7 @@ class User(db.Mobel, UserMixin, SerializerMixin):
     gmail = db.Column(db.String(50))
     phoneNum = db.Column(db.String(10))
     cmuMail = db.Column(db.String(50))
-    withdraw_history = db.relationship("WithdrawHistory", back_populates = "User")
+    withdraw_history = db.relationship("WithdrawHistory", back_populates = "user")
 
     def __init__(self, Fname, Lname, phoneNum, cmuMail):
         self.Fname = Fname
