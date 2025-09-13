@@ -8,7 +8,7 @@ class Category(db.Model,SerializerMixin):
     items = db.relationship("Item", back_populates = "category")
     serialize_only = ("cateID", "cateName", "items.itemID", "items.itemName","items.itemAmount", "items.itemPicture","items.itemMin","items.QR_Barcode")
     # { cateID : 0
-    #   cateName : hee
+    #   cateName : ระเบิดนิวเคลียร์
     #   {   itemID : 0-n
     #   }    
     # }

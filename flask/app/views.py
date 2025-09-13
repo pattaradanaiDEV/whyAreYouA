@@ -63,8 +63,20 @@ def homepage():
 
 @app.route('/category')
 def category():
-    #categories = Category.query.all()
-    return render_template('category.html')#, categories=categories)
+    categories = categories = [
+        "Stationery",
+        "Electrical",
+        "IT",
+        "Consumables",
+        "Tools",
+        "Safety Equipment",
+        "Medical Equipment",
+        "Construction Materials",
+        "Machine Parts",
+        "Others"
+    ]
+    categories = list(map(lambda x: x.to_dict(), categories))
+    return jsonify(categories)#, categories=categories)
 
 @app.route('/newstock')
 def newstock():
