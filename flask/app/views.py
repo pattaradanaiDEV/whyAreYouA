@@ -6,7 +6,6 @@ from sqlalchemy.sql import text
 from app import app
 from app import db
 from app.models.category import Category
-
 @app.route('/')
 def home():
     return '\
@@ -29,7 +28,6 @@ def home():
                 </a>\
             </div>\
         </body>'
-
 @app.route('/homepage')
 def homepage():
     return '\
@@ -57,8 +55,8 @@ def homepage():
 
 @app.route('/category')
 def category():
-    #categories = Category.query.all()
-    return render_template('category.html')#, categories=categories)
+    categories = Category.query.all()
+    return render_template('category.html', categories=categories)
 
 @app.route('/newstock')
 def newstock():
