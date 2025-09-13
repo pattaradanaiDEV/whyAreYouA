@@ -30,12 +30,6 @@ def home():
             </div>\
         </body>'
 
-@app.route('/test_DB')
-def test_DB():
-    data_category = Category.query.all()
-    categories = list(map(lambda x: x.to_dict(), data_category))
-    return jsonify(categories)
-
 @app.route('/homepage')
 def homepage():
     return '\
@@ -63,20 +57,7 @@ def homepage():
 
 @app.route('/category')
 def category():
-    categories = categories = [
-        "Stationery",
-        "Electrical",
-        "IT",
-        "Consumables",
-        "Tools",
-        "Safety Equipment",
-        "Medical Equipment",
-        "Construction Materials",
-        "Machine Parts",
-        "Others"
-    ]
-    categories = list(map(lambda x: x.to_dict(), categories))
-    return jsonify(categories)#, categories=categories)
+    return render_template('category.html')#, categories=categories)
 
 @app.route('/newstock')
 def newstock():
@@ -85,6 +66,18 @@ def newstock():
 @app.route('/stockmenu')
 def stockmenu():
     return render_template('stockmenu.html')
+
+@app.route('/test_DB')
+def test_DB():
+    category = []
+    db_category = Category.query.all()
+
+
+    category = list(map(lambda x: x.to_dict(), db_category))
+    app.logger.debug("DB Contacts: " + str(category))
+
+
+    return jsonify(category)
 
 @app.route('/db')
 def db_connection():
@@ -134,3 +127,4 @@ def db_connection():
                     </a>\
                 </div>\
             </body>'
+            

@@ -27,10 +27,19 @@ def seed_db():
         "Machine Parts",
         "Others"
     ]
-    for i in range(len(categories)):
-        cat = Category(cateName=categories[i])
-        db.session.add(cat)
+    
+    for name in categories:
+        db.session.add(Category(cateName=name))
     db.session.commit()
-
+    
+    all_categories = Category.query.all()
+    print("✅ Categories seeded:")
+    for cat in all_categories:
+        print(f"- {cat.cateID}: {cat.cateName}")
+## เพิ่ม item เข้า category id = 1
+#item = Item(name="Smartphone", amount=10, picture="phone.jpg", min=2)
+#item.cateID = 1  # ใส่ FK โดยตรง
+#db.session.add(item)
+#db.session.commit()
 if __name__ == "__main__":
     cli()
