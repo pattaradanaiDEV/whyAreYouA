@@ -28,8 +28,6 @@ def home():
                 </a>\
             </div>\
         </body>'
-<<<<<<< HEAD
-=======
 
 @app.route('/test_DB')
 def test_DB():
@@ -64,20 +62,9 @@ def homepage():
 
 @app.route('/category')
 def category():
-    categories = categories = [
-        "Stationery",
-        "Electrical",
-        "IT",
-        "Consumables",
-        "Tools",
-        "Safety Equipment",
-        "Medical Equipment",
-        "Construction Materials",
-        "Machine Parts",
-        "Others"
-    ]
-    categories = list(map(lambda x: x.to_dict(), categories))
-    return jsonify(categories)#, categories=categories)
+    data_category = Category.query.all()
+    categories = list(map(lambda x: x.to_dict(), data_category))
+    return render_template('category.html')#, categories=categories)
 
 @app.route('/newstock')
 def newstock():
