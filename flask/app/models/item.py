@@ -23,7 +23,7 @@ class Item(db.Model,SerializerMixin):
         "QR_Barcode",
         "category",
     )
-    #withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
+    withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
     #serialize_only = ("itemID", "itemName", "itemAmount", "itemPicture","itemMin", "QR_Barcode","withdraw_history.WithdrawID","withdraw_history.Quantity","withdraw_history.DateTime" ,"category")
     def __init__(self,ItemName,ItemAmount,ItemPicture,itemMin):
         self.itemName = ItemName

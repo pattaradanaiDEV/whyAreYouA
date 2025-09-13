@@ -6,6 +6,34 @@ from sqlalchemy.sql import text
 from app import app
 from app import db
 from app.models.category import Category
+from app.models.user import User
+from flask_login import current_user
+
+@app.route('/save_pin', methods=['POST'])
+def save_pin():
+    data = request.get_json()
+    pin = data.get("pin")
+
+    if not pin or len(pin) != 6 or not pin.isdigit():
+        return jsonify({"success": False, "message": "Invalid PIN"}), 400
+
+    try:
+        # ใช้ user จาก session (login)
+        user = User.query.get(current_user.UserID)
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        if user.userpin:  
+            return jsonify({"success": False, "message": "PIN already set"}), 400
+
+        user.set_pin(pin)       # <-- hash ก่อนเก็บ
+        db.session.commit()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 @app.route('/')
 def home():
     return '\
@@ -53,6 +81,18 @@ def homepage():
                 </div>\
             </div>\
         </body>'
+
+@app.route('/loginA')
+def loginA():
+    return render_template('loginA.html')
+
+@app.route('/loginB')
+def loginB():
+    return render_template('loginB.html')
+
+@app.route('/createpin')
+def create_pin():
+    return render_template('createpin.html')
 
 @app.route('/category')
 def category():
