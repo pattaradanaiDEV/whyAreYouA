@@ -30,6 +30,12 @@ def home():
             </div>\
         </body>'
 
+@app.route('/test_DB')
+def test_DB():
+    data_category = Category.query.all()
+    categories = list(map(lambda x: x.to_dict(), data_category))
+    return jsonify(categories)
+
 @app.route('/homepage')
 def homepage():
     return '\

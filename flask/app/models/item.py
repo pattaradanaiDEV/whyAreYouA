@@ -16,13 +16,13 @@ class Item(db.Model,SerializerMixin):
     QR_Barcode = db.Column(db.Text)
     category = db.relationship("Category", back_populates = "items")
     withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
-    serialize_only = ("itemID", "itemName", "itemAmount", "itemPicture","itemMin", "QR_Barcode", "QR_Barcode","categoryID")
+    serialize_only = ("itemID", "itemName", "itemAmount", "itemPicture","itemMin", "QR_Barcode", "category")
     def __init__(self,name,amount,picture,min):
         self.ItemName = name
         self.ItemAmount = amount
         self.ItemPicture = picture
         self.itemMin = min
-        self.QR_Barcode = self.generate_qr(name)
+        self.QR_Barcode = ""# self.generate_qr(name)
     
     def generate_qr(self, data):
         qr = qrcode.make(data)
