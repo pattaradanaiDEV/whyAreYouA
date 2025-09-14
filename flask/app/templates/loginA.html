@@ -3,31 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/loginA.css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     <title>Document Title</title>
 </head>
-<body class="center-screen">
-    <div class="center-text text">
-        <div>
-            <p class="head-container header"> Stock </p>
+<body>
+    <div class="app-container">
+        <img src="../static/ico/stock_logo.png" alt="stock-logo" class="logo" />
+      
+        <p class="app-title">CS' Stock Managing System</p>
+        <div class="text">
+            <p>Please contact admin:</p>
+            <p>pongpop@TBA.com</p>
+            <p>or</p>
         </div>
-        <div>
-            <img class="center-screen "src="../static/ico/stock_logo.png">
+        <div class="login-button" onclick="touchLogin()">
+            <span>Continue without Login</span>
         </div>
-    	<p>
-        	CS Stock Managing System<br><br>
-        	Please contact admin:<br>
-        	pongpop@TBA.com<br><br>
-        	or
-    	</p>
-    	<button class="border center-text button-text">
-        	Continue without <br>
-        	Login
-    	</button>
-    </div>
+      </div>
 </body>
+<script>
+    const form = document.querySelector('form')
+</script>
+
 </html>

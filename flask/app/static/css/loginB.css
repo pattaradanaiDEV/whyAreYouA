@@ -1,89 +1,87 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(to bottom, #ffffff, #f6f1eb);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; 
-  }
-  
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom, #ffffff, #f6f1eb);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 
-  .app-container {
-    width: 60vw;              
-    max-width: 400px;        
-    padding: 5vw 4vw;         
-    text-align: center;
-  }
-  
-  .logo {
-    width: 35vw;             
-    max-width: 150px;       
-    margin-bottom: 24px;
-  }
-  
-  .app-title {
-    font-size: 5vw;           
-    font-weight: 600;
-    margin: 2vh 0;
-    color: #333;
-  }
+.app-container {
+  width: 100%;       
+  padding: 5vw 4vw;         
+  text-align: center;
+}
 
-  .pin-container {
-    margin: 4vh 0;
-  }
-  
-  .pin {
-    width: 5vw;
-    height: 5vw;
-    border: 2px solid #999;
-    border-radius: 50%;
-    display: inline-block;
-    margin: 1vw;
-  }
+.logo {
+  width: 40dvw;
+  margin-bottom: 24px;
+}
 
-  .pin:focus,
-  .pin:valid {
-    background-color: #333;
-  }
+.app-title {
+  font-size: 5vw;           
+  font-weight: 600;
+  margin: 2vh 0;
+  color: #333;
+}
 
-  .login-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    padding: 3vh 4vw;        
-    margin: 2vh 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    font-size: 4vw;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .login-button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .login-button .material-icons {
-    font-size: 6vw;
-    font-size: 28px;
-    color: #444;
-  }
-  
-  @media (max-width: 393px){
-    .pin{
-        width: 4vw;
-        height: 4vw;
-    }
-  }
+.pin-container {
+  margin: 4vh 0;
+  padding: 2vh;
+}
 
-  @media (max-width: 290px){
-    .pin{
-        width: 10vw;
-        height: 10vw;
-    }
+.pin {
+  width: 5vw;
+  height: 5vw;
+  border: 2px solid #999;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 1vw;
+}
+
+.pin:focus,
+.pin:valid {
+  background-color: #333;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  padding: 3vh 4vw;        
+  margin: 4vh 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  font-size: 4vw;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #f0f0f0;
+}
+
+.login-button .material-icons {
+  font-size: 6vw;
+  font-size: 28px;
+  color: #444;
+}
+
+@media (max-width: 393px){
+  .pin{
+    width: 4vw;
+    height: 4vw;
   }
+}
+
+@media (max-width: 290px){
+  .pin{
+    width: 10vw;
+    height: 10vw;
+  }
+}

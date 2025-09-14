@@ -1,71 +1,59 @@
 body {
-    /* background-color: white; */
-    /* background-color: #f9f9f9; */
-    background: linear-gradient(to bottom, #ffffff, #f6f1eb);    
-    font-family: 'Inter', sans-serif;
-    background-position: center center;
-    background-attachment: fixed;
-    background-size: cover;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom, #ffffff, #f6f1eb);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; 
 }
 
-.center-screen {
-    margin: 0 auto;
+.app-container {
+  width: 100%;       
+  padding: 5vw 4vw;         
+  text-align: center;
 }
 
-.center-text {
-    text-align: center;
+.logo {
+  width: 40dvw;
+  margin-bottom: 24px;
+}
+
+.app-title {
+  font-size: 5vw;
+  font-weight: 600;
+  margin: 2vh 0;
+  color: #333;
 }
 
 .text {
-    font-size: 1.65rem;
+    margin: 5% 0 0 0;
+    font-size: 3vh;
 }
 
-.border {
-    border: 2px solid black;
-    border-radius: 40px;
-    margin: auto;
-    width: 50%;
-    background-color: white;
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  padding: 3vh 4vw;        
+  margin: 8vh 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  font-size: 4vw;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.button {
-    background-color: white;
-    background-repeat: no-repeat;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    overflow: hidden;
-    width: 50%;
-    padding: 12px 20px;
-    /* font-family: 'Nunito', sans-serif; */
-    font-size: 1.65rem;
-    transition: all 0.2s ease-in-out;
+.login-button:hover {
+  background-color: #f0f0f0;
 }
 
-.button:hover {
-    background-color: #f5f5f5;
-  }
-
-img {
-    width: 65%;
-    height: 65%;
-    padding-top: 80px;
-}
-
-.header {
-    font-size: 2rem;
-    font-family: 'League Spartan', sans-serif;
-    
-}
-
-.head-container{
-    border-style: none none solid none;
-    border-width: 3px;
-    border-color: lightgray;
-    position: absolute;  
-    background-color: transparent;
-    background-repeat: no-repeat;
-    width: 100%;
-    height: auto;
-    top: 0;
-    padding-bottom: 10px;
+.login-button .material-icons {
+  font-size: 6vw;
+  font-size: 28px;
+  color: #444;
 }
