@@ -11,7 +11,7 @@
 	<div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('stockmenu') }}">
-                <span class="material-icons">arrow_back</span> 
+                <span class="material-icons" color="#FFFFFF">arrow_back</span> 
             </a>
     	</div>
     	<div class="category">
@@ -27,7 +27,17 @@
     	<span class="material-icons">search</span>
     	<input type="search" class="search-input" placeholder="Search...">
 	</div>
-	<div class="show_Category">
+	<div class="show_category">
+        <button class="category-item" onclick="showCategory()" id="all">All</button>    
+        <button class="category-item" onclick="showCategory()" id="stationery">Stationery</button>   
+        <button class="category-item" onclick="showCategory()" id="elec">Electrical</button>   
+        <button class="category-item" onclick="showCategory()" id="it">IT</button>
+        <button class="category-item" onclick="showCategory()" id="med">Medical Supplies</button>
+        <button class="category-item" onclick="showCategory()" id="consu">Consumables</button>
+        <button class="category-item" onclick="showCategory()" id="tool">Tools</button>
+        <button class="category-item" onclick="showCategory()" id="cont">Construction</button>
+        <button class="category-item" onclick="showCategory()" id="fur">Furniture</button>
+        <button class="category-item" onclick="showCategory()" id="others">Others</button>
 	</div>
 </body>
 </html>

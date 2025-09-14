@@ -59,28 +59,7 @@ def home():
 
 @app.route('/homepage')
 def homepage():
-    return '\
-        <style>\
-            .a-tag{border: 2px solid gray; border-radius: 5px}\
-            .a-tag:link{color: aqua; background-color: gray;}\
-            .a-tag:hover{color: aquamarine; background-color: gray;}\
-            .a-tag:visited{color: indigo; background-color: gray;}\
-            .a-tag:active{color: blue; background-color: gray;}\
-        </style>\
-        <body style="background-color: black">\
-            <div>\
-                <div style="text-align: center">\
-                    <h1 style="color: gray">\
-                        This is homepage!\
-                    </h1>\
-                </div>\
-                <div style="text-align: center">\
-                    <a href="/stockmenu" class="a-tag">\
-                        Enter stock menu\
-                    </a>\
-                </div>\
-            </div>\
-        </body>'
+    return render_template('home.html')
 
 @app.route('/loginA')
 def loginA():

@@ -3,11 +3,12 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   margin: 0;
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .material-icons {
   font-size: 2rem;
+  color: black;
 }
 
 .top-bar{
@@ -32,7 +33,7 @@ body {
   padding: 10px;
   border-radius: 30px;
   background-color: white;
-  margin: 20px auto;
+  margin: 5px auto;
 }
 
 .search-input {
@@ -43,4 +44,28 @@ body {
   outline: none;
   background-color: white;
   padding-left: 3%;
+}
+
+
+.show_category {
+  display: flex;
+  flex-direction: row;
+  gap: 2.5%;          
+  overflow-x: auto;        
+  white-space: nowrap;    
+  padding: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-item {
+  flex: 0 0 auto;        
+  padding: 8px 16px;
+  border: 1px solid lightgray;
+  border-radius: 30px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.category-item:hover{
+  background-color: lightgray;
 }
