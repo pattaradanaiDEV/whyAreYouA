@@ -13,6 +13,7 @@ class Item(db.Model,SerializerMixin):
     itemMin = db.Column(db.Integer)
     QR_Barcode = db.Column(db.Text)
 
+    cart = db.relationship("Cart", back_populates="items", cascade="all, delete-orphan")
     category = db.relationship("Category", back_populates="items")
     serialize_only = (
         "itemID",
