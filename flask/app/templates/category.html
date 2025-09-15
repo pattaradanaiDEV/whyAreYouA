@@ -24,64 +24,76 @@
             </a>
     	</div>
 	</div>
+
 	<div class="search-bar">
     	<span class="material-icons">search</span>
-    	<input type="search" class="search-input" placeholder="Search...">
+    	<input type="text" class="search-input" placeholder="Search...">
 	</div>
+
 	<div class="show_category">
-        <button class="category-item" onclick="showCategory()" id="all">All</button>    
-        <button class="category-item" onclick="showCategory()" id="stationery">Stationery</button>   
-        <button class="category-item" onclick="showCategory()" id="elec">Electrical</button>   
-        <button class="category-item" onclick="showCategory()" id="it">IT</button>
-        <button class="category-item" onclick="showCategory()" id="med">Medical Supplies</button>
-        <button class="category-item" onclick="showCategory()" id="consu">Consumables</button>
-        <button class="category-item" onclick="showCategory()" id="tool">Tools</button>
-        <button class="category-item" onclick="showCategory()" id="cont">Construction</button>
-        <button class="category-item" onclick="showCategory()" id="fur">Furniture</button>
-        <button class="category-item" onclick="showCategory()" id="others">Others</button>
+        <button class="category-item" onclick="filterCategory('all')">All Items</button>    
+        {% for cate in categories %}
+            <button class="category-item" onclick="filterCategory('{{ cate['cateName'] }}')">
+                {{ cate['cateName'] }}
+            </button>   
+        {% endfor %}
 	</div>
+
+    <div id="item-list"></div>
+    <input type="hidden" id="is_admin" value="{{ 1 if is_admin else 0 }}">
 </body>
 </html>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    const categories =  categories | tojson ;
-    console.log(categories);
-    var admin;
-    var current_admin=$("#current_admin").val();
-    $.when(
-        $.get("/admin"),
-        $.get("/category")
-    ).done(function(admin, category) {
-        admin = admin[0];  
-        category = category[0];
-        showCategory(admin, category);
-    });
-    function navigateTo(url){
-        window.location.href = url;
+
+    const items = {{ items|tojson }};
+    const is_admin = document.getElementById("is_admin").value === "1";
+
+    function renderItems(data) {
+        $("#item-list").empty();
+        data.forEach(it => {
+            let html = `
+            <div class="item-box">
+                <div><b>${it.itemName}</b></div>
+                <div>Category: ${it.category.cateName}</div>
+                <div>Stock: ${it.itemAmount}</div>
+                ${is_admin ? `
+                    <button onclick="editItem(${it.itemID})">
+                        Edit
+                    </button>` 
+                : ""}
+                <button onclick="withdrawItem(${it.itemID})">
+                    Withdraw
+                </button>
+            </div>`;
+            $("#item-list").append(html);
+        });
     }
-    function showCategory(admin,category){
-        category.forEach(
-            function(cte_list) {
-                let show = `<div class="category-box" data-id="${cte_list.cateID}">
-                    <div style= "display : flex ;">
-                       
-                    </div>
-                </div>`;
-                $('.show_Category').append(show);
+
+    function filterCategory(cateName) {
+        if (cateName === "all") {
+            renderItems(items);
+        } else {
+            renderItems(items.filter(it => it.category.cateName === cateName));
         }
-        )
     }
     function searchCategory(query) {
-        const filteredData = category.filter(entry => 
-            entry.category_name.toLowerCase().includes(query.toLowerCase())
-        );
-        $('.show_Category').empty();
+        if (query === "") {
+            renderItems(items);
+            return;
+        }
 
-        showCategory(admin,filteredData);
+        const filteredData = items.filter(item =>
+            item.itemName.toLowerCase().includes(query.toLowerCase()) || item.category.cateName.toLowerCase().includes(query.toLowerCase())
+        );
+
+        renderItems(filteredData);
     }
     document.querySelector('.search-bar input').addEventListener('input', function(event) {
         searchCategory(event.target.value.trim());
     });
-</script>
 
+    window.onload = function() {
+        filterCategory("all");
+    };
+</script>
