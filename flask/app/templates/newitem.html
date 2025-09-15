@@ -3,15 +3,37 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../static/css/stockmenu.css">
+    <link rel="stylesheet" href="../static/css/newitem.css">
 </head>
 
-<body>
-    <div>
-        <a href="{{ url_for('stockmenu') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
-        <div style="text-align: center">
-            <h1>New Item page</h1>
+<body class="mobilescreen">
+    <a href="{{ url_for('stockmenu') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <div class="mainbox">
+        <div class="row">
+            <span class="recName"></span>
+            <h1>New Item</h1>
         </div>
+        <div class="row align-center">
+            <img src="../static/ico/default_image.png" class="default-icon">
+        </div>
+        <div class="column">
+           	<form>
+                <div class="row">
+                    <input type="text" class="name-input input-box" placeholder="Item name" required>
+                </div>
+                <div class="row">
+                    <input type="text" class="cate-input input-box" placeholder="Category" required>
+                    <input type="text" class="amount-input input-box" placeholder="Amount" required pattern="[0-9]{1,}">
+                </div>
+                <div class="row">
+                    <textarea class="desc-input input-box" rows="4" cols="50" placeholder="Description"></textarea>
+                </div>
+                <div class="row">
+                    <button class="btm-btn">PrintQR</button>
+                    <button class="confirm-button btm-btn">Confirm</button>
+                </div>
+            </form>
+		</div>
     </div>
 </body>
 </html>
