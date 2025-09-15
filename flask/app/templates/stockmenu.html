@@ -3,25 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/stockmenu.css">
 </head>
 
 <body class="mobilescreen">
-    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
     <div class="mainbox">
+        <div class="reply-icon">
+            <a href="{{ url_for('homepage') }}"> 
+                <span class="material-icons">arrow_back_ios_new</span> 
+            </a> 
+        </div>
+    
         <div class="row">
-            <span class="recName"></span>
-            <h1>Stock Menu</h1>
+            <span>Stock Menu</span>
         </div>
         <div class="column">
-           	<button type="button" class="nav-box" onclick="navigateTo('{{ url_for('category') }}')">
+           	<a type="button" class="nav-box" href="('{{ url_for('category') }}')">
                 <span>Category</span>
                 <img src="../static/ico/category.png" class="category-icon">
-           	</button>
-           	<button type="button" class="nav-box" onclick="navigateTo('{{ url_for('newitem') }}')">
+            </a>
+           	<a type="button" class="nav-box" href="('{{ url_for('newitem') }}')">
                 <span>New Item</span>
             	<img src="../static/ico/addStock.png" class="addStock-icon">
-        	</button>
+            </a>
 		</div>
     </div>
 </body>
