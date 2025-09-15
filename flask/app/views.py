@@ -165,4 +165,31 @@ def db_connection():
                     </a>\
                 </div>\
             </body>'
-            
+
+@app.route('/edit')
+def edit():
+    ItemID = request.form["itemID"]
+    cateID = request.form["cateID"]
+    userID = request.form["userID"]
+    R_item = Item.query.filter_by(itemID=ItemID).first()
+    R_cate = Category.query.filter_by(cateID=cateID).first()
+    R_user = User.query.filter_by(userID=userID).first()
+    return render_template('edit.html', 
+                           item=R_item,
+                           category=R_cate,
+                           user=R_user
+                           )
+
+@app.route('/withdraw')
+def withdraw():
+    ItemID = request.form["itemID"]
+    cateID = request.form["cateID"]
+    userID = request.form["userID"]
+    R_item = Item.query.filter_by(itemID=ItemID).first()
+    R_cate = Category.query.filter_by(cateID=cateID).first()
+    R_user = User.query.filter_by(userID=userID).first()
+    return render_template('withdraw.html',
+                           item=R_item,
+                           category=R_cate,
+                           user=R_user
+                           )
