@@ -15,7 +15,6 @@ def create_db():
 
 @cli.command("seed_db")
 def seed_db():
-
     categories = [
         "Stationery",
         "Electrical",

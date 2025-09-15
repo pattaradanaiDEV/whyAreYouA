@@ -88,8 +88,9 @@ def stockmenu():
     return render_template('stockmenu.html')
 
 @app.route('/waiting')
-def stockmenu():
+def waiting():
     return render_template('waiting.html')
+
 @app.route('/adminlist')
 def adminlist():
     return render_template('adminlist.html')
