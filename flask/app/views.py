@@ -87,9 +87,9 @@ def newitem():
 def stockmenu():
     return render_template('stockmenu.html')
 
-@app.route('/waiting')
-def waiting():
-    return render_template('waiting.html')
+@app.route('/cart')
+def stockmenu():
+    return render_template('cart.html')
 
 @app.route('/adminlist')
 def adminlist():
