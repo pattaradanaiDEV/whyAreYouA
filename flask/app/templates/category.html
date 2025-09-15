@@ -65,16 +65,22 @@
                     <div class="item-stock">Stock: ${it.itemAmount}</div>
                 </div>
                 <div class="item-actions">
-                    ${is_admin ? `
-                        <button class="btn edit" onclick="editItem(${it.itemID})">Edit</button>` 
-                    : ""}
-                    <button class="btn withdraw" onclick="withdrawItem(${it.itemID})">Withdraw</button>
+                    ${is_admin 
+                        ? `<button class="btn edit" onclick="edit_item(${it.itemID}, 1)">Edit</button>` 
+                        : ""
+                    }
+                    <button class="btn withdraw" onclick="withdraw(${it.itemID}, 1)">Withdraw</button>
                 </div>
             </div>`;
             $("#item-list").append(html);
         });
     }
-
+    function edit_item(itemID, userID) {
+        window.location.href = `/edit?itemID=${itemID}&userID=${userID}`;
+    }
+    function withdraw(itemID, userID) {
+        window.location.href = `/withdraw?itemID=${itemID}&userID=${userID}`;
+    }
     function filterCategory(cateName) {
         if (cateName === "all") {
             renderItems(items);

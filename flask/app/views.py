@@ -168,28 +168,22 @@ def db_connection():
 
 @app.route('/edit')
 def edit():
-    ItemID = request.form["itemID"]
-    cateID = request.form["cateID"]
-    userID = request.form["userID"]
+    ItemID = request.args.get("itemID")
+    userID = request.args.get("userID")
     R_item = Item.query.filter_by(itemID=ItemID).first()
-    R_cate = Category.query.filter_by(cateID=cateID).first()
-    R_user = User.query.filter_by(userID=userID).first()
-    return render_template('edit.html', 
-                           item=R_item,
-                           category=R_cate,
-                           user=R_user
-                           )
+    return jsonify(R_item.to_dict())
+    #return render_template('edit.html', 
+    #                       item=R_item,
+    #                       user=userID
+    #                       )
 
 @app.route('/withdraw')
 def withdraw():
-    ItemID = request.form["itemID"]
-    cateID = request.form["cateID"]
-    userID = request.form["userID"]
+    ItemID = request.args.get("itemID")
+    userID = request.args.get("userID")
     R_item = Item.query.filter_by(itemID=ItemID).first()
-    R_cate = Category.query.filter_by(cateID=cateID).first()
-    R_user = User.query.filter_by(userID=userID).first()
-    return render_template('withdraw.html',
-                           item=R_item,
-                           category=R_cate,
-                           user=R_user
-                           )
+    return jsonify(R_item.to_dict())
+    #return render_template('edit.html', 
+    #                       item=R_item,
+    #                       user=userID
+    #                       )

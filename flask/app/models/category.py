@@ -8,12 +8,6 @@ class Category(db.Model,SerializerMixin):
     serialize_only = (
         "cateID",
         "cateName",
-        "items.itemID",
-        "items.itemName",
-        "items.itemAmount",
-        "items.itemPicture",
-        "items.itemMin",
-        "items.QR_Barcode",
     )
     # { cateID : 0
     #   cateName : ระเบิดนิวเคลียร์
