@@ -11,7 +11,7 @@
 	<div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('stockmenu') }}">
-                <span class="material-icons" color="#FFFFFF">arrow_back</span> 
+                <span class="material-icons" color="#FFFFFF">arrow_back_ios_new</span> 
             </a>
     	</div>
     	<div class="category">
@@ -19,8 +19,9 @@
         	<span>Category</span>
     	</div>
         <div class="cart">
-        	<span class="material-icons">shopping_cart_checkout</span>
-        	<span>Wating list</span>
+            <a href="{{ url_for('waiting') }}">
+                <span class="material-icons">shopping_cart_checkout</span>
+            </a>
     	</div>
 	</div>
 	<div class="search-bar">

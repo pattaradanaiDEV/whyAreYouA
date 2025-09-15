@@ -87,6 +87,10 @@ def newstock():
 def stockmenu():
     return render_template('stockmenu.html')
 
+@app.route('/waiting')
+def stockmenu():
+    return render_template('waiting.html')
+
 @app.route('/test_DB')
 def test_DB():
     category = []
