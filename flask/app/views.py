@@ -88,7 +88,7 @@ def stockmenu():
     return render_template('stockmenu.html')
 
 @app.route('/cart')
-def stockmenu():
+def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist')
