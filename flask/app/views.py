@@ -61,13 +61,13 @@ def home():
 def homepage():
     return render_template('home.html')
 
-@app.route('/loginA')
+@app.route('/signup')
 def loginA():
-    return render_template('loginA.html')
+    return render_template('signup.html')
 
-@app.route('/loginB')
+@app.route('/login')
 def loginB():
-    return render_template('loginB.html')
+    return render_template('login.html')
 
 @app.route('/createpin')
 def create_pin():
@@ -79,9 +79,9 @@ def category():
     categories = list(map(lambda x: x.to_dict(), data_category))
     return render_template('category.html', categories=categories)
 
-@app.route('/newstock')
-def newstock():
-    return render_template('newstock.html')
+@app.route('/newitem')
+def newitem():
+    return render_template('newitem.html')
 
 @app.route('/stockmenu')
 def stockmenu():
@@ -90,6 +90,9 @@ def stockmenu():
 @app.route('/waiting')
 def stockmenu():
     return render_template('waiting.html')
+@app.route('/adminlist')
+def adminlist():
+    return render_template('adminlist.html')
 
 @app.route('/test_DB')
 def test_DB():

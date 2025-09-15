@@ -1,6 +1,5 @@
 from app import db
 from sqlalchemy_serializer import SerializerMixin
-from app.models.item import Item
 class Category(db.Model,SerializerMixin):
     __tablename__ = "category"
     cateID = db.Column(db.Integer, primary_key=True)

@@ -4,7 +4,6 @@ from werkzeug.debug import DebuggedApplication
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
-
 app = Flask(__name__, static_folder='static')
 app.url_map.strict_slashes = False
 
@@ -32,7 +31,6 @@ if app.debug:
     app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
 # Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
-
 
 @app.before_request
 def remove_trailing_slash():
