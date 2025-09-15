@@ -53,18 +53,23 @@
         $("#item-list").empty();
         data.forEach(it => {
             let html = `
-            <div class="item-box">
-                <div><b>${it.itemName}</b></div>
-                <div>Category: ${it.category.cateName}</div>
-                <div>Stock: ${it.itemAmount}</div>
-                ${is_admin ? `
-                    <button onclick="editItem(${it.itemID})">
-                        Edit
-                    </button>` 
-                : ""}
-                <button onclick="withdrawItem(${it.itemID})">
-                    Withdraw
-                </button>
+            <div class="item-card">
+                <div class="item-left">
+                    <div class="item-icon">
+                        ${it.itemName.substring(0,1)}
+                    </div>
+                </div>
+                <div class="item-info">
+                    <div class="item-name">${it.itemName}</div>
+                    <div class="item-category">${it.category.cateName}</div>
+                    <div class="item-stock">Stock: ${it.itemAmount}</div>
+                </div>
+                <div class="item-actions">
+                    ${is_admin ? `
+                        <button class="btn edit" onclick="editItem(${it.itemID})">Edit</button>` 
+                    : ""}
+                    <button class="btn withdraw" onclick="withdrawItem(${it.itemID})">Withdraw</button>
+                </div>
             </div>`;
             $("#item-list").append(html);
         });

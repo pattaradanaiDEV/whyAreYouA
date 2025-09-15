@@ -86,7 +86,7 @@ def category():
         'category.html',
         categories=categories,
         items=items,
-        is_admin=False
+        is_admin=True
     )
 
 @app.route('/newitem')
