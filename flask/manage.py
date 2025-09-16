@@ -1,16 +1,30 @@
 from flask.cli import FlaskGroup
 
 from app import app, db
+from app.models.user import User
 from app.models.item import Item
 from app.models.category import Category
+from app.models.withdrawHistory import WithdrawHistory
 
 cli = FlaskGroup(app)
+
+@cli.command("add_history")
+def add_history():
+    history = WithdrawHistory(user_id=1, item_id=1, quantity=2)
+    db.session.add(history)
+    db.session.commit()
 
 @cli.command("create_db")
 def create_db():
     db.reflect()
     db.drop_all()
     db.create_all()
+    db.session.commit()
+
+@cli.command("add_user")
+def add_user():
+    user = User(Fname="Hitler", Lname="adolf", phoneNum="0000000000", cmuMail="HA@cmu.ac.th")
+    db.session.add(user)
     db.session.commit()
 
 @cli.command("seed_db")
