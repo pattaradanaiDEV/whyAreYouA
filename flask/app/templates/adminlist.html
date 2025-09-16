@@ -3,12 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/adminlist.css">
 </head>
 
 <body class="mobilescreen">
-    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
     <div class="mainbox">
+        <div class="reply-icon">
+            <a href="{{ url_for('homepage') }}"> 
+                <span class="material-icons" style="font-size: 2rem; color: #FFF">arrow_back_ios_new</span> 
+            </a> 
+        </div>
         <div class="row">
             <div class="row left-align split-6-12">
                 <span class="recName"></span>
@@ -20,46 +25,65 @@
             <div class="row split-3-12">
             </div>
         </div>
-        <div class="row">
-            <div class="row split-6-12">
-                <p class="left-align input-box">a</p>
+        <form action="">
+            <div class="row">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">Pongpop Pongsuk</p>
+                </div>
+                <div class="row split-3-12">
+                    <input type="checkbox" class="left-align" checked>
+                </div>
+                <div class="row split-3-12">
+                    <button class="confirm-button btm-btn del-btn">Revoke admin</button>
+                </div>
             </div>
-            <div class="row split-3-12">
+            <div class="row">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">Thanom Kongjai</p>
+                </div>
+                <div class="row split-3-12">
+                    <input type="checkbox" class="left-align">
+                </div>
+                <div class="row split-3-12">
+                    <button class="confirm-button btm-btn del-btn">Revoke admin</button>
+                </div>
             </div>
-            <div class="row split-3-12">
+            <div class="row">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">Sutthiphong Surak</p>
+                </div>
+                <div class="row split-3-12">
+                    <input type="checkbox" class="left-align">
+                </div>
+                <div class="row split-3-12">
+                    <button class="confirm-button btm-btn del-btn">Revoke admin</button>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="row split-6-12">
-                <p class="left-align input-box">b</p>
+            <div class="row">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">Nichapha Nillaor</p>
+                </div>
+                <div class="row split-3-12">
+                    <input type="checkbox" class="left-align">
+                </div>
+                <div class="row split-3-12">
+                    <button class="confirm-button btm-btn del-btn">Revoke admin</button>
+                </div>
             </div>
-            <div class="row split-3-12">
+            <div class="row">
+                <div class="row split-6-12">
+                    <button class="left-align btm-btn add-btn">+ Grant new admin</button>
+                </div>
+                <div class="row split-3-12">
+                </div>
+                <div class="row split-3-12">
+                </div>
             </div>
-            <div class="row split-3-12">
+            <div class="row">
+                <button class="btm-btn">PrintQR</button>
+                <button class="confirm-button btm-btn">Confirm</button>
             </div>
-        </div>
-        <div class="row">
-            <div class="row split-6-12">
-                <p class="left-align input-box">c</p>
-            </div>
-            <div class="row split-3-12">
-            </div>
-            <div class="row split-3-12">
-            </div>
-        </div>
-        <div class="row">
-            <div class="row split-6-12">
-                <p class="left-align input-box">d</p>
-            </div>
-            <div class="row split-3-12">
-            </div>
-            <div class="row split-3-12">
-            </div>
-        </div>
-        <div class="row">
-            <button class="btm-btn">PrintQR</button>
-            <button class="confirm-button btm-btn">Confirm</button>
-        </div>
+        </form>
     </div>
 </body>
 </html>

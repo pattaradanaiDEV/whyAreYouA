@@ -1,7 +1,9 @@
+*{
+   font-family: 'Inter', sans-serif;
+}
 a { 
    color: #000000;
    text-decoration: none ;
-   font-family: "Archivo Narrow";
 }
 img{
    margin-left: 10px;
@@ -21,11 +23,14 @@ img{
 	fill: #000000;
 }
 .mainbox {
-   padding: 8px;
+   flex-direction: column;
+   padding: 16px;
    margin-top: 20px;
    width: 90%;
-   box-shadow: 0px 24px 30px #00000040;
-   background: radial-gradient(circle at 0% 0%, #FFFFFF 0%, #cf9241 100%);
+   /* background: #a084cc; */
+   background: linear-gradient(90deg, #000, #333); 
+   /* background: linear-gradient(#a084cc , rgb(222, 222, 222) ); */
+   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
    border-radius: 20px;
 }
 .row {
@@ -50,6 +55,11 @@ img{
     width: 25%;
     max-width: 25%;
 }
+.split-3-12{
+    min-width: 25%;
+    width: 25%;
+    max-width: 25%;
+}
 .column {
     display: flex;
     justify-items: center;
@@ -63,8 +73,8 @@ img{
     height: 40px;
     padding: 4px;
     margin-right: 10px;
-    background: #000000;
-    border: 1px solid #000000;
+    background: white;
+    border: 1px solid white;
 }
 .input-box {
 	background: #FFFFFF;
@@ -76,7 +86,7 @@ img{
    	display: flex;
    	border-radius: 30px;
    	border: none;
-   	font-size: 2vh;
+   	font-size: 3vh;
    	position: relative;
     width: 100%;
     margin: 5%;
@@ -94,13 +104,36 @@ img{
    	display: flex;
    	border-radius: 20vh;
    	border: none;
-   	font-size: 2vh;
+   	font-size: 3vh;
    	position: relative;
 	cursor: pointer;
+	transition-duration: 0.25s;
+}
+.btm-btn:hover{
+    background-color: lightgray;
 }
 .confirm-button {
-    background-color: #00441B;
+    background-color: #0A5C2A;
     color: white;
+    cursor: none;
+}
+.confirm-button:hover{
+    background-color: #006635;
+    cursor: pointer;
+}
+.del-btn{
+    margin: 0 7.5% 0 7.5%;
+   	padding: 2vh 0 2vh 0;
+    background-color: #ff0000;
+    color: white;
+}
+.del-btn:hover{
+    background-color: #880000;
+    cursor: pointer;
+}
+.add-btn{
+    margin: 7.5% 5% 0 5%;
+   	padding: 2vh;
 }
 .head-text{
 	font-weight: 400;
@@ -108,5 +141,9 @@ img{
    	justify-content: center;
    	align-items: center;
    	display: flex;
-   	font-size: 2vh;
+    font-size: 2rem;
+    color: white;
+}
+input[type=checkbox]{
+    transform: scale(3);
 }
