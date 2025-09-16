@@ -41,7 +41,9 @@ class Item(db.Model,SerializerMixin):
         return qr_b64
         
         
-    def update(self,ItemAmount,ItemPicture,itemMin):
+    def update(self,ItemName,ItemAmount,ItemPicture,itemMin):
+        self.itemName = ItemName
+        self.itemName = ItemName
         self.itemAmount=ItemAmount
         self.itemPicture=ItemPicture
         self.itemMin=itemMin
