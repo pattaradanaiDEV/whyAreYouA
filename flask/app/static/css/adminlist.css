@@ -17,10 +17,11 @@ img{
    background-attachment: fixed;
    background-size: cover;
 }
-.reply-icon {
-	width: 52px;
-	height: 52px;
+.icon {
+	width: 17px;
+	height: 21px;
 	fill: #000000;
+    margin: 0;
 }
 .mainbox {
    flex-direction: column;
@@ -79,7 +80,6 @@ img{
 .input-box {
 	background: #FFFFFF;
 	font-weight: 400;
-	text-align: left;
    	padding: 2vh 0 2vh 0;
    	justify-content: center;
    	align-items: center;
@@ -144,6 +144,18 @@ img{
     font-size: 2rem;
     color: white;
 }
-input[type=checkbox]{
+input[type="checkbox"]{
     transform: scale(3);
+}
+input[type="text"]{
+    text-align: left;
+}
+input[type="text"]::placeholder{
+    text-align: center;
+}
+.dis-btn{
+    background-color: #880000;
+}
+.dis-btn:hover{
+    cursor: not-allowed;
 }
