@@ -16,6 +16,7 @@ def create_db():
 @cli.command("seed_db")
 def seed_db():
     categories = [
+        "Free cate",
         "Stationery",
         "Electrical",
         "IT",
@@ -77,5 +78,15 @@ def seed_db():
     item.cateID = 5
     db.session.add(item)
     db.session.commit()
+
+@cli.command("delete_item")
+def delete_item():
+    R_item = Item.query.filter_by(cateID=2)
+    for i in R_item:
+        i["cateID"] = 1
+    R_category = Category.query.filter_by(cateID=2).first()
+    db.session.delete(R_category)
+    db.session.commit()
+
 if __name__ == "__main__":
     cli()

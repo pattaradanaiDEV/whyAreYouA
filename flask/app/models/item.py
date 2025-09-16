@@ -6,7 +6,7 @@ from sqlalchemy_serializer import SerializerMixin
 class Item(db.Model,SerializerMixin):
     __tablename__ = "item"
     itemID = db.Column(db.Integer, primary_key=True)
-    cateID = db.Column(db.Integer, db.ForeignKey("category.cateID"), nullable=False)
+    cateID = db.Column(db.Integer, db.ForeignKey("category.cateID"), default = 1)
     itemName = db.Column(db.String(255))
     itemAmount = db.Column(db.Integer)
     itemPicture = db.Column(db.String(255))
