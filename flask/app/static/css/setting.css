@@ -1,0 +1,22 @@
+body{
+    background: linear-gradient(#F9FAFB, #FFF);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
+}
+
+.top-bar{
+    position: relative;
+    left: 0;
+    border-bottom: 2px solid #eee;
+    padding: 14px 20px;
+}
+
+.profile{
+    padding: 20px 20px;
+    text-align: center;
+}
+
+.profile span{
+    font-size: 5rem;
+}

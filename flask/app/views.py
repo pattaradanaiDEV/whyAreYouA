@@ -187,3 +187,7 @@ def withdraw():
     #                       item=R_item,
     #                       user=userID
     #                       )
+
+@app.route('/setting')
+def setting():
+    return render_template('setting.html')
