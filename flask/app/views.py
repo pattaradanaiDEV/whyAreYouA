@@ -8,7 +8,12 @@ from app import db
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
+from app.models.withdrawHistory import WithdrawHistory
 from flask_login import current_user
+import pandas as pd
+from flask import send_file
+from io import BytesIO
+
 
 @app.route('/save_pin', methods=['POST'])
 def save_pin():
@@ -191,3 +196,39 @@ def withdraw():
 @app.route('/setting')
 def setting():
     return render_template('setting.html')
+
+
+@app.route('/delete/item')
+def delete_item():
+
+    return redirect('/category') 
+
+@app.route('/export/withdraw_history')
+def export():
+    data = WithdrawHistory.query.all()
+    data_list = [i.to_dict() for i in data]
+    list = []
+    for i in data_list:
+        print(i)
+        history = {
+            "Withdraw date" : i["DateTime"],
+           # "Username" : user["Fname"] + " " + user["Lname"],
+           # "Phone number" : user["phoneNum"],
+           # "CMU Mail" : user["cmuMail"],
+            "Item Name" : i["items"]["itemName"],
+            "Category" : i["items"]["category"]["cateName"],
+            "Quantity" : i["Quantity"]
+        }
+        list.append(history)
+    df = pd.DataFrame(list)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="WithdrawHistory")
+    output.seek(0)
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="withdraw_History.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    
