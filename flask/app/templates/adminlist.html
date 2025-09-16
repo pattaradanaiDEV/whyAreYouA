@@ -3,14 +3,62 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../static/css/stockmenu.css">
+    <link rel="stylesheet" href="../static/css/adminlist.css">
 </head>
 
-<body>
-    <div>
-        <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
-        <div style="text-align: center">
-            <h1>Admin List page</h1>
+<body class="mobilescreen">
+    <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <div class="mainbox">
+        <div class="row">
+            <div class="row left-align split-6-12">
+                <span class="recName"></span>
+                <p class="head-text">Admin List</p>
+            </div>
+            <div class="row split-3-12">
+                <p class="input-box">Main Admin</p>
+            </div>
+            <div class="row split-3-12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="row split-6-12">
+                <p class="left-align input-box">a</p>
+            </div>
+            <div class="row split-3-12">
+            </div>
+            <div class="row split-3-12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="row split-6-12">
+                <p class="left-align input-box">b</p>
+            </div>
+            <div class="row split-3-12">
+            </div>
+            <div class="row split-3-12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="row split-6-12">
+                <p class="left-align input-box">c</p>
+            </div>
+            <div class="row split-3-12">
+            </div>
+            <div class="row split-3-12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="row split-6-12">
+                <p class="left-align input-box">d</p>
+            </div>
+            <div class="row split-3-12">
+            </div>
+            <div class="row split-3-12">
+            </div>
+        </div>
+        <div class="row">
+            <button class="btm-btn">PrintQR</button>
+            <button class="confirm-button btm-btn">Confirm</button>
         </div>
     </div>
 </body>
