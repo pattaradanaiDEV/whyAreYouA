@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/setting.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Setting Page</title>
 </head>
 <body>
     <div class="top-bar">
-        <span class="material-icons">arrow_back_ios_new</span>
+        <a href="{{ url_for('home') }}">
+            <span class="material-icons">arrow_back_ios_new</span>
+        </a>
     </div>
 
     <div class="profile">
-        <span class="material-icons">circle</span>
+        <span class="material-icons">account_circle</span>
     </div>
 
     <div class="item">
         <div>
             <span class="material-icons">contrast</span>
+            <span>Appearance</span>
         </div>
     </div>
 
