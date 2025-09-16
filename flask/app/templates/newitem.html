@@ -3,15 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/newitem.css">
 </head>
 
 <body class="mobilescreen">
-    <a href="{{ url_for('stockmenu') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
+    <a href="{{ url_for('stockmenu') }}"> 
+        <span class="material-icons reply-icon" style="font-size: 2rem;">arrow_back_ios_new</span>
+    </a>
     <div class="mainbox">
         <div class="row">
             <span class="recName"></span>
-            <h1>New Item</h1>
+            <span>New Item</span>
         </div>
         <div class="row align-center">
             <img src="../static/ico/default_image.png" class="default-icon">
