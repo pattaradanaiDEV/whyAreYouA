@@ -1,4 +1,4 @@
-#import qrcode
+import segno
 import base64
 from io import BytesIO
 from app import db
@@ -33,14 +33,13 @@ class Item(db.Model,SerializerMixin):
         self.itemMin = itemMin
         self.QR_Barcode = ""
     
-    def generate_qr(self, data):
-        qr = qrcode.make(data)
+    def generate_qr(self, data: str):
+        qr = segno.make(data)
         buffer = BytesIO()
-        qr.save(buffer, format="PNG")
+        qr.save(buffer, kind="png")
         qr_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
         return qr_b64
-        
-        
+
     def update(self,ItemName,ItemAmount,ItemPicture,itemMin):
         self.itemName = ItemName
         self.itemAmount=ItemAmount
