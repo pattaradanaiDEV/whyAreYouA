@@ -19,11 +19,11 @@
             <span>Stock Menu</span>
         </div>
         <div class="column">
-           	<a type="button" class="nav-box" href="('{{ url_for('category') }}')">
+           	<a type="button" class="nav-box" href="{{ url_for('category') }}">
                 <span>Category</span>
                 <img src="../static/ico/category.png" class="category-icon">
             </a>
-           	<a type="button" class="nav-box" href="('{{ url_for('newitem') }}')">
+           	<a type="button" class="nav-box" href="{{ url_for('newitem') }}">
                 <span>New Item</span>
             	<img src="../static/ico/addStock.png" class="addStock-icon">
             </a>

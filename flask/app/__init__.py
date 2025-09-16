@@ -32,6 +32,16 @@ if app.debug:
 # Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+#ถ้าเกิด circular import ให้ย้ายบรรทัด 40-43 ยกเว้น42 ไปใส่ใน models/init แทน
+@login_manager.user_loader
+def load_user(user_id):
+    from app.models.user import User
+    return User.query.get(int(user_id))
+
 @app.before_request
 def remove_trailing_slash():
    # Check if the path ends with a slash but is not the root "/"

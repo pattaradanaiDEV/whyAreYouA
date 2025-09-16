@@ -7,6 +7,7 @@ from app import app
 from app import db
 from app.models.category import Category
 from app.models.user import User
+from app.models.item import Item
 from flask_login import current_user
 
 @app.route('/save_pin', methods=['POST'])
@@ -76,8 +77,17 @@ def create_pin():
 @app.route('/category')
 def category():
     data_category = Category.query.all()
-    categories = list(map(lambda x: x.to_dict(), data_category))
-    return render_template('category.html', categories=categories)
+    categories = [c.to_dict() for c in data_category]
+
+    data_items = Item.query.all()
+    items = [i.to_dict() for i in data_items]
+    #madmin = current_user.isM_admin if current_user.is_authenticated else False
+    return render_template(
+        'category.html',
+        categories=categories,
+        items=items,
+        is_admin=True
+    )
 
 @app.route('/newitem')
 def newitem():
@@ -88,7 +98,7 @@ def stockmenu():
     return render_template('stockmenu.html')
 
 @app.route('/cart')
-def stockmenu():
+def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist')
@@ -155,4 +165,25 @@ def db_connection():
                     </a>\
                 </div>\
             </body>'
-            
+
+@app.route('/edit')
+def edit():
+    ItemID = request.args.get("itemID")
+    userID = request.args.get("userID")
+    R_item = Item.query.filter_by(itemID=ItemID).first()
+    return jsonify(R_item.to_dict())
+    #return render_template('edit.html', 
+    #                       item=R_item,
+    #                       user=userID
+    #                       )
+
+@app.route('/withdraw')
+def withdraw():
+    ItemID = request.args.get("itemID")
+    userID = request.args.get("userID")
+    R_item = Item.query.filter_by(itemID=ItemID).first()
+    return jsonify(R_item.to_dict())
+    #return render_template('edit.html', 
+    #                       item=R_item,
+    #                       user=userID
+    #                       )
