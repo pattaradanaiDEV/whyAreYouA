@@ -43,7 +43,6 @@ class Item(db.Model,SerializerMixin):
         
     def update(self,ItemName,ItemAmount,ItemPicture,itemMin):
         self.itemName = ItemName
-        self.itemName = ItemName
         self.itemAmount=ItemAmount
         self.itemPicture=ItemPicture
         self.itemMin=itemMin
