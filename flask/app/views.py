@@ -8,6 +8,7 @@ from app import db
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
+from flask import Blueprint
 from flask_login import current_user
 
 @app.route('/save_pin', methods=['POST'])
@@ -170,8 +171,14 @@ def db_connection():
 def edit():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
-    R_item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(R_item.to_dict())
+    item = Item.query.filter_by(itemID=ItemID).first()
+    qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
+
+    return render_template(
+        'edit.html',
+        item=item,
+        QR_Barcode=qr_b64
+    )
     #return render_template('edit.html', 
     #                       item=R_item,
     #                       user=userID
@@ -181,8 +188,8 @@ def edit():
 def withdraw():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
-    R_item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(R_item.to_dict())
+    item = Item.query.filter_by(itemID=ItemID).first()
+    return jsonify(item.to_dict())
     #return render_template('edit.html', 
     #                       item=R_item,
     #                       user=userID
@@ -191,3 +198,15 @@ def withdraw():
 @app.route('/setting')
 def setting():
     return render_template('setting.html')
+
+bp = ("item" , __name__ )
+@app.route('/item/<int:itemID>/withdraw')
+def withdraw_byQR(itemID):
+    item = Item.query.get_or_404(itemID)
+    if item.itemAmount > 0 :
+        item.itemAmount-=1
+        db.session.commit()
+        return f"เบิก{item.itemName}สำเร็จ"
+    else:
+        return f"{item.itemName} หมดแล้วไอน้อง"
+        
