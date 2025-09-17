@@ -25,77 +25,29 @@
             <div class="row split-3-12">
             </div>
         </div>
-        <div class="row" id="admin1">
-            <div class="row split-6-12">
-                <p class="left-align input-box">Pongpop Pongsuk</p>
+        {% for user in users %}
+            {% if user.userID == 1 %}
+            <div class="row" id="admin{{user.userID}}">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">{{user.Fname}} {{user.Lname}}</p>
+                </div>
             </div>
-            <div class="row split-3-12">
-                <input type="checkbox" class="left-align" disabled checked>
+            {% else %}
+            <div class="row" id="admin{{user.userID}}">
+                <div class="row split-6-12">
+                    <p class="left-align input-box">{{user.Fname}} {{user.Lname}}</p>
+                </div>
+                <div class="row split-3-12">
+                    <input type="checkbox" class="left-align" disabled checked>
+                </div>
+                <div class="row split-3-12">
+                    <button onclick="DelAdmin('admin{{user.userID}}')" class="confirm-button btm-btn del-btn dis-btn" disabled>
+                        <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
+                    </button>
+                </div>
             </div>
-            <div class="row split-3-12">
-                <button onclick="DelAdmin('admin1')" class="confirm-button btm-btn del-btn dis-btn" disabled>
-                    <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
-                </button>
-            </div>
-        </div>
-        <div class="row" id="admin2">
-            <div class="row split-6-12">
-                <p class="left-align input-box">Thanom Kongjai</p>
-            </div>
-            <div class="row split-3-12">
-                <input type="checkbox" class="left-align">
-            </div>
-            <div class="row split-3-12">
-                <button onclick="DelAdmin('admin2')" class="confirm-button btm-btn del-btn">
-                    <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
-                </button>
-            </div>
-        </div>
-        <div class="row" id="admin3">
-            <div class="row split-6-12">
-                <p class="left-align input-box">Sutthiphong Surak</p>
-            </div>
-            <div class="row split-3-12">
-                <input type="checkbox" class="left-align">
-            </div>
-            <div class="row split-3-12">
-                <button onclick="DelAdmin('admin3')" class="confirm-button btm-btn del-btn">
-                    <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
-                </button>
-            </div>
-        </div>
-        <div class="row" id="admin4">
-            <div class="row split-6-12">
-                <p class="left-align input-box">Nichapha Nillaor</p>
-            </div>
-            <div class="row split-3-12">
-                <input type="checkbox" class="left-align">
-            </div>
-            <div class="row split-3-12">
-                <button onclick="DelAdmin('admin4')" class="confirm-button btm-btn del-btn">
-                    <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
-                </button>
-            </div>
-        </div>
-        <form id="editor" method="post">
-        </form>
-        <div class="row">
-            <div class="row split-6-12">
-                <button name="e-h1" onclick="NewAdmin()" class="left-align btm-btn add-btn">+ New admin</button>
-            </div>
-            <div class="row split-3-12">
-            </div>
-            <div class="row split-3-12">
-            </div>
-        </div>
-        <div class="row">
-            <button class="btm-btn">PrintQR</button>
-            <form method="post">
-            </form>
-            <button class="confirm-button btm-btn">Confirm</button>
-            <form method="post">
-            </form>
-        </div>
+            {% endif %}
+        {% endfor %}
     </div>
 </body>
 </html>

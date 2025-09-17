@@ -109,7 +109,25 @@ def cart():
 
 @app.route('/adminlist')
 def adminlist():
-    return render_template('adminlist.html')
+    data = User.query.all()
+    users = [u.to_dict() for u in data]
+    return render_template('adminlist.html', users=users)
+
+@app.route('/make_admin/<int:user_id>', methods=['POST'])
+def make_admin(user_id):
+    user = User.query.get_or_404(user_id)
+    user.IsM_admin = True
+    db.session.commit()
+
+    return jsonify({"success": True})
+
+@app.route('/accept_user/<int:user_id>', methods=['POST'])
+def accept_user(user_id):
+    user = User.query.get_or_404(user_id)
+    user.availiable = True
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 @app.route('/test_DB')
 def test_DB():

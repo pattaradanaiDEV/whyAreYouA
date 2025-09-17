@@ -11,7 +11,6 @@ class Item(db.Model,SerializerMixin):
     itemAmount = db.Column(db.Integer)
     itemPicture = db.Column(db.String(255))
     itemMin = db.Column(db.Integer)
-    QR_Barcode = db.Column(db.Text)
 
     cart = db.relationship("Cart", back_populates="items", cascade="all, delete-orphan")
     category = db.relationship("Category", back_populates="items")
@@ -21,7 +20,6 @@ class Item(db.Model,SerializerMixin):
         "itemAmount",
         "itemPicture",
         "itemMin",
-        "QR_Barcode",
         "category",
     )
     withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
@@ -31,7 +29,6 @@ class Item(db.Model,SerializerMixin):
         self.itemAmount = ItemAmount
         self.itemPicture = ItemPicture
         self.itemMin = itemMin
-        self.QR_Barcode = ""
     
     def generate_qr(self, data: str):
         qr = segno.make(data)
