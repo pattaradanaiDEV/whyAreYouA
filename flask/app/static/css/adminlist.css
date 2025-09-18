@@ -1,161 +1,230 @@
-*{
-   font-family: 'Inter', sans-serif;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
 }
-a { 
-   color: #000000;
-   text-decoration: none ;
+
+.mainbox {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 16px;
 }
-img{
-   margin-left: 10px;
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
 }
-.mobilescreen {
-  background: linear-gradient(180deg, #FFFFFFEB 2%, #FEFAC0 79%);
-  justify-content: center;
-  justify-items: center;
-   background-repeat: no-repeat;
-   background-position: center center;
-   background-attachment: fixed;
-   background-size: cover;
-}
-.icon {
-	width: 17px;
-	height: 21px;
-	fill: #000000;
+
+ul {
+    list-style: none;
+    padding: 0;
     margin: 0;
 }
-.mainbox {
-   flex-direction: column;
-   padding: 16px;
-   margin-top: 20px;
-   width: 90%;
-   /* background: #a084cc; */
-   background: linear-gradient(90deg, #000, #333); 
-   /* background: linear-gradient(#a084cc , rgb(222, 222, 222) ); */
-   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-   border-radius: 20px;
-}
-.row {
+
+li {
     display: flex;
-    justify-items: center;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    align-content: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+    color: #333;
+}
+
+form {
+    display: inline;
+}
+
+.btn {
+    border: none;
+    padding: 6px 14px;
+    margin-left: 4px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-accept {
+    background-color: #2c3e50;
+    color: #fff;
+}
+
+.btn-accept:hover {
+    background-color: #1a252f;
+}
+
+.btn-decline {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-decline:hover {
+    background-color: #c7c7c7;
+}
+
+.btn-accept-all {
+    display: block;
     width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
-.left-align{
-    justify-items: left;
-    justify-content: left;
+
+.btn-accept-all:hover {
+    background-color: #1a252f;
 }
-.split-6-12{
-    min-width: 50%;
-    width: 50%;
-    max-width: 50%;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
 }
-.split-3-12{
-    min-width: 25%;
-    width: 25%;
-    max-width: 25%;
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
-.split-3-12{
-    min-width: 25%;
-    width: 25%;
-    max-width: 25%;
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
 }
-.column {
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.header {
     display: flex;
-    justify-items: center;
-    justify-content: center;
     align-items: center;
-    align-content: center;
-    height: auto;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
 }
-.recName {
-    width: 4px;
-    height: 40px;
-    padding: 4px;
-    margin-right: 10px;
-    background: white;
-    border: 1px solid white;
-}
-.input-box {
-	background: #FFFFFF;
-	font-weight: 400;
-   	padding: 2vh 0 2vh 0;
-   	justify-content: center;
-   	align-items: center;
-   	display: flex;
-   	border-radius: 30px;
-   	border: none;
-   	font-size: 3vh;
-   	position: relative;
-    width: 100%;
-    margin: 5%;
-}
-.btm-btn {
-    width: 100%;
-    margin: 10% 7.5% 5% 7.5%;
-	background: #FFFFFF;
-	font-weight: 400;
-	text-align: left;
-    padding-top: 30px;
-    padding-bottom: 30px;
-   	justify-content: center;
-   	align-items: center;
-   	display: flex;
-   	border-radius: 20vh;
-   	border: none;
-   	font-size: 3vh;
-   	position: relative;
-	cursor: pointer;
-	transition-duration: 0.25s;
-}
-.btm-btn:hover{
-    background-color: lightgray;
-}
-.confirm-button {
-    background-color: #0A5C2A;
-    color: white;
-    cursor: none;
-}
-.confirm-button:hover{
-    background-color: #006635;
-    cursor: pointer;
-}
-.del-btn{
-    margin: 0 7.5% 0 7.5%;
-   	padding: 2vh 0 2vh 0;
-    background-color: #ff0000;
-    color: white;
-}
-.del-btn:hover{
-    background-color: #880000;
-    cursor: pointer;
-}
-.add-btn{
-    margin: 7.5% 5% 0 5%;
-   	padding: 2vh;
-}
-.head-text{
-	font-weight: 400;
-	text-align: left;
-   	justify-content: center;
-   	align-items: center;
-   	display: flex;
-    font-size: 2rem;
-    color: white;
-}
-input[type="checkbox"]{
-    transform: scale(3);
-}
-input[type="text"]{
-    text-align: left;
-}
-input[type="text"]::placeholder{
+
+.header h2 {
+    flex: 1;
     text-align: center;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
 }
-.dis-btn{
-    background-color: #880000;
+
+.back-btn {
+    text-decoration: none;
+    color: #333;
+    font-size: 24px;
 }
-.dis-btn:hover{
-    cursor: not-allowed;
+
+/* Section titles */
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.section-sub {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+/* Admin list */
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fafafa;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.admin-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #ddd;
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #111;
+}
+
+.username {
+    font-size: 13px;
+    color: #777;
 }

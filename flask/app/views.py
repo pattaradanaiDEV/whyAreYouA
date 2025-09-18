@@ -12,6 +12,7 @@ from flask import Blueprint
 from app.models.withdrawHistory import WithdrawHistory
 from flask_login import current_user
 import pandas as pd
+from flask_wtf.csrf import CSRFProtect
 from flask import send_file
 from io import BytesIO
 
@@ -107,27 +108,24 @@ def stockmenu():
 def cart():
     return render_template('cart.html')
 
-@app.route('/adminlist')
+@app.route('/adminlist', methods=["GET", "POST"])
 def adminlist():
-    data = User.query.all()
-    users = [u.to_dict() for u in data]
-    return render_template('adminlist.html', users=users)
+    if request.method == "POST":
+        action = request.form.get("action")
+        user_id = request.form.get("user_id")
 
-@app.route('/make_admin/<int:user_id>', methods=['POST'])
-def make_admin(user_id):
-    user = User.query.get_or_404(user_id)
-    user.IsM_admin = True
-    db.session.commit()
-
-    return jsonify({"success": True})
-
-@app.route('/accept_user/<int:user_id>', methods=['POST'])
-def accept_user(user_id):
-    user = User.query.get_or_404(user_id)
-    user.availiable = True
-    db.session.commit()
-
-    return jsonify({"success": True})
+        if action == "promote" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                user.IsM_admin = True
+                db.session.commit()
+        else:
+            user = User.query.get(int(user_id))
+            if user:
+                user.IsM_admin = False
+                db.session.commit()
+    users = User.query.filter_by(availiable=True).all()
+    return render_template("adminlist.html", users=users)
 
 @app.route('/test_DB')
 def test_DB():
@@ -269,3 +267,30 @@ def export():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     
+@app.route("/pending_admin", methods=["GET", "POST"])
+def pending_user():
+    if request.method == "POST":
+        action = request.form.get("action")
+        user_id = request.form.get("user_id")
+
+        if action == "accept" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                user.availiable = True
+                db.session.commit()
+
+        elif action == "decline" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+
+        elif action == "accept_all":
+            users = User.query.filter_by(availiable=False).all()
+            for user in users:
+                user.availiable = True
+            db.session.commit()
+
+        return redirect(url_for("pending_user"))
+    users = User.query.filter_by(availiable=False).all()
+    return render_template("pending_admin.html", users=users)

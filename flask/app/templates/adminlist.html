@@ -6,100 +6,49 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/adminlist.css">
 </head>
-
 <body class="mobilescreen">
+    <div class="header">
+        <a href="{{ url_for('homepage') }}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+        </a>
+        <h2>Admin List</h2>
+    </div>
+
     <div class="mainbox">
-        <div class="reply-icon">
-            <a href="{{ url_for('homepage') }}"> 
-                <span class="material-icons" style="font-size: 2rem; color: #FFF">arrow_back_ios_new</span> 
-            </a> 
-        </div>
-        <div class="row">
-            <div class="row left-align split-6-12">
-                <span class="recName"></span>
-                <p class="head-text">Admin List</p>
-            </div>
-            <div class="row split-3-12">
-                <p class="input-box">Main Admin</p>
-            </div>
-            <div class="row split-3-12">
-            </div>
-        </div>
-        {% for user in users %}
-            {% if user.userID == 1 %}
-            <div class="row" id="admin{{user.userID}}">
-                <div class="row split-6-12">
-                    <p class="left-align input-box">{{user.Fname}} {{user.Lname}}</p>
+        <h3 class="section-title">Mainadmin management</h3>
+        <p class="section-sub">Manage admin access and permissions</p>
+        <ul class="admin-list">
+            {% for user in users %}
+            <li class="admin-item">
+                {% if user.UserID == 1 %}
+                <div class="admin-info">
+                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <div>
+                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
+                        <div class="username">@{{ user.cmuMail }}</div>
+                    </div>
                 </div>
-            </div>
-            {% else %}
-            <div class="row" id="admin{{user.userID}}">
-                <div class="row split-6-12">
-                    <p class="left-align input-box">{{user.Fname}} {{user.Lname}}</p>
+                {% else %}
+                <div class="admin-info">
+                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <div>
+                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
+                        <div class="username">@{{ user.cmuMail }}</div>
+                    </div>
                 </div>
-                <div class="row split-3-12">
-                    <input type="checkbox" class="left-align" disabled checked>
-                </div>
-                <div class="row split-3-12">
-                    <button onclick="DelAdmin('admin{{user.userID}}')" class="confirm-button btm-btn del-btn dis-btn" disabled>
-                        <img class="icon" src="../static/ico/bin.png" alt="Delete admin">
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-        {% endfor %}
+                <form method="post" action="{{ url_for('adminlist') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                    <label class="switch">
+                        <input type="checkbox" name="action" value="promote"
+                        onchange="this.form.submit();" {% if user.IsM_admin %}checked{% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                </form>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>
-<script>
-    var i = 4;
-    function NewAdmin() {
-        i = i + 1;
-        var div1 = document.createElement("div");
-        var div21 = document.createElement("div");
-        var div22 = document.createElement("div");
-        var div23 = document.createElement("div");
-        var text_in = document.createElement("input");
-        var input1 = document.createElement("input");
-        var button1 = document.createElement("button");
-        var img1 = document.createElement("img");
-        // div(class) {}
-        div1.setAttribute("class", "row");
-        div1.setAttribute("id", `admin${i}`);
-        // div(class) { p(class; text) }
-        div21.setAttribute("class", "row split-6-12");
-        text_in.setAttribute("type", "text")
-        text_in.setAttribute("placeholder", "Input CMU mail here!")
-        text_in.setAttribute("class", "input-box")
-        div21.append(text_in);
-        // div(class) { div(class) { p(class; text) } }
-        div1.append(div21);
-        // div(class) { input(class; text) }
-        div22.setAttribute("class", "row split-3-12");
-        input1.setAttribute("class", "left-align");
-        input1.setAttribute("type", "checkbox");
-        input1.setAttribute("disabled", true);
-        div22.append(input1);
-        // div(class) { div(class) { input(class; text) } }
-        div1.append(div22);
-        // div(class) { button(class; text) }
-        div23.setAttribute("class", "row split-3-12");
-        button1.setAttribute("class", "confirm-button btm-btn del-btn");
-        button1.setAttribute("onclick", "DelAdmin('admin" + `${i}` + "')");
-        img1.setAttribute("class", "icon");
-        img1.setAttribute("src", "../static/ico/bin.png");
-        img1.setAttribute("alt", "Delete admin");
-        button1.append(img1);
-        div23.append(button1);
-        // div(class) { div(class) { button(class; text) { img (class, src, alt) } } }
-        div1.append(div23);
-
-        document.getElementById("editor").append(div1);
-    }
-    function DelAdmin(admin_id) {
-        const elementToRemove = document.getElementById(admin_id);
-        if (elementToRemove) {
-            elementToRemove.remove();
-        }
-    }
-</script>
