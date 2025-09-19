@@ -3,7 +3,8 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Pridi', serif;
+    /* font-family: 'Inter', sans-serif; */
   }
   
   .top-bar {
