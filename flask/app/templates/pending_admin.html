@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin requests</title>
+    <link rel="stylesheet" href="../static/css/adminlist.css">
+</head>
+<body>
+    <div class="mainbox">
+        <h2>Admin requests</h2>
+        {% if users %}
+            <ul>
+                {% for user in users %}
+                    <li>
+                        {{ user.Fname }} {{ user.Lname }}
+                        <form method="post" action="{{ url_for('pending_user') }}" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                            <button type="submit" name="action" value="accept" class="btn btn-accept">Accept</button>
+                            <button type="submit" name="action" value="decline" class="btn btn-decline">Decline</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+            <form method="post" action="{{ url_for('pending_user') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" name="action" value="accept_all" class="btn btn-accept-all">Accept All</button>
+            </form>
+        {% else %}
+            <p>No pending users.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

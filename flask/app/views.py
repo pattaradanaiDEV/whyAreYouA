@@ -8,7 +8,14 @@ from app import db
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
+from flask import Blueprint
+from app.models.withdrawHistory import WithdrawHistory
 from flask_login import current_user
+import pandas as pd
+from flask_wtf.csrf import CSRFProtect
+from flask import send_file
+from io import BytesIO
+
 
 @app.route('/save_pin', methods=['POST'])
 def save_pin():
@@ -101,9 +108,24 @@ def stockmenu():
 def cart():
     return render_template('cart.html')
 
-@app.route('/adminlist')
+@app.route('/adminlist', methods=["GET", "POST"])
 def adminlist():
-    return render_template('adminlist.html')
+    if request.method == "POST":
+        action = request.form.get("action")
+        user_id = request.form.get("user_id")
+
+        if action == "promote" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                user.IsM_admin = True
+                db.session.commit()
+        else:
+            user = User.query.get(int(user_id))
+            if user:
+                user.IsM_admin = False
+                db.session.commit()
+    users = User.query.filter_by(availiable=True).all()
+    return render_template("adminlist.html", users=users)
 
 @app.route('/test_DB')
 def test_DB():
@@ -170,8 +192,14 @@ def db_connection():
 def edit():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
-    R_item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(R_item.to_dict())
+    item = Item.query.filter_by(itemID=ItemID).first()
+    qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
+
+    return render_template(
+        'edit.html',
+        item=item,
+        QR_Barcode=qr_b64
+    )
     #return render_template('edit.html', 
     #                       item=R_item,
     #                       user=userID
@@ -181,8 +209,8 @@ def edit():
 def withdraw():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
-    R_item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(R_item.to_dict())
+    item = Item.query.filter_by(itemID=ItemID).first()
+    return jsonify(item.to_dict())
     #return render_template('edit.html', 
     #                       item=R_item,
     #                       user=userID
@@ -191,3 +219,78 @@ def withdraw():
 @app.route('/setting')
 def setting():
     return render_template('setting.html')
+
+bp = ("item" , __name__ )
+@app.route('/item/<int:itemID>/withdraw')
+def withdraw_byQR(itemID):
+    item = Item.query.get_or_404(itemID)
+    if item.itemAmount > 0 :
+        item.itemAmount-=1
+        db.session.commit()
+        return f"เบิก{item.itemName}สำเร็จ"
+    else:
+        return f"{item.itemName} หมดแล้วไอน้อง"
+        
+
+
+@app.route('/delete/item')
+def delete_item():
+
+    return redirect('/category') 
+
+@app.route('/export/withdraw_history')
+def export():
+    data = WithdrawHistory.query.all()
+    data_list = [i.to_dict() for i in data]
+    list = []
+    for i in data_list:
+        print(i)
+        history = {
+            "Withdraw date" : i["DateTime"],
+           # "Username" : user["Fname"] + " " + user["Lname"],
+           # "Phone number" : user["phoneNum"],
+           # "CMU Mail" : user["cmuMail"],
+            "Item Name" : i["items"]["itemName"],
+            "Category" : i["items"]["category"]["cateName"],
+            "Quantity" : i["Quantity"]
+        }
+        list.append(history)
+    df = pd.DataFrame(list)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="WithdrawHistory")
+    output.seek(0)
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="withdraw_History.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    
+@app.route("/pending_admin", methods=["GET", "POST"])
+def pending_user():
+    if request.method == "POST":
+        action = request.form.get("action")
+        user_id = request.form.get("user_id")
+
+        if action == "accept" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                user.availiable = True
+                db.session.commit()
+
+        elif action == "decline" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+
+        elif action == "accept_all":
+            users = User.query.filter_by(availiable=False).all()
+            for user in users:
+                user.availiable = True
+            db.session.commit()
+
+        return redirect(url_for("pending_user"))
+    users = User.query.filter_by(availiable=False).all()
+    return render_template("pending_admin.html", users=users)

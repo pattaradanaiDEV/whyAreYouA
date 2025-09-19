@@ -35,9 +35,11 @@
 	<div class="show_category">
         <button class="category-item" onclick="filterCategory('all')">All Items</button>    
         {% for cate in categories %}
+            {% if cate['cateName'] != 'Free cate'%}
             <button class="category-item" onclick="filterCategory('{{ cate['cateName'] }}')">
                 {{ cate['cateName'] }}
-            </button>   
+            </button> 
+            {% endif %}  
         {% endfor %}
 	</div>
 

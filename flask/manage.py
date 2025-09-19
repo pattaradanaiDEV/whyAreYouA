@@ -1,10 +1,18 @@
 from flask.cli import FlaskGroup
 
 from app import app, db
+from app.models.user import User
 from app.models.item import Item
 from app.models.category import Category
+from app.models.withdrawHistory import WithdrawHistory
 
 cli = FlaskGroup(app)
+
+@cli.command("add_history")
+def add_history():
+    history = WithdrawHistory(user_id=1, item_id=1, quantity=2)
+    db.session.add(history)
+    db.session.commit()
 
 @cli.command("create_db")
 def create_db():
@@ -13,9 +21,24 @@ def create_db():
     db.create_all()
     db.session.commit()
 
+@cli.command("add_user")
+def add_user():
+    user = [["pongpob","pongsuk","0000099900","pongpob_pongsuk@cmu.ac.th"],
+            ["Hitler","adolf","0000000000","HA@cmu.ac.th"],
+            ["putin","janOcha","0000010000","Suca@cmu.ac.th"],
+            ["blow","จ็อบ","0001000000","พรhub@cmu.ac.th"]]
+    for i in user :
+        db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],cmuMail=i[3]))
+    db.session.commit()
+    peeman = User.query.get_or_404(1)
+    peeman.IsM_admin=True
+    peeman.availiable=True
+    db.session.commit()
+
 @cli.command("seed_db")
 def seed_db():
     categories = [
+        "Free cate",
         "Stationery",
         "Electrical",
         "IT",
@@ -77,5 +100,15 @@ def seed_db():
     item.cateID = 5
     db.session.add(item)
     db.session.commit()
+
+@cli.command("delete_item")
+def delete_item():
+    R_item = Item.query.filter_by(cateID=2)
+    for i in R_item:
+        i["cateID"] = 1
+    R_category = Category.query.filter_by(cateID=2).first()
+    db.session.delete(R_category)
+    db.session.commit()
+
 if __name__ == "__main__":
     cli()

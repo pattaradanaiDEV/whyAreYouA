@@ -13,6 +13,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     phoneNum = db.Column(db.String(10))
     cmuMail = db.Column(db.String(50))
     userpin = db.Column(db.String(255), nullable=True)   # ค่า default = NULL
+    availiable = db.Column(db.Boolean,default=False)
     
     cart = db.relationship("Cart", back_populates="user", cascade="all, delete-orphan")
     withdraw_history = db.relationship("WithdrawHistory", back_populates="user")
@@ -21,6 +22,7 @@ class User(db.Model, UserMixin, SerializerMixin):
                       "Fname",
                       "Lname",
                       "IsM_admin",
+                      "availiable",
                       "gmail",
                       "phoneNum",
                       "cmuMail",
@@ -32,6 +34,10 @@ class User(db.Model, UserMixin, SerializerMixin):
         self.Lname = Lname
         self.phoneNum = phoneNum
         self.cmuMail = cmuMail
+    
+    def update(self,IsM_admin,availiable):
+        self.IsM_admin=IsM_admin
+        self.availiable=availiable
         
     def set_pin(self, pin):
         self.userpin = generate_password_hash(pin)

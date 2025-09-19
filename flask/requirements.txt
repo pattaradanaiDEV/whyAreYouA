@@ -8,3 +8,7 @@ Flask-SQLAlchemy==3.0.3
 psycopg2-binary==2.9.9
 SQLAlchemy-serializer==1.4.1
 Flask-Login==0.6.3
+segno==1.6.1
+
+pandas==2.2.2
+openpyxl==3.1.2

@@ -7,13 +7,49 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+<body class="mobilescreen">
+    <div class="header">
+        <a href="{{ url_for('homepage') }}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+        </a>
+        <h2>Admin List</h2>
+    </div>
 
-<body>
-    <div>
-        <a href="{{ url_for('homepage') }}"> <img src="../static/ico/reply.png" class="reply-icon"></a>
-        <div style="text-align: center">
-            <h1>Admin List page</h1>
-        </div>
+    <div class="mainbox">
+        <h3 class="section-title">Mainadmin management</h3>
+        <p class="section-sub">Manage admin access and permissions</p>
+        <ul class="admin-list">
+            {% for user in users %}
+            <li class="admin-item">
+                {% if user.UserID == 1 %}
+                <div class="admin-info">
+                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <div>
+                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
+                        <div class="username">@{{ user.cmuMail }}</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="admin-info">
+                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <div>
+                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
+                        <div class="username">@{{ user.cmuMail }}</div>
+                    </div>
+                </div>
+                <form method="post" action="{{ url_for('adminlist') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                    <label class="switch">
+                        <input type="checkbox" name="action" value="promote"
+                        onchange="this.form.submit();" {% if user.IsM_admin %}checked{% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                </form>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>

@@ -1,3 +1,6 @@
+*{
+   font-family: 'Inter', sans-serif;
+}
 a { 
    color: #000000;
    text-decoration: none ;
@@ -65,11 +68,19 @@ img{
    font-size: 30px;
    position: relative;
 	cursor: pointer;
-	transition-duration: 0.5s;
+	transition-duration: 0.25s;
 }
 
+.recName {
+    width: 4px;
+    height: 40px;
+    padding: 4px;
+    margin-right: 10px;
+    background: white;
+    border: 1px solid white;
+}
 .nav-box:hover{
-   background-color: #F3F4F6;
+    background-color: lightgray;
 }
 
 .category-icon {
