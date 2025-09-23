@@ -17,7 +17,8 @@
    /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
    --base--color: #121212; 
    --text--color: #fff; 
-   --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
+   /* --buttonbg--color: #121212; */
+   --buttonbg--color: #eee;
    --border--color: gray; 
    --hover--color: gray; 
  }
