@@ -129,15 +129,15 @@ def adminlist():
 
 @app.route('/test_DB')
 def test_DB():
-    category = []
+    forshow = []
     db_category = Category.query.all()
-
-
     category = list(map(lambda x: x.to_dict(), db_category))
-    app.logger.debug("DB Contacts: " + str(category))
-
-
-    return jsonify(category)
+    db_item = Item.query.all()
+    item = list(map(lambda x:x.to_dict(),db_item))
+    db_user = User.query.all()
+    users = list(map(lambda x:x.to_dict(),db_user))
+    forshow=["Category DB",category,"item DB",item,"User DB",users]
+    return jsonify(forshow)
 
 @app.route('/db')
 def db_connection():
