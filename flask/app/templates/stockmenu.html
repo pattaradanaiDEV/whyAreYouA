@@ -9,11 +9,19 @@
     <link rel="stylesheet" href="../static/css/stockmenu.css">
 </head>
 
-<body class="mobilescreen">
+<body class="">
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="mainbox">
         <div class="reply-icon">
             <a href="{{ url_for('homepage') }}"> 
-                <span class="material-icons" style="font-size: 2rem; color: #FFF">arrow_back_ios_new</span> 
+                <span class="material-icons" style="font-size: 2rem;">arrow_back_ios_new</span> 
             </a> 
         </div>
         <div class="row">

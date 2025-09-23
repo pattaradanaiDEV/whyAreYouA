@@ -1,28 +1,56 @@
-*{
-   font-family: 'Inter', sans-serif;
+:root{ 
+   --basebg--color: linear-gradient(360deg,#ffffff 0%, #fff0f5 100%);
+   /* --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%); */ 
+   --base--color: #fff; 
+   --text--color: #000; 
+   --buttonbg--color: linear-gradient(90deg, #000, #333); 
+   --border--color: gray; 
+   --hover--color: gray; 
+ } 
+
+:root img{
+   filter: invert(0%);
 }
-a { 
-   color: #000000;
-   text-decoration: none ;
-   font-family: 'Pridi', serif;
-   /* font-family: 'Inter', sans-serif; */
-}
-img{
-   margin-left: 10px;
-}
-.mobilescreen {
-   background: #F9FAFB;
+ 
+ .darkmode{ 
+   --basebg--color: #212121; 
+   /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
+   --base--color: #121212; 
+   --text--color: #fff; 
+   --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
+   --border--color: gray; 
+   --hover--color: gray; 
+ }
+
+ .darkmode img{
+   filter: invert(100%);
+ }
+
+body{
+   background: var(--basebg--color);
    justify-content: center;
    justify-items: center;
    background-repeat: no-repeat;
    background-position: center center;
    background-attachment: fixed;
    background-size: cover;
+   font-family: 'Inter', sans-serif;
 }
+a { 
+   color: #000000;
+   text-decoration: none ;
+}
+img{
+   margin-left: 10px;
+}
+
 .reply-icon {
    position: relative;
    left: 0;
-	color: #FFF;
+}
+
+.reply-icon span{
+   color: var(--base--color);
 }
 
 .mainbox {
@@ -31,7 +59,7 @@ img{
    margin-top: 20px;
    width: 90%;
    /* background: #a084cc; */
-   background: linear-gradient(90deg, #000, #333); 
+   background: var(--buttonbg--color); 
    /* background: linear-gradient(#a084cc , rgb(222, 222, 222) ); */
    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
    border-radius: 20px;
@@ -46,12 +74,16 @@ img{
 }
 
 .row span{
-   color: #FFF;
+   color: var(--base--color);
 }
 .column {
    justify-items: center;
    justify-content: center;
    height: auto;
+}
+
+.column span{
+   color: var(--text--color);
 }
 
 .nav-box{
@@ -61,7 +93,7 @@ img{
    align-items: center;
    display: flex;
    margin: 5% 0% 5% 0%;
-   background: #F5F7FA;
+   background: var(--base--color);
    border-radius: 20px;
    border: none;
    font-weight: 500;
@@ -72,12 +104,12 @@ img{
 }
 
 .recName {
-    width: 4px;
+    width: 1px;
     height: 40px;
     padding: 4px;
     margin-right: 10px;
-    background: white;
-    border: 1px solid white;
+    background: var(--base--color);
+    border: 1px solid var(--base--color);
 }
 .nav-box:hover{
     background-color: lightgray;
@@ -86,10 +118,11 @@ img{
 .category-icon {
 	width: 3rem;
 	height: 3rem;
-	fill: #000000;
+	fill: var(--text--color);
 }
 .addStock-icon {
 	width: 3rem;
 	height: 3rem;
-	fill: #000000;
+	fill: var(--text--color);
+   color: var(--text--color);
 }

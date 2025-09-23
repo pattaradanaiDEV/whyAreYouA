@@ -1,19 +1,21 @@
-:root{
-    --basebg--color: linear-gradient(#e1caca, #FFF);
-    --base--color: #fff;
-    --text--color: #000;
-    --buttonbg--color: linear-gradient(90deg, #000, #333);
-    --border--color: gray;
-    --hover--color: gray;
-  }
-  
-.darkmode{
-    --basebg--color: linear-gradient(#070b1d, #282c40);
-    --base--color: #282c40;
-    --text--color: #fff;
-    --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8);
-    --border--color: gray;
-    --hover--color: gray;
+:root{ 
+  --basebg--color: #FFF;
+  /* --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%);  */
+  --base--color: #fff; 
+  --text--color: #000; 
+  --buttonbg--color: linear-gradient(90deg, #000, #333); 
+  --border--color: gray; 
+  --hover--color: gray; 
+} 
+
+.darkmode{ 
+  --basebg--color: #212121; 
+  /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
+  --base--color: #282c40; 
+  --text--color: #fff; 
+  --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
+  --border--color: gray; 
+  --hover--color: gray; 
 }
 
 body {

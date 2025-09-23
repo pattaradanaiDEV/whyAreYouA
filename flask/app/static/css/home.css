@@ -1,17 +1,27 @@
 :root{
-  --basebg--color: linear-gradient(#efcdcd, #FFF);
-  --base--color: #fff;
+  /* --basebg--color: linear-gradient(60deg, #fff9c4 0%, #ffecb3 100%); */
+  /* --basebg--color: linear-gradient(90deg, #e0c3fc 0%, #8ec5fc 100%); */
+  /* --basebg--color: linear-gradient(45deg, #c1dfc4 0%, #deecdd 100%); */
+  /* --basebg--color: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); */
+  --basebg--color: linear-gradient(360deg,#ffffff 0%, #fff0f5 100%);
+  --base--color: #FFF;
   --text--color: #000;
+  --text2--color: #000;
   --border--color: gray;
   --hover--color: gray;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 .darkmode{
-  --basebg--color: linear-gradient(#070b1d, #282c40);
-  --base--color: #282c40;
-  --text--color: #fff;
+  --basebg--color: #212121;
+  /* --basebg--color: linear-gradient(#2c3e50 0%, #000000 100%); */
+  /* --basebg--color: linear-gradient(#070b1d, #282c40); */
+  --base--color: #fff;
+  --text--color: #000;
+  --text2--color: #FFF;
   --border--color: gray;
   --hover--color: gray;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 svg{
@@ -23,6 +33,7 @@ svg{
 body {
     background: var(--basebg--color);
     color: var(--text--color);
+    transition: background 0.5s ease, color 0.5s ease;
     background-repeat: no-repeat;
     background-attachment: fixed;
     margin: 0;
@@ -72,7 +83,7 @@ body {
     flex-direction: column;
     line-height: 1.2;
     font-size: 0.9rem;
-    color: var(--text--color);
+    color: var(--text2--color);
   }
   
 
@@ -232,7 +243,7 @@ body {
     border-radius: 50%;
     background: none;
     /* background-color: var(--base--color); */
-    color: var(--text--color);
+    color: var(--text2--color);
     font-weight: 600;
     display: flex;
     justify-content: center;
