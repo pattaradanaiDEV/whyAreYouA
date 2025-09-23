@@ -1,6 +1,21 @@
+:root{
+    --basebg--color: #FFF;
+    --base--color: #eee;
+    --text--color: #000;
+    --border--color: gray;
+}
+
+.darkmode{
+    --basebg--color: #212121;
+    --base--color: #121212;
+    --text--color: #FFF;
+    --border--color: gray;
+}
+
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #fff;
+    background-color: var(--basebg--color);
     margin: 0;
     padding: 0;
 }
@@ -151,10 +166,14 @@ input:checked + .slider:before {
     display: flex;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid #eee;
-    background-color: #fff;
+    border-bottom: 1px solid var(--border--color);
+    background-color: var(--base--color);
     position: sticky;
     top: 0;
+}
+
+.header span{
+    color: var(--text--color);
 }
 
 .header h2 {
@@ -163,7 +182,7 @@ input:checked + .slider:before {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--text--color);
 }
 
 .back-btn {
