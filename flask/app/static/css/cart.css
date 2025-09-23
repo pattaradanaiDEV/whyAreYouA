@@ -1,23 +1,41 @@
+:root{
+    --basebg--color: linear-gradient(#e1caca, #FFF);
+    --base--color: #fff;
+    --text--color: #000;
+    --buttonbg--color: linear-gradient(90deg, #000, #333);
+    --border--color: gray;
+    --hover--color: gray;
+  }
+  
+.darkmode{
+    --basebg--color: linear-gradient(#070b1d, #282c40);
+    --base--color: #282c40;
+    --text--color: #fff;
+    --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8);
+    --border--color: gray;
+    --hover--color: gray;
+}
+
 body {
-    background: linear-gradient(#F9FAFB, #FFF);
+    background: var(--basebg--color);
     background-repeat: no-repeat;
     background-attachment: fixed;
     margin: 0;
-    font-family: 'Pridi', serif;
-    /* font-family: 'Inter', sans-serif; */
+    /* font-family: 'Pridi', serif; */
+    font-family: 'Inter', sans-serif;
   }
 
 .top-bar{
     display: flex;
     padding: 20px;
     justify-content: space-between;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--border--color);
 }
 
 .top-bar span{
     font-size: 1.5rem;
     font-weight: 400;
-    color: #111827;
+    color: var(--text--color);
 }
 
 .column {
@@ -34,15 +52,15 @@ body {
     width: 100%;     
     padding: 12px 0;
     z-index: 1000;    
-    border-top: 2px solid #eee; 
+    border-top: 2px solid var(--border--color); 
     font-size: 1rem;
   }
 
 .bot-container {
     text-align: center;
     border-radius: 50px;
-    background: #9174c0;
-    background: linear-gradient(90deg, #000, #333); 
+    background: var(--buttonbg--color);
+    /* background: linear-gradient(90deg, #000, #333);  */
     padding: 14px 0;
     margin: 8px 16px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
@@ -51,7 +69,6 @@ body {
 .bot-container-total{
     display: flex;
     justify-content: space-between;
-    color: #000;
     padding: 16px 20px;
     text-align: left;
     font-size: 1.25rem;
@@ -63,13 +80,13 @@ body {
   }
 
 .bot-container-total span:last-child {
-    color: #111827;
+    color: var(--text--color);
     font-weight: 600; 
     font-size: 1.2rem;
 }
 
 .bot-container button{
-    color: #FFF;
+    color: var(--base--color);
     font-size: 1.2rem;
     font-weight: 400;
     background-color: transparent;

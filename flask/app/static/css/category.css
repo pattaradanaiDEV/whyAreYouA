@@ -1,23 +1,47 @@
+:root{
+  /* --basebg--color: linear-gradient(#e1caca, #FFF); */
+  --base--color: #fff;
+  --text--color: #000;
+  --buttonbg--color: linear-gradient(90deg, #000, #333);
+  --border--color: gray;
+  --hover--color: gray;
+}
+
+.darkmode{
+  /* --basebg--color: #121212; */
+  --basebg--color: linear-gradient(#070b1d, #282c40);
+  --base--color: #282c40;
+  --text--color: #fff;
+  --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8);
+  --border--color: gray;
+  --hover--color: gray;
+}
+
+
 body {
-  background: linear-gradient(#F9FAFB, #FFF);
+  background: var(--basebg--color);
   background-repeat: no-repeat;
   background-attachment: fixed;
   margin: 0;
-  font-family: 'Pridi', serif;
-  /* font-family: 'Inter', sans-serif; */
+  /* font-family: 'Pridi', serif; */
+  font-family: 'Inter', sans-serif;
 }
 
 .material-icons {
   font-size: 2rem;
-  color: black;
+  color: var(--text--color);
 }
 
 .top-bar{
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--border--color);
   padding: 10px;
+}
+
+.top-bar span{
+  color:var(--text--color);
 }
 
 .back, .category, .cart{
@@ -31,11 +55,15 @@ body {
   width: 90%;
   display: flex;
   align-items: center;
-  border: 1px solid lightgray;
+  border: 1px solid var(--border--color);
   padding: 10px;
   border-radius: 30px;
   background-color: white;
   margin: 20px auto;
+}
+
+.search-bar span{
+  color: black
 }
 
 .search-input {
@@ -62,7 +90,7 @@ body {
 .category-item {
   flex: 0 0 auto;        
   padding: 8px 16px;
-  border: 1px solid lightgray;
+  border: 1px solid var(--border--color);
   border-radius: 30px;
   background: #fff;
   cursor: pointer;

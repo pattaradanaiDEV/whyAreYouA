@@ -9,11 +9,20 @@
     <link rel="stylesheet" href="../static/css/category.css">
 </head>
 
-<body>
+<body class="">
+    <script src="/js/darkmode.js"></script>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+      </script>
 	<div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('stockmenu') }}">
-                <span class="material-icons" color="#FFFFFF">arrow_back_ios_new</span> 
+                <span class="material-icons">arrow_back_ios_new</span> 
             </a>
     	</div>
     	<div class="category">
