@@ -16,14 +16,11 @@
    --basebg--color: #212121; 
    /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
    --base--color: #121212; 
-   --text--color: #fff; 
-   --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
+   --text--color: #121212; 
+   --button--color: #444; 
+   --buttonbg--color: #555; 
    --border--color: gray; 
    --hover--color: gray; 
- }
-
- .darkmode img{
-   filter: invert(100%);
  }
 
 body{
@@ -93,7 +90,7 @@ img{
    align-items: center;
    display: flex;
    margin: 5% 0% 5% 0%;
-   background: var(--base--color);
+   background: var(--button--color);
    border-radius: 20px;
    border: none;
    font-weight: 500;
