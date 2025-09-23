@@ -10,11 +10,13 @@ from app.models.user import User
 from app.models.item import Item
 from flask import Blueprint
 from app.models.withdrawHistory import WithdrawHistory
-from flask_login import current_user
+from flask_login import login_user, login_required, logout_user, current_user
 import pandas as pd
 from flask_wtf.csrf import CSRFProtect
 from flask import send_file
 from io import BytesIO
+from app import oauth
+
 
 
 @app.route('/save_pin', methods=['POST'])
@@ -294,3 +296,67 @@ def pending_user():
         return redirect(url_for("pending_user"))
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
+
+@app.route('/google')
+def google():
+
+
+    oauth.register(
+        name='google',
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        server_metadata_url=app.config['GOOGLE_DISCOVERY_URL'],
+        client_kwargs={
+            'scope': 'openid email profile'
+        }
+    )
+
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/google/auth')
+def google_auth():
+    try:
+        token = oauth.google.authorize_access_token()
+        #app.logger.debug(str(token))
+    except Exception as ex:
+        #app.logger.error(f"Error getting token: {ex}")
+        return redirect(url_for('homepage'))
+
+
+    #app.logger.debug(str(token))
+
+
+    userinfo = token['userinfo']
+    app.logger.debug(" Google User " + str(userinfo))
+    email = userinfo['email']
+    try:
+        with db.session.begin():
+            user = (User.query.filter_by(gmail=email).with_for_update().first())
+
+
+            if not user:
+                Fname = userinfo['given_name'] 
+                Lname = userinfo['family_name']
+                new_user = User(Fname=Fname, Lname=Lname, email=email)
+                db.session.add(new_user)
+                db.session.commit()
+    except Exception as ex:
+        db.session.rollback()  # Rollback on failure
+        app.logger.error(f"ERROR adding new user with email {email}: {ex}")
+        return redirect(url_for('loginA'))
+  
+    user = User.query.filter_by(gmail=email).first()
+    login_user(user)
+    return redirect('/homepage')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('loginA'))
+
+
+

@@ -9,9 +9,9 @@ class User(db.Model, UserMixin, SerializerMixin):
     Fname = db.Column(db.String(24))
     Lname = db.Column(db.String(24))
     IsM_admin = db.Column(db.Boolean, default=False)
-    gmail = db.Column(db.String(50))
-    phoneNum = db.Column(db.String(10))
-    cmuMail = db.Column(db.String(50))
+    gmail = db.Column(db.String(50), nullable= True)
+    phoneNum = db.Column(db.String(10), nullable = True)
+    cmuMail = db.Column(db.String(50), nullable = True)
     userpin = db.Column(db.String(255), nullable=True)   # ค่า default = NULL
     availiable = db.Column(db.Boolean,default=False)
     
@@ -29,11 +29,12 @@ class User(db.Model, UserMixin, SerializerMixin):
                       "userpin",
                       "cart",)
 
-    def __init__(self, Fname, Lname, phoneNum, cmuMail):
+    def __init__(self, Fname, Lname, phoneNum="", cmuMail="", email=""):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum
         self.cmuMail = cmuMail
+        self.gmail = email
     
     def update(self,IsM_admin,availiable):
         self.IsM_admin=IsM_admin
@@ -44,6 +45,12 @@ class User(db.Model, UserMixin, SerializerMixin):
 
     def check_pin(self, pin):
         return check_password_hash(self.userpin, pin)
+    
+    def google_login(self, Fname, Lname, email):
+        self.Fname=Fname
+        self.Lname=Lname
+        self.gmail=email
 
     
-
+    def get_id(self):
+        return self.UserID
