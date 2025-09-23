@@ -29,7 +29,7 @@ class User(db.Model, UserMixin, SerializerMixin):
                       "userpin",
                       "cart",)
 
-    def __init__(self, Fname, Lname, phoneNum="", cmuMail="", email=""):
+    def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email=""):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum

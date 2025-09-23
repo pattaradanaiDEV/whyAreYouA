@@ -337,9 +337,13 @@ def google_auth():
 
 
             if not user:
-                Fname = userinfo['given_name'] 
-                Lname = userinfo['family_name']
-                new_user = User(Fname=Fname, Lname=Lname, email=email)
+                if "family_name" in userinfo:
+                    Fname = userinfo['given_name'] 
+                    Lname = userinfo['family_name']
+                    new_user = User(Fname=Fname, Lname=Lname, email=email)
+                else:
+                    Fname = userinfo['given_name'] 
+                    new_user = User(Fname=Fname, email=email)
                 db.session.add(new_user)
                 db.session.commit()
     except Exception as ex:
