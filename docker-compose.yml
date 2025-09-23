@@ -1,4 +1,4 @@
-name: "WhyareyouA-test"
+name: "whyareyoua-test"
 services:
   flask:
     build: flask

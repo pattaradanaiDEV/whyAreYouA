@@ -4,12 +4,17 @@ from werkzeug.debug import DebuggedApplication
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from authlib.integrations.flask_client import OAuth
 app = Flask(__name__, static_folder='static')
 app.url_map.strict_slashes = False
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'img')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.config['GOOGLE_CLIENT_ID'] = os.getenv("GOOGLE_CLIENT_ID", None)
+app.config['GOOGLE_CLIENT_SECRET'] = os.getenv("GOOGLE_CLIENT_SECRET", None)
+app.config['GOOGLE_DISCOVERY_URL'] = os.getenv("GOOGLE_DISCOVERY_URL", None)
 
 app.jinja_options = app.jinja_options.copy()
 app.jinja_options.update({
@@ -34,6 +39,7 @@ if app.debug:
     app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
 # Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
+oauth = OAuth(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

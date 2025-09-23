@@ -3,6 +3,7 @@
   --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%);
   /* --base--color: #fff; */
   --text--color: #000;
+  --text2--color: #000;
   --buttonbg--color: linear-gradient(90deg, #000, #333);
   --border--color: lightgray;
   --hover--color: gray;
@@ -12,10 +13,12 @@
   --basebg--color: #212121;
   /* --basebg--color: linear-gradient(#070b1d, #282c40); */
   --base--color: #282c40;
-  --text--color: #fff;
-  --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8);
+  --text--color: #000;
+  --text2--color: #888;
+  --buttonbg--color: gray;
   --border--color: gray;
   --hover--color: gray;
+  --item-card--color: #444;
 }
 
 
@@ -42,7 +45,7 @@ body {
 }
 
 .top-bar span{
-  color:var(--text--color);
+  color:var(--text2--color);
 }
 
 .back, .category, .cart{
@@ -59,7 +62,7 @@ body {
   border: 1px solid var(--border--color);
   padding: 10px;
   border-radius: 30px;
-  background-color: white;
+  background-color: var(--buttonbg--color);
   margin: 20px auto;
 }
 
@@ -73,10 +76,13 @@ body {
   border: none;
   font-size: 1rem;
   outline: none;
-  background-color: white;
+  background-color: var(--buttonbg--color);
   padding-left: 3%;
 }
 
+.search-input::placeholder {
+  color: var(--text--color);
+}
 
 .show_category {
   display: flex;
@@ -93,13 +99,14 @@ body {
   padding: 8px 16px;
   border: 1px solid var(--border--color);
   border-radius: 30px;
-  background: #fff;
+  background: var(--buttonbg--color);
   cursor: pointer;
 }
 
 .category-item:hover{
   background-color: lightgray;
 }
+
 #item-list {
   display: flex;
   flex-direction: column;
@@ -111,8 +118,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
-  border: 1px solid #E5E7EB;
+  background: var(--item-card--color);
+  border: 1px solid var(--item-card--color);
   border-radius: 12px;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -128,7 +135,7 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 12px;
-  background: #F3F4F6;
+  background: var(--buttonbg--color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,12 +154,12 @@ body {
 .item-name {
   font-weight: 600;
   font-size: 1rem;
-  color: #111827;
+  color: var(--text2--color);
 }
 
 .item-category {
   font-size: 0.9rem;
-  color: #6B7280;
+  color: var(--text--color);
 }
 
 .item-stock {

@@ -9,7 +9,15 @@
     <link rel="stylesheet" href="../static/css/newitem.css">
 </head>
 
-<body class="mobilescreen">
+<body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <a href="{{ url_for('stockmenu') }}"> 
         <span class="material-icons reply-icon" style="font-size: 2rem;">arrow_back_ios_new</span>
     </a>

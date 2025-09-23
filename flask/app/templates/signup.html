@@ -19,6 +19,14 @@
             <p>pongpop@TBA.com</p>
             <p>or</p>
         </div>
+        <div class="login-button">
+            <a href="{{ url_for('google') }}" class="button is-large is-fullwidth">
+            <span class="icon">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px;">
+            </span>
+            <span>Signin with Google</span>
+            </a>
+        </div>
         <div class="login-button" onclick="touchLogin()">
             <span>Continue without Login</span>
         </div>
