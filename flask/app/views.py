@@ -1,6 +1,7 @@
 import json
+import os
 from flask import (jsonify, render_template,
-                  request, url_for, flash, redirect)
+                  request, url_for, flash,current_app, redirect)
 
 from sqlalchemy.sql import text
 from app import app
@@ -15,6 +16,7 @@ import pandas as pd
 from flask_wtf.csrf import CSRFProtect
 from flask import send_file
 from io import BytesIO
+from werkzeug.utils import secure_filename
 
 
 @app.route('/save_pin', methods=['POST'])
@@ -96,8 +98,35 @@ def category():
         is_admin=True
     )
 
-@app.route('/newitem')
+@app.route('/newitem', methods=["GET", "POST"])
 def newitem():
+    if request.method == "POST":
+        action = request.form.get("submit")
+        file = request.files.get('file')
+        filename = None
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+
+        if action == "confirm" :
+            catename = request.form.get("getcate")
+            item = Item(ItemName=request.form.get("getname"),
+                        ItemAmount=request.form.get("getamount"),
+                        ItemPicture=filename,
+                        itemMin=999)
+            db.session.add(item)
+            
+            data_category = Category.query.all()
+            categories = [c.to_dict() for c in data_category]
+            
+            if request.form.get("getcate") not in categories :
+                db.session.add(Category(cateName=catename))
+                item.cateID =  len(categories)+1
+                
+            db.session.commit()
+            test_DB()
+            
     return render_template('newitem.html')
 
 @app.route('/stockmenu')

@@ -18,27 +18,32 @@
             <span class="recName"></span>
             <span>New Item</span>
         </div>
-        <div class="row align-center">
-            <img src="../static/ico/default_image.png" class="default-icon">
-        </div>
+        <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row align-center">
+                <img src="" class="default-icon">
+                <input type="file" name="file" accept="image/*" required>
+            </div>
+        
+
         <div class="column">
-           	<form>
+           	
                 <div class="row">
-                    <input type="text" class="name-input input-box" placeholder="Item name" required>
+                    <input type="text" class="name-input input-box" name="getname" placeholder="Item name" required>
                 </div>
                 <div class="row">
-                    <input type="text" class="cate-input input-box" placeholder="Category" required>
-                    <input type="text" class="amount-input input-box" placeholder="Amount" required pattern="[0-9]{1,}">
+                    <input type="text" class="cate-input input-box" name="getcate" placeholder="Category" required>
+                    <input type="text" class="amount-input input-box" name="getamount" placeholder="Amount" required pattern="[0-9]{1,}">
                 </div>
                 <div class="row">
-                    <textarea class="desc-input input-box" rows="4" cols="50" placeholder="Description"></textarea>
+                    <textarea class="desc-input input-box" rows="4" cols="50" name="getdes" placeholder="Description"></textarea>
                 </div>
                 <div class="row">
-                    <button class="btm-btn">PrintQR</button>
-                    <button class="confirm-button btm-btn">Confirm</button>
+                    <button class="confirm-button btm-btn" name="submit" value="confirm">Confirm</button>
                 </div>
-            </form>
+            
 		</div>
+        </form>
     </div>
 </body>
 </html>

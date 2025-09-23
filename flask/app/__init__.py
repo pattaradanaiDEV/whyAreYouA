@@ -7,6 +7,9 @@ from flask_wtf.csrf import CSRFProtect
 app = Flask(__name__, static_folder='static')
 app.url_map.strict_slashes = False
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'img')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.jinja_options = app.jinja_options.copy()
 app.jinja_options.update({
