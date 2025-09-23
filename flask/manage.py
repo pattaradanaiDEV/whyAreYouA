@@ -23,16 +23,17 @@ def create_db():
 
 @cli.command("add_user")
 def add_user():
-    user = [["pongpob","pongsuk","0000099900","pongpob_pongsuk@cmu.ac.th"],
-            ["Hitler","adolf","0000000000","HA@cmu.ac.th"],
-            ["putin","janOcha","0000010000","Suca@cmu.ac.th"],
-            ["blow","จ็อบ","0001000000","พรhub@cmu.ac.th"]]
+    user = [["Developer","Account","0001000000","DEV-ACC@cmu.ac.th"],
+            ["Pongpop","Pongsuk","0000099900","pongpop.pongsuk@cmu.ac.th"],
+            ["Santi","Saelee","0000000000","santi.saelee@cmu.ac.th"],
+            ["Rui","Jie","0000010000","rui.jie@cmu.ac.th"]]
     for i in user :
         db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],cmuMail=i[3]))
     db.session.commit()
-    peeman = User.query.get_or_404(1)
-    peeman.IsM_admin=True
-    peeman.availiable=True
+    User.query.get_or_404(1).IsM_admin=True
+    User.query.get_or_404(1).availiable=True
+    User.query.get_or_404(2).IsM_admin=True
+    User.query.get_or_404(2).availiable=True
     db.session.commit()
 
 @cli.command("seed_db")
