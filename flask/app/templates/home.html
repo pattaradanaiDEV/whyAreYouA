@@ -11,7 +11,7 @@
     <script type="text/javascript" src="../templates/js/language.js" defer></script>
     <title>Home page</title>
 </head>
-<body>
+<body class="lightmode">
     <div class="top-bar">
         <div class="profile-wrapper">
             <div class="profile-circle">
@@ -48,28 +48,28 @@
     
     <div class="category-container">
         <div class="category">
-            <button class="circle-button">
+            <button class="circle-button circle-button-lightmode">
                 <img src="../static/ico/stock.png" alt="stock">
             </button>
             <span>Stock</span>
         </div>
         
         <div class="category">
-            <button class="circle-button">
+            <button class="circle-button circle-button-lightmode">
                 <img src="../static/ico/stock.png" alt="stock">
             </button>
             <span>Stock</span>
         </div>
 
         <div class="category">
-            <button class="circle-button">
+            <button class="circle-button circle-button-lightmode">
                 <img src="../static/ico/stock.png" alt="stock">
             </button>
             <span>Stock</span>
         </div>
 
         <div class="category"> 
-            <button class="circle-button">
+            <button class="circle-button circle-button-lightmode">
                 <img src="../static/ico/stock.png" alt="stock">
             </button>
             <span>Stock</span>
@@ -108,18 +108,18 @@
     const circleButtons = document.querySelectorAll('.circle-button');
 
     const enableDarkmode = () => {
-        document.body.classList.add('darkmode');
-        localStorage.setItem('darkmode','active');
+        document.body.classList.replace('lightmode', 'darkmode');
+        localStorage.setItem('darkmode', 'active');
         circleButtons.forEach(button => {
-            button.classList.add('circle-button-darkmode');
+            button.classList.replace('circle-button-lightmode', 'circle-button-darkmode');
         })
     }
 
     const disableDarkmode = () => {
-        document.body.classList.remove('darkmode');
+        document.body.classList.replace('darkmode', 'lightmode');
         localStorage.setItem('darkmode', null);
         circleButtons.forEach(button => {
-            button.classList.remove('circle-button-darkmode');
+            button.classList.replace('circle-button-darkmode', 'circle-button-lightmode');
         })
     }
 

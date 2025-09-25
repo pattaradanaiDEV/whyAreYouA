@@ -1,9 +1,10 @@
 :root{ 
-   --basebg--color: linear-gradient(360deg,#ffffff 0%, #fff0f5 100%);
+   --basebg--color: linear-gradient(to top, #ffc 0%,#fff 50%);
    /* --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%); */ 
-   --base--color: #fff; 
+   --base--color: #555; 
    --text--color: #000; 
-   --buttonbg--color: #212121;
+   --button--color: #aaa;
+   --buttonbg--color: rgba(220, 220, 220, 0.75);
    --border--color: gray; 
    --hover--color: gray; 
  } 
