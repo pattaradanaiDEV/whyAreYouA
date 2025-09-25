@@ -363,7 +363,7 @@ def google_auth():
     try:
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
-
+            return jsonify([user])
 
             if not user:
                 if "family_name" in userinfo:
