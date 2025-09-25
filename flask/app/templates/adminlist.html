@@ -32,7 +32,7 @@
             <li class="admin-item">
                 {% if user.UserID == 1 %}
                 <div class="admin-info">
-                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
                     <div>
                         <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
                         <div class="username">@{{ user.cmuMail }}</div>
@@ -40,7 +40,7 @@
                 </div>
                 {% else %}
                 <div class="admin-info">
-                    <img src="../static/images/avatar.png" alt="avatar" class="avatar">
+                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
                     <div>
                         <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
                         <div class="username">@{{ user.cmuMail }}</div>

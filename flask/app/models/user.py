@@ -14,6 +14,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     cmuMail = db.Column(db.String(50), nullable = True)
     userpin = db.Column(db.String(255), nullable=True)   # ค่า default = NULL
     availiable = db.Column(db.Boolean,default=False)
+    profile_pic = db.Column(db.String(255), nullable=True)
     
     cart = db.relationship("Cart", back_populates="user", cascade="all, delete-orphan")
     withdraw_history = db.relationship("WithdrawHistory", back_populates="user")
@@ -27,14 +28,16 @@ class User(db.Model, UserMixin, SerializerMixin):
                       "phoneNum",
                       "cmuMail",
                       "userpin",
-                      "cart",)
+                      "cart",
+                      "profile_pic",)
 
-    def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email=""):
+    def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email="",profile_url=None):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum
         self.cmuMail = cmuMail
         self.gmail = email
+        self.profile_pic=profile_url
     
     def update(self,IsM_admin,availiable):
         self.IsM_admin=IsM_admin
@@ -46,11 +49,11 @@ class User(db.Model, UserMixin, SerializerMixin):
     def check_pin(self, pin):
         return check_password_hash(self.userpin, pin)
     
-    def google_login(self, Fname, Lname, email):
-        self.Fname=Fname
-        self.Lname=Lname
-        self.gmail=email
-
+    # def google_login(self, Fname, Lname, email,profile_url):
+    #     self.Fname=Fname
+    #     self.Lname=Lname
+    #     self.gmail=email
+    #     self.profile_pic=profile_url
     
     def get_id(self):
         return self.UserID
