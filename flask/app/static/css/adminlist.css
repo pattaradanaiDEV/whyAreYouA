@@ -1,15 +1,19 @@
 :root{
-    --basebg--color: #FFF;
+    --basebg--color: linear-gradient(to top, #ffc 0%,#fff 50%);
     --base--color: #eee;
     --text--color: #000;
     --border--color: gray;
+    --admin-box--color: #dcdcdc;
+    --admin-username-color: #777;
 }
 
 .darkmode{
     --basebg--color: #212121;
     --base--color: #121212;
-    --text--color: #FFF;
-    --border--color: gray;
+    --text--color: #eee;
+    --border--color: #000;
+    --admin-box--color: gray;
+    --admin-username-color: #bbb;
 }
 
 
@@ -196,12 +200,12 @@ input:checked + .slider:before {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 4px;
-    color: #222;
+    color: var(--text--color);
 }
 
 .section-sub {
     font-size: 13px;
-    color: #666;
+    color: var(--text--color);
     margin-bottom: 12px;
 }
 
@@ -218,7 +222,8 @@ input:checked + .slider:before {
     align-items: center;
     padding: 12px;
     border-radius: 12px;
-    background: #fafafa;
+    border-color: var(--admin-box--color);
+    background: var(--admin-box--color);
     margin-bottom: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -234,16 +239,17 @@ input:checked + .slider:before {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    background: #ddd;
+    color: var(--text--color);
+    background: var(--basebg--color);
 }
 
 .name {
     font-size: 15px;
     font-weight: 500;
-    color: #111;
+    color: var(--text--color);
 }
 
 .username {
     font-size: 13px;
-    color: #777;
+    color: var(--admin-username-color);
 }

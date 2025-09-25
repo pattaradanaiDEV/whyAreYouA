@@ -26,16 +26,25 @@
             <span class="recName"></span>
             <span>New Item</span>
         </div>
-        <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <div class="row align-center">
-                <img src="" class="default-icon">
-                <input type="file" name="file" accept="image/*" required>
-            </div>
-        
-
         <div class="column">
-           	
+            <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="row align-center">
+                    <img src="../static/ico/default_image.png" class="default-icon" id="preview-img">
+                    <input type="file" name="file" accept="image/*" id="img-file" required>
+                </div>
+                <script>
+                    const imgFile = document.getElementById('preview-img');
+                    const inputBox = document.getElementById('img-file');
+
+                    inputBox.addEventListener('change', function() {
+                        const reader = new FileReader();
+                        reader.addEventListener('load', function () {
+                            imgFile.src = reader.result;
+                        });
+                        reader.readAsDataURL(this.files[0]);
+                    });
+                </script>
                 <div class="row">
                     <input type="text" class="name-input input-box" name="getname" placeholder="Item name" required>
                 </div>
@@ -49,9 +58,8 @@
                 <div class="row">
                     <button class="confirm-button btm-btn" name="submit" value="confirm">Confirm</button>
                 </div>
-            
-		</div>
-        </form>
+            </form>
+        </div>
     </div>
 </body>
 </html>
