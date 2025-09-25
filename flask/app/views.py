@@ -117,7 +117,7 @@ def newitem():
             data_category = Category.query.all()
             categories = [c.to_dict() for c in data_category]
             catename_list = [cname['cateName'].lower() for cname in categories]
-            
+
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=request.form.get("getamount"),
                         ItemPicture=filename,
@@ -363,8 +363,9 @@ def google_auth():
 
     userinfo = token['userinfo']
     app.logger.debug(" Google User " + str(userinfo))
-    return userinfo
-    email = userinfo['email']
+    email = userinfo.get('email')
+    picture = userinfo.get('picture', None)
+    Fname = userinfo.get('given_name', "")
     try:
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
@@ -372,12 +373,10 @@ def google_auth():
 
             if not user:
                 if "family_name" in userinfo:
-                    Fname = userinfo['given_name'] 
-                    Lname = userinfo['family_name']
-                    new_user = User(Fname=Fname, Lname=Lname, email=email)
+                    Lname = userinfo.get('family_name', "")
+                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_url=picture)
                 else:
-                    Fname = userinfo['given_name'] 
-                    new_user = User(Fname=Fname, email=email)
+                    new_user = User(Fname=Fname, email=email,profile_url=picture)
                 db.session.add(new_user)
                 db.session.commit()
     except Exception as ex:
