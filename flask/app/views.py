@@ -112,22 +112,26 @@ def newitem():
             file.save(filepath)
 
         if action == "confirm" :
+            
             catename = request.form.get("getcate")
+            data_category = Category.query.all()
+            categories = [c.to_dict() for c in data_category]
+            catename_list = [cname['cateName'].lower() for cname in categories]
+            
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=request.form.get("getamount"),
                         ItemPicture=filename,
                         itemMin=999)
             db.session.add(item)
             
-            data_category = Category.query.all()
-            categories = [c.to_dict() for c in data_category]
-            
-            if request.form.get("getcate") not in categories :
+            if catename.lower() not in catename_list :
                 db.session.add(Category(cateName=catename))
-                item.cateID =  len(categories)+1
+                item.cateID = len(catename_list)+1
+            else :
+                item.cateID = catename_list.index(catename)+1
                 
             db.session.commit()
-            test_DB()
+            return redirect(url_for("test_DB"))
             
     return render_template('newitem.html')
 
@@ -359,11 +363,12 @@ def google_auth():
 
     userinfo = token['userinfo']
     app.logger.debug(" Google User " + str(userinfo))
+    return userinfo
     email = userinfo['email']
     try:
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
-            return jsonify([user])
+          
 
             if not user:
                 if "family_name" in userinfo:
