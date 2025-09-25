@@ -11,7 +11,7 @@
     <script type="text/javascript" src="../templates/js/language.js" defer></script>
     <title>Home page</title>
 </head>
-<body>
+<body class="darkmode">
     <div class="top-bar">
         <div class="profile-wrapper">
             <div class="profile-circle">
@@ -108,7 +108,7 @@
     const circleButtons = document.querySelectorAll('.circle-button');
 
     const enableDarkmode = () => {
-        document.body.classList.add('darkmode');
+        document.body.classList.replace('lightmode', 'darkmode');
         localStorage.setItem('darkmode','active');
         circleButtons.forEach(button => {
             button.classList.add('circle-button-darkmode');
@@ -116,7 +116,7 @@
     }
 
     const disableDarkmode = () => {
-        document.body.classList.remove('darkmode');
+        document.body.classList.replace('darkmode', 'lightmode');
         localStorage.setItem('darkmode', null);
         circleButtons.forEach(button => {
             button.classList.remove('circle-button-darkmode');

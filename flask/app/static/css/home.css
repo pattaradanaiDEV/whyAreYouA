@@ -15,22 +15,6 @@
   background-color: #444;
 }
 
-:root {
-  --base--color: #FFF;
-  --basebg--color: linear-gradient(360deg, #ffffff 0%, #fff0f5 100%);
-  --border--color: gray;
-  --hover--color: gray;
-  --text--color: #000;
-  --text2--color: #000;
-  --noti-num--color: white;
-  transition: background 0.5s ease, color 0.5s ease;
-
-  /* --basebg--color: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); */
-  /* --basebg--color: linear-gradient(45deg, #c1dfc4 0%, #deecdd 100%); */
-  /* --basebg--color: linear-gradient(60deg, #fff9c4 0%, #ffecb3 100%); */
-  /* --basebg--color: linear-gradient(90deg, #e0c3fc 0%, #8ec5fc 100%); */
-}
-
 body {
   background: var(--basebg--color);
   background-attachment: fixed;
@@ -38,7 +22,6 @@ body {
   color: var(--text--color);
   font-family: 'Inter', sans-serif;
   margin: 0;
-  transition: background 0.5s ease, color 0.5s ease;
 
   /* font-family: 'Pridi', serif; */
 }
@@ -46,6 +29,18 @@ body {
 svg {
   color: var(--text--color);
   fill: var(--text--color);
+}
+
+.lightmode {
+  --base--color: #FFF;
+  --basebg--color: #fff;
+  --border--color: gray;
+  --hover--color: gray;
+  --text--color: #000;
+  --text2--color: #000;
+  --noti-num--color: white;
+
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 .darkmode {
@@ -56,9 +51,7 @@ svg {
   --text--color: #000;
   --text2--color: #888;
   --noti-num--color: white;
-  
-  /* --basebg--color: linear-gradient(#070b1d, #282c40); */
-  /* --basebg--color: linear-gradient(#2c3e50 0%, #000000 100%); */
+
   transition: background 0.5s ease, color 0.5s ease;
 }
 
