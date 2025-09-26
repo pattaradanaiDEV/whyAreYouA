@@ -83,7 +83,7 @@ svg {
   align-items: center;
   background-color: var(--base--color);
   border-radius: 50%;
-  display: flex;
+  display :flex;
   flex-shrink: 0;
   height: 3rem;
   justify-content: center;

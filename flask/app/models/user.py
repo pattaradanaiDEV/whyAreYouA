@@ -56,4 +56,4 @@ class User(db.Model, UserMixin, SerializerMixin):
     #     self.profile_pic=profile_url
     
     def get_id(self):
-        return self.UserID
+        return str(self.UserID)

@@ -234,15 +234,6 @@ input:checked + .slider:before {
     gap: 10px;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    color: var(--text--color);
-    background: var(--basebg--color);
-}
-
 .name {
     font-size: 15px;
     font-weight: 500;
@@ -252,4 +243,30 @@ input:checked + .slider:before {
 .username {
     font-size: 13px;
     color: var(--admin-username-color);
+}
+
+.user-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--buttonbg--color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #f5f5f5;
+  font-weight: bold;
+}
+
+.profile-circle {
+  align-items: center;
+  background-color: var(--base--color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display :flex;
+  flex-shrink: 0;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
 }

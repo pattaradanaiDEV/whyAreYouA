@@ -30,32 +30,31 @@
         <ul class="admin-list">
             {% for user in users %}
             <li class="admin-item">
-                {% if user.UserID == 1 %}
+                    
                 <div class="admin-info">
-                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
+                    {% if user.profile_pic %}
+                        <img src="{{ user.profile_pic }}" class="profile-circle">
+                    {% else %}
+                        <div class="user-icon">{{ user.Fname[0].upper() }}</div>
+                    {% endif %}
                     <div>
                         <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
-                        <div class="username">@{{ user.cmuMail }}</div>
+                        <div class="username">{{ user.gmail }}</div>
                     </div>
                 </div>
-                {% else %}
-                <div class="admin-info">
-                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
-                    <div>
-                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
-                        <div class="username">@{{ user.cmuMail }}</div>
-                    </div>
-                </div>
-                <form method="post" action="{{ url_for('adminlist') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="user_id" value="{{ user.UserID }}">
-                    <label class="switch">
-                        <input type="checkbox" name="action" value="promote"
-                        onchange="this.form.submit();" {% if user.IsM_admin %}checked{% endif %}>
-                        <span class="slider round"></span>
-                    </label>
-                </form>
+
+                {% if user.UserID > 2 and current_user.UserID != user.UserID %}
+                    <form method="post" action="{{ url_for('adminlist') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                        <label class="switch">
+                            <input type="checkbox" name="action" value="promote"
+                            onchange="this.form.submit();" {% if user.IsM_admin %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </form>
                 {% endif %}
+
             </li>
             {% endfor %}
         </ul>

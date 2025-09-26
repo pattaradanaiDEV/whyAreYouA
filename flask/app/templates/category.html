@@ -53,7 +53,7 @@
 	</div>
 
     <div id="item-list"></div>
-    <input type="hidden" id="is_admin" value="{{ 1 if is_admin else 0 }}">
+    <input type="hidden" id="is_admin" value="{{ 1 if current_user.IsM_admin else 0 }}">
 </body>
 </html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
