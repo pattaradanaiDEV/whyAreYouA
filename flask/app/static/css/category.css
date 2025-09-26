@@ -163,7 +163,7 @@ body {
 
 .item-stock {
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text2--color);
 }
 
 .item-actions {
