@@ -262,19 +262,17 @@ svg {
 #language-switch span {
   color: var(--text-color);
   font-size: 1.5rem;
-}
-
-#language-switch span:last-child {
-  display: none;
+  display: none; 
 }
 
 .en #language-switch span:first-child {
-  display: none;
+  display: inline-block;
 }
 
-.en #language-switch span:last-child {
-  display: block;
+.th #language-switch span:last-child {
+  display: inline-block;
 }
+
 
 #theme-switch {
   align-items: center;

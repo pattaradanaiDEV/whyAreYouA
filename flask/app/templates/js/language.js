@@ -32,11 +32,17 @@ function changeLanguage(lang) {
     document.querySelector('.action1').textContent = 'Stock';
     document.querySelector('.action2').textContent = 'QR Scan';
     document.querySelector('.action3').textContent = 'Manage Admin';
+    // document.querySelector('stock-menu').textContent = 'Stock Menu';
+    // document.querySelector('.category').textContent = 'Category';
+    // document.querySelector('.new-item').textContent = 'New Item';
   } else {
     document.querySelector('.welcome-message').textContent = 'ยินดีต้อนรับ!';
     document.querySelector('.search-input').placeholder = 'ค้นหา';
     document.querySelector('.action1').textContent = 'สต็อก';
     document.querySelector('.action2').textContent = 'QR แสกน';
     document.querySelector('.action3').textContent = 'จัดการแอดมิน';
+    // document.querySelector('stock-menu').textContent = 'สต็อกเมนู';
+    // document.querySelector('.category').textContent = 'ประเภท';
+    // document.querySelector('.new-item').textContent = 'เพิ่มของ';
   }
 }
