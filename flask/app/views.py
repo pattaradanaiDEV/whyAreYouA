@@ -93,6 +93,7 @@ def category():
     )
 
 @app.route('/newitem', methods=["GET", "POST"])
+@madmin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -235,6 +236,7 @@ def db_connection():
             </body>'
 
 @app.route('/edit')
+@madmin_required
 def edit():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
@@ -269,6 +271,7 @@ def withdraw_byQR(itemID):
         return f"{item.itemName} หมดแล้วไอน้อง"
 
 @app.route('/delete/item')
+@madmin_required
 def delete_item():
     return redirect('/category') 
 
