@@ -156,7 +156,7 @@ svg {
 }
 
 .search-input {
-  background-color: var(--base--color);
+  background:transparent;
   border: none;
   flex: 1;
   font-size: 1rem;

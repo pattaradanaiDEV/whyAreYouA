@@ -1,6 +1,6 @@
 :root{
   /* --basebg--color: linear-gradient(#e1caca, #FFF); */
-  --basebg--color: linear-gradient(to top, #ffc 0%, #fff 50%);
+  --basebg--color: linear-gradient(to top, rgb(255, 255, 224) 0%,#fff 50%);
   /* --base--color: #fff; */
   --text--color: #000;
   --text2--color: #000;
