@@ -5,15 +5,16 @@
     --border--color: gray;
     --button1--color: #E5E7EB;
     --button2--color: #22C55E;
-    
-
+    --def-icon--color: #eee;
 }
 
 .darkmode{
     --bg--color: #121212;
-    --base--color: #212121;
-    --text--color: #FFF;
-    --border--color: #eee;
+    --base--color: #555;
+    --text--color: black;
+    --border--color: black;
+    --button2--color: #22c55e99;
+    --def-icon--color: #888;
 }
 
 a span{
@@ -87,10 +88,13 @@ body {
    	align-items: center;
    	display: flex;
    	border-radius: 10px;
-   	border: 1px solid var(--border--color);
+   	border: 2px solid var(--border--color);
    	font-size: 3vh;
    	position: relative;
 	cursor: text;
+}
+.input-box::placeholder{
+    color: var(--text--color);
 }
 .name-input {
    	width:100%;
@@ -144,7 +148,7 @@ body {
 .default-icon {
 	width: 40%;
 	height: 40%;
-    background-color: white;
+    background-color: var(--def-icon--color);
     border-radius: 30px;
 }
 .align-center{

@@ -13,7 +13,7 @@
    filter: invert(0%);
 }
  
- .darkmode{ 
+.darkmode{ 
    --basebg--color: #212121; 
    /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
    --base--color: #121212; 
@@ -45,10 +45,11 @@ img{
 .reply-icon {
    position: relative;
    left: 0;
+   color: var(--base--color);
 }
 
-.reply-icon span{
-   color: var(--base--color);
+.stock-menu {
+   color: var(--text--color);
 }
 
 .mainbox {
@@ -69,22 +70,17 @@ img{
     padding: 20px;
     font-weight: 500;
     font-size: 2rem;
-}
-
-.row span{
    color: var(--base--color);
 }
+
 .column {
    justify-items: center;
    justify-content: center;
    height: auto;
-}
-
-.column span{
    color: var(--text--color);
 }
 
-.nav-box{
+.nav-box {
    width:75%;
    padding:  30px;
    justify-content: center;
@@ -106,8 +102,8 @@ img{
     height: 40px;
     padding: 4px;
     margin-right: 10px;
-    background: var(--base--color);
-    border: 1px solid var(--base--color);
+    background: var(--text--color);
+    border: 1px solid var(--text--color);
 }
 .nav-box:hover{
     background-color: lightgray;
