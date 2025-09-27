@@ -116,7 +116,6 @@ def cart():
 
 @app.route('/adminlist', methods=["GET", "POST"])
 # @madmin_required 
-# เป็นmain_admin ค่อยเข้าได้นะน้องงง
 def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
@@ -132,7 +131,7 @@ def adminlist():
             if user:
                 user.IsM_admin = False
                 db.session.commit()
-    users = User.query.filter_by(availiable=True).all()
+    users = User.query.filter_by(availiable=True).order_by(User.UserID).all()
     return render_template("adminlist.html", users=users)
 
 @app.route("/pending_admin", methods=["GET", "POST"])
@@ -161,7 +160,9 @@ def pending_user():
             db.session.commit()
 
         return redirect(url_for("pending_user"))
-    users = User.query.filter_by(availiable=False).all()
+    users = User.query.order_by(User.UserID).all()
+    return users
+    users = users.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
 @app.route('/edit')
@@ -269,9 +270,9 @@ def google_auth():
                                 for i in range(12))
                 if "family_name" in userinfo:
                     Lname = userinfo.get('family_name', "")
-                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_url=picture, password = password)
+                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_pic=picture, password = password)
                 else:
-                    new_user = User(Fname=Fname, email=email,profile_url=picture, password=password)
+                    new_user = User(Fname=Fname, email=email,profile_pic=picture, password=password)
                 db.session.add(new_user)
                 db.session.commit()
     except Exception as ex:
@@ -293,8 +294,8 @@ def logout():
 def test_DB():
     forshow = []
     db_category = Category.query.all()
-    db_item = Item.query.all()
-    db_user = User.query.all()
+    db_item = Item.query.order_by(Item.itemID).all()
+    db_user = User.query.order_by(User.UserID).all()
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))

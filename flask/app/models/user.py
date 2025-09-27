@@ -33,13 +33,13 @@ class User(db.Model, UserMixin, SerializerMixin):
                       "profile_pic",
                       "password")
 
-    def __init__(self, password, Fname, Lname="", phoneNum="", cmuMail="", email="",profile_url=None):
+    def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email="",profile_pic=None,password=""):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum
         self.cmuMail = cmuMail
         self.gmail = email
-        self.profile_pic=profile_url
+        self.profile_pic=profile_pic
         self.password = password
     
     def update(self,IsM_admin,availiable):
