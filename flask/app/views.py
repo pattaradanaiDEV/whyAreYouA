@@ -45,31 +45,7 @@ def madmin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route('/')
-def home():
-    return '\
-        <style>\
-            .a-tag{border: 2px solid gray; border-radius: 5px}\
-            .a-tag:link{color: aqua; background-color: gray;}\
-            .a-tag:hover{color: aquamarine; background-color: gray;}\
-            .a-tag:visited{color: indigo; background-color: gray;}\
-            .a-tag:active{color: blue; background-color: gray;}\
-        </style>\
-        <body style="background-color: black">\
-            <div style="text-align: center">\
-                <h1 style="color: gray">\
-                    Flask says "Hello world!"\
-                </h1>\
-            </div>\
-            <div style="text-align: center">\
-                <a href="/homepage" class="a-tag">\
-                    Enter homepage\
-                </a>\
-            </div>\
-        </body>'
-
 @app.route('/homepage')
-@login_required
 def homepage():
     return render_template('home.html')
 
@@ -93,7 +69,7 @@ def category():
     )
 
 @app.route('/newitem', methods=["GET", "POST"])
-@madmin_required
+# @madmin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -137,7 +113,7 @@ def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist', methods=["GET", "POST"])
-@madmin_required 
+# @madmin_required 
 # เป็นmain_admin ค่อยเข้าได้นะน้องงง
 def adminlist():
     if request.method == "POST":
@@ -158,7 +134,7 @@ def adminlist():
     return render_template("adminlist.html", users=users)
 
 @app.route("/pending_admin", methods=["GET", "POST"])
-@madmin_required
+# @madmin_required
 def pending_user():
     if request.method == "POST":
         action = request.form.get("action")
@@ -185,55 +161,6 @@ def pending_user():
         return redirect(url_for("pending_user"))
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
-
-@app.route('/db')
-def db_connection():
-    try:
-        with db.engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return '\
-            <style>\
-                .a-tag{border: 2px solid gray; border-radius: 5px}\
-                .a-tag:link{color: aqua; background-color: gray;}\
-                .a-tag:hover{color: aquamarine; background-color: gray;}\
-                .a-tag:visited{color: indigo; background-color: gray;}\
-                .a-tag:active{color: blue; background-color: gray;}\
-            </style>\
-            <body style="background-color: black">\
-                <div>\
-                    <div style="text-align: center">\
-                        <h1 style="color:gray">\
-                            db works.\
-                        </h1>\
-                    </div>\
-                    <div style="text-align: center">\
-                        <a href="/" class="a-tag">\
-                            Go back to landing page\
-                        </a>\
-                    </div>\
-                </div>\
-            </body>'
-    except Exception as e:
-        return '\
-            <style>\
-                .a-tag{border: 2px solid gray; border-radius: 5px}\
-                .a-tag:link{color: aqua; background-color: gray;}\
-                .a-tag:hover{color: aquamarine; background-color: gray;}\
-                .a-tag:visited{color: indigo; background-color: gray;}\
-                .a-tag:active{color: blue; background-color: gray;}\
-            </style>\
-            <body style="background-color: black">\
-                <div style="text-align: center">\
-                    <h1 style="color:gray">\
-                        db is broken. return: 'f"{e}"'\
-                    </h1>\
-                </div>\
-                <div style="text-align: center">\
-                    <a href="/" class="a-tag">\
-                        Go back to landing page\
-                    </a>\
-                </div>\
-            </body>'
 
 @app.route('/edit')
 @madmin_required
@@ -346,7 +273,7 @@ def google_auth():
     except Exception as ex:
         db.session.rollback()  # Rollback on failure
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
-        return redirect(url_for('loginA'))
+        return redirect(url_for('login'))
   
     user = User.query.filter_by(gmail=email).first()
     login_user(user)
@@ -356,7 +283,7 @@ def google_auth():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('loginA'))
+    return redirect(url_for('login'))
 
 @app.route('/test_DB')
 def test_DB():
