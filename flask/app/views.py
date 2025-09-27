@@ -18,6 +18,8 @@ from flask import send_file
 from io import BytesIO
 from app import oauth
 from werkzeug.utils import secure_filename
+import secrets
+import string
 
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
@@ -263,11 +265,13 @@ def google_auth():
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
             if not user:
+                password = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
+                                for i in range(12))
                 if "family_name" in userinfo:
                     Lname = userinfo.get('family_name', "")
-                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_url=picture)
+                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_url=picture, password = password)
                 else:
-                    new_user = User(Fname=Fname, email=email,profile_url=picture)
+                    new_user = User(Fname=Fname, email=email,profile_url=picture, password=password)
                 db.session.add(new_user)
                 db.session.commit()
     except Exception as ex:
@@ -289,10 +293,10 @@ def logout():
 def test_DB():
     forshow = []
     db_category = Category.query.all()
-    category = list(map(lambda x: x.to_dict(), db_category))
     db_item = Item.query.all()
-    item = list(map(lambda x:x.to_dict(),db_item))
     db_user = User.query.all()
-    users = list(map(lambda x:x.to_dict(),db_user))
+    category = list(map(lambda x: x.to_dict(), db_category))
+    item = list(map(lambda x:x.to_dict(), db_item))
+    users = list(map(lambda x:x.to_dict(), db_user))
     forshow=["Category DB",category,"item DB",item,"User DB",users]
     return jsonify(forshow)
