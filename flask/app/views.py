@@ -127,6 +127,10 @@ def category():
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
+    data_category = Category.query.all()
+    categor = [c.to_dict() for c in data_category]
+    categories = [a["cateName"] for a in categor]
+    
     if request.method == "POST":
         action = request.form.get("submit")
         file = request.files.get('file')
@@ -158,7 +162,7 @@ def newitem():
             db.session.commit()
             return redirect(url_for("test_DB"))
             
-    return render_template('newitem.html')
+    return render_template('newitem.html', categories=categories)
 
 @app.route('/stockmenu')
 def stockmenu():
