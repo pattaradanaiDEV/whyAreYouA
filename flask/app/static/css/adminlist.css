@@ -299,3 +299,18 @@ input:checked + .slider:before {
   padding: 8px 16px;
   cursor: pointer;
 }
+
+.pending-admin{
+    padding: 10px 20px;
+    background: #2196F3;
+    border-radius: 20px;
+    width: 30%;
+    margin-left: 20px;
+    justify-content: center;
+    text-align: center;
+}
+
+.pending-admin span{
+    color: var(--text--color);
+    font-size: 1rem;
+}

@@ -159,9 +159,8 @@ def pending_user():
                 user.availiable = True
             db.session.commit()
 
-        return redirect(url_for("pending_user"))
-    users = User.query.order_by(User.UserID).all()
-    return users
+        return redirect(url_for("pending_user"))    
+    
     users = users.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
