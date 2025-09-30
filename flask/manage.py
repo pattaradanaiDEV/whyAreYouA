@@ -6,6 +6,7 @@ from app.models.item import Item
 from app.models.category import Category
 from app.models.withdrawHistory import WithdrawHistory
 from app.models.cart import Cart
+from werkzeug.security import generate_password_hash
 
 cli = FlaskGroup(app)
 
@@ -22,14 +23,25 @@ def create_db():
     db.create_all()
     db.session.commit()
 
+def gen_avatar_url(email, username):
+    bgcolor = (generate_password_hash(email, method="sha256") + generate_password_hash(username, method="sha256"))[-6:]
+    r = int(bgcolor[0:2], 16)
+    g = int(bgcolor[2:4], 16)
+    b = int(bgcolor[4:6], 16)
+    color = 0.2126 * (r if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4) + \
+            0.7152 * (g if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4) + \
+            0.0722 * (b if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4)
+    avatar_url = ("https://ui-avatars.com/api/?name=" + username + "+&background=" + bgcolor + "&color=" + color)
+    return avatar_url
+
 @cli.command("add_user")
 def add_user():
-    user = [["Developer","Account","0001000000","DEV-ACC@cmu.ac.th"],
-            ["Pongpop","Pongsuk","0000099900","pongpop.pongsuk@cmu.ac.th"],
-            ["Santi","Saelee","0000000000","santi.saelee@cmu.ac.th"],
-            ["Rui","Jie","0000010000","rui.jie@cmu.ac.th"]]
+    user = [["Developer","Account","0001000000","DEV-ACC@cmu.ac.th","DEV-ACC@cscmumail.com","204361@DEV-ACC"],
+            ["Pongpop","Pongsuk","0000099900","pongpop.pongsuk@cmu.ac.th","","PPP@cmu!"],
+            ["Santi","Saelee","0000000000","santi.saelee@cmu.ac.th","","TunderEXP001"],
+            ["Rui","Jie","0000010000","rui.jie@cmu.ac.th","","MaiMeeRaHatWoi"]]
     for i in user :
-        db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],cmuMail=i[3]))
+        db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],cmuMail=i[3],email=i[4],profile_pic=gen_avatar_url(i[4], i[0]+i[1]),password=generate_password_hash(i[5])))
     db.session.commit()
     User.query.get_or_404(1).IsM_admin=True
     User.query.get_or_404(1).availiable=True

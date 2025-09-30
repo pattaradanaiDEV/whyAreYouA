@@ -59,10 +59,10 @@ def redirect_to_login():
 
 @app.route('/login', methods=["get", "post"])
 def login():
-    if request.method == "post":
-        username = request.form.get("username")
+    if request.method == "POST":
+        email = request.form.get("email")
         password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(gmail=email).first()
         if not user:
             flash("There no such user. Please try again")
             return redirect(url_for('login'))
@@ -70,6 +70,7 @@ def login():
             flash("Incorrect password. Please try again")
             return redirect(url_for('login'))
         login_user(user)
+        return redirect(url_for('homepage'))
     if current_user.is_authenticated:
         return redirect(url_for('homepage'))
     return render_template('signup.html')
