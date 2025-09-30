@@ -49,7 +49,15 @@
                     <input type="text" class="name-input input-box" name="getname" placeholder="Item name" required>
                 </div>
                 <div class="row">
-                    <input type="text" class="cate-input input-box" name="getcate" placeholder="Category" required>
+                    <input list="test" name="getcate" placeholder="Category" class="cate-input input-box">
+                    <datalist id="test">
+                        {% for cate in categories %}
+                        <option value="{{ cate }}">
+                        {% endfor %}
+                    </datalist>
+                    <!-- <input type="text" class="cate-input input-box" name="getcate" placeholder="Category" required> -->
+
+
                     <input type="text" class="amount-input input-box" name="getamount" placeholder="Amount" required pattern="[0-9]{1,}">
                 </div>
                 <div class="row">

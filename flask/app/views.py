@@ -24,7 +24,7 @@ import string
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
 def check_user_availiable():
-    except_routes = ['login','test_DB', 'google', 'google_auth','static']
+    except_routes = ['login','test_DB', 'google', 'google_auth','static','https//']
     if request.endpoint and (request.endpoint.startswith('static') or request.endpoint.endswith('.static')):
         return None
 
@@ -73,6 +73,10 @@ def category():
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
+    data_category = Category.query.all()
+    categor = [c.to_dict() for c in data_category]
+    categories = [a["cateName"] for a in categor]
+    
     if request.method == "POST":
         action = request.form.get("submit")
         file = request.files.get('file')
@@ -104,7 +108,7 @@ def newitem():
             db.session.commit()
             return redirect(url_for("test_DB"))
             
-    return render_template('newitem.html')
+    return render_template('newitem.html', categories=categories)
 
 @app.route('/stockmenu')
 def stockmenu():
@@ -161,7 +165,7 @@ def pending_user():
 
         return redirect(url_for("pending_user"))    
     
-    users = users.query.filter_by(availiable=False).all()
+    users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
 @app.route('/edit')
