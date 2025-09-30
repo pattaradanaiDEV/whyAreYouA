@@ -14,11 +14,6 @@
         <img src="../static/ico/stock_logo.png" alt="stock-logo" class="logo" />
       
         <p class="app-title">CS' Stock Managing System</p>
-        <div class="text">
-            <p>Please contact admin:</p>
-            <p>pongpop@TBA.com</p>
-            <p>or</p>
-        </div>
         <div class="login-button">
             <a href="{{ url_for('google') }}" class="button is-large is-fullwidth">
             <span class="icon">
@@ -27,8 +22,23 @@
             <span>Signin with Google</span>
             </a>
         </div>
-        <div class="login-button" onclick="touchLogin()">
-            <span>Continue without Login</span>
+        <form class="text" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <p>or<br><br>login with username and password</p>
+            <div class>
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="ExampleUsername101" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Your Password Here" required>
+            </div>
+            <input type="submit" value="login">
+        </form>
+        <div class="text">
+            <hr>
+            <p>Please contact Mr.Pongpop for stock edit permission:</p>
+            <p>pongpop@TBA.com</p>
         </div>
       </div>
 </body>

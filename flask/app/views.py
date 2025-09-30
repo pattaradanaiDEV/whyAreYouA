@@ -18,8 +18,11 @@ from flask import send_file
 from io import BytesIO
 from app import oauth
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import string
+from sqlalchemy.orm.attributes import flag_modified
+
 
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
@@ -51,9 +54,69 @@ def madmin_required(f):
 def homepage():
     return render_template('home.html')
 
-@app.route('/login')
+@app.route('/signup')
+@app.route('/signin')
+def redirect_to_login():
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=["get", "post"])
 def login():
+    if request.method == "post":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash("There no such user. Please try again")
+            return redirect(url_for('login'))
+        if not check_password_hash(user.password, password):
+            flash("Incorrect password. Please try again")
+            return redirect(url_for('login'))
+        login_user(user)
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
     return render_template('signup.html')
+
+@app.route('/add_new_user', methods=['post'])
+def add_new_user():
+    result = request.form.to_dict()
+
+    validated = True
+    validated_dict = {}
+    valid_keys = ["email", "username", "password"]
+
+    for key in result:
+        if key not in valid_keys:
+            continue
+
+        value = result[key].strip()
+        if not value or value == "undefined":
+            validated = False
+            break
+        validated_dict[key] = value
+
+    if validated:
+        email = validated_dict["email"]
+        username = validated_dict["username"]
+        password = validated_dict["password"]
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            flash("Email address already in use")
+        phoneNum = result["phoneNum"].strip()
+        if not phoneNum or phoneNum == "undefined":
+            phoneNum = ""
+
+        avatar_url = gen_avatar_url(email, username)
+        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, cmuMail="", email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+
+        db.session.add(new_user)
+        db.session.commit()
+
+def gen_avatar_url(email, username):
+    bgcolor = (generate_password_hash(email, method="sha256") + generate_password_hash(username, method="sha256"))[-6:]
+    color = hex(int("0xffffff", 0) - int("0x" + bgcolor, 0)).replace("0x", "")
+    avatar_url = ("https://ui-avatars.com/api/?name=" + username + "+&background=" + bgcolor + "&color=" + color)
+    return avatar_url
 
 @app.route('/category')
 def category():
@@ -77,10 +140,6 @@ def notification():
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
-    data_category = Category.query.all()
-    categor = [c.to_dict() for c in data_category]
-    categories = [a["cateName"] for a in categor]
-    
     if request.method == "POST":
         action = request.form.get("submit")
         file = request.files.get('file')
@@ -112,7 +171,7 @@ def newitem():
             db.session.commit()
             return redirect(url_for("test_DB"))
             
-    return render_template('newitem.html', categories=categories)
+    return render_template('newitem.html')
 
 @app.route('/stockmenu')
 def stockmenu():
@@ -187,10 +246,16 @@ def edit():
 
 @app.route('/withdraw')
 def withdraw():
-    ItemID = request.args.get("itemID")
-    userID = request.args.get("userID")
-    item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(item.to_dict())
+    ItemID = int(request.args.get("itemID"))
+    cart_itemID = [ i[0] for i in current_user.cart]
+    if ItemID in cart_itemID:
+        index = cart_itemID.index(ItemID)
+        current_user.cart[index][1] += 1
+    else:
+        current_user.cart.append([ItemID, 1])
+    flag_modified(current_user, "cart")
+    db.session.commit()
+    return jsonify(current_user.to_dict())
 
 @app.route('/setting')
 def setting():

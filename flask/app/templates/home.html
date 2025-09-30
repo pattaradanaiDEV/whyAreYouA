@@ -25,6 +25,9 @@
                 <span class="welcome-message">Welcome!<br></span>
                 <span>{{ current_user.Fname}} {{ current_user.Lname }}</span>
             </div>
+            <form>
+                <input id="logout" type="button" value="logout">
+            </form>
         </div>
         
         <div class="action-wrapper">
@@ -148,4 +151,10 @@
         darkmode = localStorage.getItem('darkmode')
         darkmode !== "active" ? enableDarkmode() : disableDarkmode()
     })
+
+    const logoutButton = document.querySelector('#logout')
+    logoutButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.location.href = "logout";
+    });
 </script>
