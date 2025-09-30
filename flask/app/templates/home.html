@@ -14,6 +14,7 @@
 <body class="lightmode en">
     <div class="top-bar">
         <div class="profile-wrapper">
+             <img src="{{ current_user.profile_pic }}"  class="profile-img">
             <div class="profile-circle">
                 {% if current_user.profile_pic %}
                     <img src="{{ current_user.profile_pic }}"  class="profile-img">

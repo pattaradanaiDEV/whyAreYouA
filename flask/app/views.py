@@ -24,7 +24,7 @@ import string
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
 def check_user_availiable():
-    except_routes = ['login','test_DB', 'google', 'google_auth','static']
+    except_routes = ['login','test_DB', 'google', 'google_auth','static','https//']
     if request.endpoint and (request.endpoint.startswith('static') or request.endpoint.endswith('.static')):
         return None
 
@@ -161,7 +161,7 @@ def pending_user():
 
         return redirect(url_for("pending_user"))    
     
-    users = users.query.filter_by(availiable=False).all()
+    users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
 @app.route('/edit')
