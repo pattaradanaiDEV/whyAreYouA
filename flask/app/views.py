@@ -70,6 +70,10 @@ def category():
         is_admin=True
     )
 
+@app.route('/notification')
+def notification():
+    return render_template('notification.html')
+
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
