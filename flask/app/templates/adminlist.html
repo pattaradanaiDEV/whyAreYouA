@@ -30,35 +30,104 @@
         <ul class="admin-list">
             {% for user in users %}
             <li class="admin-item">
-                {% if user.UserID == 1 %}
+                    
                 <div class="admin-info">
-                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
+                    {% if user.profile_pic %}
+                        <img src="{{ user.profile_pic }}" class="profile-circle">
+                    {% else %}
+                        <div class="user-icon">{{ user.Fname[0].upper() }}</div>
+                    {% endif %}
                     <div>
                         <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
-                        <div class="username">@{{ user.cmuMail }}</div>
+                        <div class="username">{{ user.gmail }}</div>
                     </div>
                 </div>
-                {% else %}
-                <div class="admin-info">
-                    <img src="{{ user.profile_pic }}" alt="avatar" class="avatar">
-                    <div>
-                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
-                        <div class="username">@{{ user.cmuMail }}</div>
-                    </div>
-                </div>
-                <form method="post" action="{{ url_for('adminlist') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="user_id" value="{{ user.UserID }}">
-                    <label class="switch">
-                        <input type="checkbox" name="action" value="promote"
-                        onchange="this.form.submit();" {% if user.IsM_admin %}checked{% endif %}>
-                        <span class="slider round"></span>
-                    </label>
-                </form>
+                
+                {% if user.UserID > 2 and current_user.UserID != user.UserID %}
+                    <form method="post" action="{{ url_for('adminlist') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                        <label class="switch">
+                            <input type="checkbox" name="action" value="promote"
+                            {% if user.IsM_admin %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </form>
                 {% endif %}
             </li>
             {% endfor %}
         </ul>
+
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <p id="modalMessage"></p>
+                <div class="modal-buttons">
+                    <button id="modalConfirm">Confirm</button>
+                    <button id="modalCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pending-admin">
+        <a href="{{ url_for('pending_user')}}">
+            <span>Pending Admin</span>
+        </a>
     </div>
 </body>
+</body>
 </html>
+<script>
+document.querySelectorAll("form").forEach(form => {
+    const checkbox = form.querySelector("input[type=checkbox]");
+
+    // ดักไม่ให้ส่ง form ทันทีตอนเปลี่ยน checkbox
+    checkbox.addEventListener("change", (e) => {
+        e.preventDefault();
+        confirmSubmit(form, checkbox);
+    });
+});
+
+function confirmSubmit(form, checkbox) {
+    const li = form.closest("li");
+    const name = li.querySelector(".name").textContent;
+    const email = li.querySelector(".username").textContent;
+
+    const modal = document.getElementById("confirmModal");
+    const modalMessage = document.getElementById("modalMessage");
+    const confirmBtn = document.getElementById("modalConfirm");
+    const cancelBtn = document.getElementById("modalCancel");
+
+    if (checkbox.checked) {
+        modalMessage.textContent = `คุณแน่ใจที่จะให้ user "${name}" (${email}) เป็น main admin?`;
+    } else {
+        modalMessage.textContent = `คุณแน่ใจที่จะยกเลิกสิทธิ์ main admin ของ user "${name}" (${email})?`;
+    }
+
+    modal.style.display = "flex";
+
+    confirmBtn.onclick = () => {
+        modal.style.display = "none";
+
+        if (checkbox.checked) {
+            checkbox.value = "promote";
+        } else {
+            let hidden = form.querySelector("input[name=action]");
+            if (hidden) {
+                hidden.value = "demote";
+            } else {
+                hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = "action";
+                hidden.value = "demote";
+                form.appendChild(hidden);
+            }
+        }
+        form.submit();
+    };
+    cancelBtn.onclick = () => {
+        modal.style.display = "none";
+        checkbox.checked = !checkbox.checked;
+    };
+}
+</script>

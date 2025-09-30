@@ -1,8 +1,8 @@
 import json
 import os
 from flask import (jsonify, render_template,
-                  request, url_for, flash,current_app, redirect)
-
+                  request, url_for, flash,current_app, abort,session,redirect)
+from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
@@ -17,73 +17,43 @@ from flask_wtf.csrf import CSRFProtect
 from flask import send_file
 from io import BytesIO
 from app import oauth
-
 from werkzeug.utils import secure_filename
+import secrets
+import string
 
+#ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
+@app.before_request
+def check_user_availiable():
+    except_routes = ['login','test_DB', 'google', 'google_auth','static','https//']
+    if request.endpoint and (request.endpoint.startswith('static') or request.endpoint.endswith('.static')):
+        return None
 
-@app.route('/save_pin', methods=['POST'])
-def save_pin():
-    data = request.get_json()
-    pin = data.get("pin")
+    if request.endpoint in except_routes:
+        return None
 
-    if not pin or len(pin) != 6 or not pin.isdigit():
-        return jsonify({"success": False, "message": "Invalid PIN"}), 400
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
 
-    try:
-        # ใช้ user จาก session (login)
-        user = User.query.get(current_user.UserID)
+    # if not current_user.availiable:
+    #     return redirect(url_for('waiting'))
+        
+def madmin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.IsM_admin:
+            peeman = User.query.get(2)
+            return f"You are not Main_admin please contact {peeman.Fname} {peeman.Lname}"  # Forbidden
 
-        if not user:
-            return jsonify({"success": False, "message": "User not found"}), 404
-
-        if user.userpin:  
-            return jsonify({"success": False, "message": "PIN already set"}), 400
-
-        user.set_pin(pin)       # <-- hash ก่อนเก็บ
-        db.session.commit()
-
-        return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
-@app.route('/')
-def home():
-    return '\
-        <style>\
-            .a-tag{border: 2px solid gray; border-radius: 5px}\
-            .a-tag:link{color: aqua; background-color: gray;}\
-            .a-tag:hover{color: aquamarine; background-color: gray;}\
-            .a-tag:visited{color: indigo; background-color: gray;}\
-            .a-tag:active{color: blue; background-color: gray;}\
-        </style>\
-        <body style="background-color: black">\
-            <div style="text-align: center">\
-                <h1 style="color: gray">\
-                    Flask says "Hello world!"\
-                </h1>\
-            </div>\
-            <div style="text-align: center">\
-                <a href="/homepage" class="a-tag">\
-                    Enter homepage\
-                </a>\
-            </div>\
-        </body>'
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/homepage')
 def homepage():
     return render_template('home.html')
 
-@app.route('/signup')
-def loginA():
-    return render_template('signup.html')
-
 @app.route('/login')
-def loginB():
-    return render_template('login.html')
-
-@app.route('/createpin')
-def create_pin():
-    return render_template('createpin.html')
+def login():
+    return render_template('signup.html')
 
 @app.route('/category')
 def category():
@@ -101,6 +71,7 @@ def category():
     )
 
 @app.route('/newitem', methods=["GET", "POST"])
+# @madmin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -144,6 +115,7 @@ def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist', methods=["GET", "POST"])
+# @madmin_required 
 def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
@@ -159,86 +131,51 @@ def adminlist():
             if user:
                 user.IsM_admin = False
                 db.session.commit()
-    users = User.query.filter_by(availiable=True).all()
+    users = User.query.filter_by(availiable=True).order_by(User.UserID).all()
     return render_template("adminlist.html", users=users)
 
-@app.route('/test_DB')
-def test_DB():
-    forshow = []
-    db_category = Category.query.all()
-    category = list(map(lambda x: x.to_dict(), db_category))
-    db_item = Item.query.all()
-    item = list(map(lambda x:x.to_dict(),db_item))
-    db_user = User.query.all()
-    users = list(map(lambda x:x.to_dict(),db_user))
-    forshow=["Category DB",category,"item DB",item,"User DB",users]
-    return jsonify(forshow)
+@app.route("/pending_admin", methods=["GET", "POST"])
+# @madmin_required
+def pending_user():
+    if request.method == "POST":
+        action = request.form.get("action")
+        user_id = request.form.get("user_id")
 
-@app.route('/db')
-def db_connection():
-    try:
-        with db.engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return '\
-            <style>\
-                .a-tag{border: 2px solid gray; border-radius: 5px}\
-                .a-tag:link{color: aqua; background-color: gray;}\
-                .a-tag:hover{color: aquamarine; background-color: gray;}\
-                .a-tag:visited{color: indigo; background-color: gray;}\
-                .a-tag:active{color: blue; background-color: gray;}\
-            </style>\
-            <body style="background-color: black">\
-                <div>\
-                    <div style="text-align: center">\
-                        <h1 style="color:gray">\
-                            db works.\
-                        </h1>\
-                    </div>\
-                    <div style="text-align: center">\
-                        <a href="/" class="a-tag">\
-                            Go back to landing page\
-                        </a>\
-                    </div>\
-                </div>\
-            </body>'
-    except Exception as e:
-        return '\
-            <style>\
-                .a-tag{border: 2px solid gray; border-radius: 5px}\
-                .a-tag:link{color: aqua; background-color: gray;}\
-                .a-tag:hover{color: aquamarine; background-color: gray;}\
-                .a-tag:visited{color: indigo; background-color: gray;}\
-                .a-tag:active{color: blue; background-color: gray;}\
-            </style>\
-            <body style="background-color: black">\
-                <div style="text-align: center">\
-                    <h1 style="color:gray">\
-                        db is broken. return: 'f"{e}"'\
-                    </h1>\
-                </div>\
-                <div style="text-align: center">\
-                    <a href="/" class="a-tag">\
-                        Go back to landing page\
-                    </a>\
-                </div>\
-            </body>'
+        if action == "accept" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                user.availiable = True
+                db.session.commit()
+
+        elif action == "decline" and user_id:
+            user = User.query.get(int(user_id))
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+
+        elif action == "accept_all":
+            users = User.query.filter_by(availiable=False).all()
+            for user in users:
+                user.availiable = True
+            db.session.commit()
+
+        return redirect(url_for("pending_user"))    
+    
+    users = User.query.filter_by(availiable=False).all()
+    return render_template("pending_admin.html", users=users)
 
 @app.route('/edit')
+@madmin_required
 def edit():
     ItemID = request.args.get("itemID")
     userID = request.args.get("userID")
     item = Item.query.filter_by(itemID=ItemID).first()
     qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
-
     return render_template(
         'edit.html',
         item=item,
         QR_Barcode=qr_b64
     )
-    #return render_template('edit.html', 
-    #                       item=R_item,
-    #                       user=userID
-    #                       )
 
 @app.route('/withdraw')
 def withdraw():
@@ -246,10 +183,6 @@ def withdraw():
     userID = request.args.get("userID")
     item = Item.query.filter_by(itemID=ItemID).first()
     return jsonify(item.to_dict())
-    #return render_template('edit.html', 
-    #                       item=R_item,
-    #                       user=userID
-    #                       )
 
 @app.route('/setting')
 def setting():
@@ -265,12 +198,10 @@ def withdraw_byQR(itemID):
         return f"เบิก{item.itemName}สำเร็จ"
     else:
         return f"{item.itemName} หมดแล้วไอน้อง"
-        
-
 
 @app.route('/delete/item')
+@madmin_required
 def delete_item():
-
     return redirect('/category') 
 
 @app.route('/export/withdraw_history')
@@ -301,39 +232,9 @@ def export():
         download_name="withdraw_History.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    
-@app.route("/pending_admin", methods=["GET", "POST"])
-def pending_user():
-    if request.method == "POST":
-        action = request.form.get("action")
-        user_id = request.form.get("user_id")
-
-        if action == "accept" and user_id:
-            user = User.query.get(int(user_id))
-            if user:
-                user.availiable = True
-                db.session.commit()
-
-        elif action == "decline" and user_id:
-            user = User.query.get(int(user_id))
-            if user:
-                db.session.delete(user)
-                db.session.commit()
-
-        elif action == "accept_all":
-            users = User.query.filter_by(availiable=False).all()
-            for user in users:
-                user.availiable = True
-            db.session.commit()
-
-        return redirect(url_for("pending_user"))
-    users = User.query.filter_by(availiable=False).all()
-    return render_template("pending_admin.html", users=users)
-
+   
 @app.route('/google')
 def google():
-
-
     oauth.register(
         name='google',
         client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -343,10 +244,8 @@ def google():
             'scope': 'openid email profile'
         }
     )
-
     redirect_uri = url_for('google_auth', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
-
 
 @app.route('/google/auth')
 def google_auth():
@@ -356,11 +255,7 @@ def google_auth():
     except Exception as ex:
         #app.logger.error(f"Error getting token: {ex}")
         return redirect(url_for('homepage'))
-
-
     #app.logger.debug(str(token))
-
-
     userinfo = token['userinfo']
     app.logger.debug(" Google User " + str(userinfo))
     email = userinfo.get('email')
@@ -369,20 +264,20 @@ def google_auth():
     try:
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
-          
-
             if not user:
+                password = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
+                                for i in range(12))
                 if "family_name" in userinfo:
                     Lname = userinfo.get('family_name', "")
-                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_url=picture)
+                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_pic=picture, password = password)
                 else:
-                    new_user = User(Fname=Fname, email=email,profile_url=picture)
+                    new_user = User(Fname=Fname, email=email,profile_pic=picture, password=password)
                 db.session.add(new_user)
                 db.session.commit()
     except Exception as ex:
         db.session.rollback()  # Rollback on failure
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
-        return redirect(url_for('loginA'))
+        return redirect(url_for('login'))
   
     user = User.query.filter_by(gmail=email).first()
     login_user(user)
@@ -390,10 +285,18 @@ def google_auth():
 
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
-    return redirect(url_for('loginA'))
+    return redirect(url_for('login'))
 
-
-
+@app.route('/test_DB')
+def test_DB():
+    forshow = []
+    db_category = Category.query.all()
+    db_item = Item.query.order_by(Item.itemID).all()
+    db_user = User.query.order_by(User.UserID).all()
+    category = list(map(lambda x: x.to_dict(), db_category))
+    item = list(map(lambda x:x.to_dict(), db_item))
+    users = list(map(lambda x:x.to_dict(), db_user))
+    forshow=["Category DB",category,"item DB",item,"User DB",users]
+    return jsonify(forshow)
