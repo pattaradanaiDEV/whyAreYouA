@@ -8,6 +8,7 @@ from app.models.withdrawHistory import WithdrawHistory
 from app.models.cart import Cart
 from werkzeug.security import generate_password_hash
 
+
 cli = FlaskGroup(app)
 
 @cli.command("add_history")

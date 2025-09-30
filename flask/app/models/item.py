@@ -12,7 +12,6 @@ class Item(db.Model,SerializerMixin):
     itemPicture = db.Column(db.String(255))
     itemMin = db.Column(db.Integer)
 
-    cart = db.relationship("Cart", back_populates="items", cascade="all, delete-orphan")
     category = db.relationship("Category", back_populates="items")
     serialize_only = (
         "itemID",

@@ -4,11 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Admin requests</title>
-    <link rel="stylesheet" href="../static/css/adminlist.css">
+    <link rel="stylesheet" href="../static/css/pendingadmin.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
+    <div class="top-bar">
+        <a href="{{ url_for('adminlist') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+        </a>    
+        <div class="center">
+            <span class="center">Admin requests</span>
+        </div>
+    </div>
     <div class="mainbox">
-        <h2>Admin requests</h2>
         {% if users %}
             <ul>
                 {% for user in users %}

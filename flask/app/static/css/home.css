@@ -120,8 +120,12 @@ svg {
   color: var(--text2--color);
   display: flex;
   flex-direction: column;
-  font-size: 0.9rem;
   line-height: 1.2;
+}
+
+.profile-text span{
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .notification-circle {

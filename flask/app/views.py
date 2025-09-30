@@ -21,6 +21,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import string
+from sqlalchemy.orm.attributes import flag_modified
+
 
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
@@ -132,6 +134,10 @@ def category():
         is_admin=True
     )
 
+@app.route('/notification')
+def notification():
+    return render_template('notification.html')
+
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
@@ -241,10 +247,16 @@ def edit():
 
 @app.route('/withdraw')
 def withdraw():
-    ItemID = request.args.get("itemID")
-    userID = request.args.get("userID")
-    item = Item.query.filter_by(itemID=ItemID).first()
-    return jsonify(item.to_dict())
+    ItemID = int(request.args.get("itemID"))
+    cart_itemID = [ i[0] for i in current_user.cart]
+    if ItemID in cart_itemID:
+        index = cart_itemID.index(ItemID)
+        current_user.cart[index][1] += 1
+    else:
+        current_user.cart.append([ItemID, 1])
+    flag_modified(current_user, "cart")
+    db.session.commit()
+    return jsonify(current_user.to_dict())
 
 @app.route('/setting')
 def setting():
