@@ -159,14 +159,14 @@ def newitem():
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=request.form.get("getamount"),
                         ItemPicture=filename,
-                        itemMin=999)
+                        itemMin=request.form.get("getmin"))
             db.session.add(item)
             
             if catename.lower() not in catename_list :
                 db.session.add(Category(cateName=catename))
                 item.cateID = len(catename_list)+1
             else :
-                item.cateID = catename_list.index(catename)+1
+                item.cateID = catename_list.index(catename.lower())+1
                 
             db.session.commit()
             return redirect(url_for("test_DB"))
