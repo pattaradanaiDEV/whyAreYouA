@@ -156,7 +156,6 @@ def newitem():
             data_category = Category.query.all()
             categories = [c.to_dict() for c in data_category]
             catename_list = [cname['cateName'].lower() for cname in categories]
-
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=request.form.get("getamount"),
                         ItemPicture=filename,
@@ -171,8 +170,8 @@ def newitem():
                 
             db.session.commit()
             return redirect(url_for("test_DB"))
-            
-    return render_template('newitem.html')
+    category_list = Category.query.all()
+    return render_template('newitem.html',category_list=category_list)
 
 @app.route('/stockmenu')
 def stockmenu():
