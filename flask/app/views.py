@@ -57,7 +57,7 @@ def homepage():
 def redirect_to_login():
     return redirect(url_for('login'))
 
-@app.route('/login', methods=("get", "post"))
+@app.route('/login', methods=["get", "post"])
 def login():
     if request.method == "post":
         username = request.form.get("username")
@@ -74,7 +74,7 @@ def login():
         return redirect(url_for('homepage'))
     return render_template('signup.html')
 
-@app.route('/add_new_user', methods=('post'))
+@app.route('/add_new_user', methods=['post'])
 def add_new_user():
     result = request.form.to_dict()
 
@@ -100,8 +100,15 @@ def add_new_user():
 
         if user:
             flash("Email address already in use")
+        phoneNum = result["phoneNum"].strip()
+        if not phoneNum or phoneNum == "undefined":
+            phoneNum = ""
 
         avatar_url = gen_avatar_url(email, username)
+        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, cmuMail="", email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+
+        db.session.add(new_user)
+        db.session.commit()
 
 def gen_avatar_url(email, username):
     bgcolor = (generate_password_hash(email, method="sha256") + generate_password_hash(username, method="sha256"))[-6:]
@@ -127,10 +134,6 @@ def category():
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():
-    data_category = Category.query.all()
-    categor = [c.to_dict() for c in data_category]
-    categories = [a["cateName"] for a in categor]
-    
     if request.method == "POST":
         action = request.form.get("submit")
         file = request.files.get('file')
@@ -162,7 +165,7 @@ def newitem():
             db.session.commit()
             return redirect(url_for("test_DB"))
             
-    return render_template('newitem.html', categories=categories)
+    return render_template('newitem.html')
 
 @app.route('/stockmenu')
 def stockmenu():
