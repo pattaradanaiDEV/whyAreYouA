@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=contact_emergency" />
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -98,7 +99,7 @@
             </a>
             <span class="action1">Add User</span>
         </div>
-        <div id="qr-scan" class="nav-item">
+        <div onclick="openScanner()" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
             <span class="action2">QR Scan</span>
         </div>
@@ -131,9 +132,9 @@
         .catch(err => console.error("SW registration failed", err));
         }
     </script>
-    <div id="camera-overlay">
-        <video id="camera-video" autoplay playsinline></video>
-        <button id="close-camera">ปิดกล้อง</button>
+    <div id="qr-container">
+        <div id="reader"></div>
+        <button id="close-btn" onclick="closeScanner()">ปิดกล้อง</button>
     </div>
 </body>
 </html>
@@ -172,33 +173,32 @@
         window.location.href = "logout";
     });
 
-    const qrButton = document.getElementById("qr-scan");
-    const overlay = document.getElementById("camera-overlay");
-    const video = document.getElementById("camera-video");
-    const closeBtn = document.getElementById("close-camera");
+    let html5QrCode;
 
-    let stream = null;
+    function openScanner() {
+      document.getElementById("qr-container").style.display = "flex";
+      html5QrCode = new Html5Qrcode("reader");
 
-    // เมื่อกดปุ่ม QR Scan
-    qrButton.addEventListener("click", async () => {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            overlay.style.display = "flex"; // แสดง overlay
-        } catch (err) {
-            console.error("ไม่สามารถเปิดกล้องได้:", err);
-            alert("กรุณาอนุญาตการใช้งานกล้อง");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10 },
+        qrCodeMessage => {
+          console.log(`QR Code detected: ${qrCodeMessage}`);
+          html5QrCode.stop().then(() => {
+            window.location.href = qrCodeMessage; 
+          });
+        },
+        errorMessage => {
+          // console.log(`QR scan error: ${errorMessage}`);
         }
-    });
+      );
+    }
 
-    // เมื่อกดปิดกล้อง
-    closeBtn.addEventListener("click", () => {
-        overlay.style.display = "none";
-
-        // ปิดกล้องจริง ๆ
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
-    });
+    function closeScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          document.getElementById("qr-container").style.display = "none";
+        });
+      }
+    }
 </script>
