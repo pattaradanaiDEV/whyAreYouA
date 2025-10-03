@@ -156,23 +156,22 @@ def newitem():
             data_category = Category.query.all()
             categories = [c.to_dict() for c in data_category]
             catename_list = [cname['cateName'].lower() for cname in categories]
-
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=request.form.get("getamount"),
                         ItemPicture=filename,
-                        itemMin=999)
+                        itemMin=request.form.get("getmin"))
             db.session.add(item)
             
             if catename.lower() not in catename_list :
                 db.session.add(Category(cateName=catename))
                 item.cateID = len(catename_list)+1
             else :
-                item.cateID = catename_list.index(catename)+1
+                item.cateID = catename_list.index(catename.lower())+1
                 
             db.session.commit()
             return redirect(url_for("test_DB"))
-            
-    return render_template('newitem.html')
+    category_list = Category.query.all()
+    return render_template('newitem.html',category_list=category_list)
 
 @app.route('/stockmenu')
 def stockmenu():
