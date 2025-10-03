@@ -1,4 +1,14 @@
-<h1>{{ item.itemName }}</h1>
-<p>จำนวน: {{ item.itemAmount }}</p>
-
-<img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code">
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/newitem.css">
+</head>
+<body>
+    <div class="header">
+        <a href="{{ url_for('category') }}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+        </a>
+    </div>
+    <h1>{{ item.itemName }}</h1>
+    <p>จำนวน: {{ item.itemAmount }}</p>
+    <img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code">
+</body>

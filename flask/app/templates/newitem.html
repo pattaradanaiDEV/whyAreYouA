@@ -23,22 +23,21 @@
         </a>
         <h2>New item</h2>
     </div>
-    <div class="center">
+    <div class="center ">
       <div class="mainbox">
         <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
           <div class="upload-box">
-          <label for="img-file" class="upload-label">
-              <img src="../static/ico/default_image.png" id="preview-img">
-              <span>Add Photo</span>
-          </label>
-          <input type="file" name="file" accept="image/*" id="img-file" hidden required>
+            <label for="img-file" class="upload-label">
+                <img src="../static/ico/default_image.png" id="preview-img">
+                <span>Add Photo</span>
+            </label>
+            <input type="file" name="file" accept="image/*" id="img-file" hidden required>
           </div>
-          <div class="center input-area">
+          <div class="input-area">
             <label class="form-label">Item Name</label>
             <input type="text" class="input-box" name="getname" placeholder="Enter item name" required>
-
             <label class="form-label">Category</label>
             <div class="dropdown">
               <input class="input-box" type="text" id="searchBox" placeholder="Select category"
@@ -50,11 +49,13 @@
               </div>
             </div>
             <div class="row-2">
-              <div class="center">
+              <div class="input-box-row2-left">
                 <label class="form-label">Item Amount</label>
-                <input type="number" class="input-box-row2" name="getamount" value="1" min="1" required>
+                <div class="center">
+                  <input type="number" class="input-box-row2" name="getamount" value="1" min="1" required>
+                </div>
               </div>
-              <div class="center">
+              <div class="input-box-row2-right">
                 <label class="form-label">Item Minimum</label>
                 <div class="center">
                   <input type="number" class="input-box-row2" name="getmin" value="1" min="1" required>
