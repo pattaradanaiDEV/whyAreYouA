@@ -131,7 +131,10 @@
         .catch(err => console.error("SW registration failed", err));
         }
     </script>
-    
+    <div id="camera-overlay">
+        <video id="camera-video" autoplay playsinline></video>
+        <button id="close-camera">ปิดกล้อง</button>
+    </div>
 </body>
 </html>
 
@@ -167,5 +170,35 @@
     logoutButton.addEventListener("click", (event) => {
         event.preventDefault();
         window.location.href = "logout";
+    });
+
+    const qrButton = document.getElementById("qr-scan");
+    const overlay = document.getElementById("camera-overlay");
+    const video = document.getElementById("camera-video");
+    const closeBtn = document.getElementById("close-camera");
+
+    let stream = null;
+
+    // เมื่อกดปุ่ม QR Scan
+    qrButton.addEventListener("click", async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            overlay.style.display = "flex"; // แสดง overlay
+        } catch (err) {
+            console.error("ไม่สามารถเปิดกล้องได้:", err);
+            alert("กรุณาอนุญาตการใช้งานกล้อง");
+        }
+    });
+
+    // เมื่อกดปิดกล้อง
+    closeBtn.addEventListener("click", () => {
+        overlay.style.display = "none";
+
+        // ปิดกล้องจริง ๆ
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
     });
 </script>

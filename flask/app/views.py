@@ -264,6 +264,22 @@ def withdraw():
 @madmin_required
 def edit():
     ItemID = request.args.get("itemID")
+    cart_item = CartItem.query.filter_by(
+        UserID=current_user.UserID,
+        ItemID=ItemID,
+        Status='e'
+    ).first()
+    if cart_item:
+        cart_item.Quantity += 1
+    else:
+        cart_item = CartItem(
+            UserID=current_user.UserID,
+            ItemID=ItemID,
+            Quantity=1, 
+            Status='e'
+        )
+        db.session.add(cart_item)
+    db.session.commit()
     userID = request.args.get("userID")
     item = Item.query.filter_by(itemID=ItemID).first()
     qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
