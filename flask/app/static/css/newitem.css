@@ -1,5 +1,27 @@
+:root{ 
+   --basebg--color: linear-gradient(to top, rgb(255, 255, 224) 0%,#fff 50%);
+   /* --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%); */ 
+   --base--color: #555; 
+   --text--color: #000; 
+   --button--color: #aaa;
+   --buttonbg--color: rgba(220, 220, 220, 0.75);
+   --border--color: gray; 
+   --hover--color: gray; 
+ }
+
+.darkmode{ 
+   --basebg--color: #212121; 
+   /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
+   --base--color: #121212; 
+   --text--color: #ccc; 
+   --button--color: #444; 
+   --buttonbg--color: #555; 
+   --border--color: gray; 
+   --hover--color: gray; 
+ }
+
 body {
-  background: #f9fafb;
+  background-color: var(--basebg--color);
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
@@ -10,7 +32,7 @@ body {
     align-items: center;
     padding: 16px;
     border-bottom: 1px solid var(--border--color);
-    background-color: var(--base--color);
+    background-color: var(--basebg--color);
     position: sticky;
     top: 0;
 }
@@ -30,16 +52,21 @@ body {
 
 .back-btn {
     text-decoration: none;
-    color: #333;
+    color: var(--button--color);
     font-size: 24px;
 }
 
+.center {
+  justify-items: center;
+}
+
 .mainbox {
+  justify-items: center;
   max-height: 100%;
-  background: #fff;
+  background: var(--button--color);
   padding: 40px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  position: fixed;
+  max-width: 50%;
 }
 
 .upload-box {
@@ -77,11 +104,12 @@ body {
   margin-top: 12px;
   margin-bottom: 4px;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text--color);
 }
 
+
 .input-box {
-  width: 80%;
+  width: 100%;
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;

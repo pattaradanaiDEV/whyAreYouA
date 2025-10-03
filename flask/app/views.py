@@ -1,6 +1,6 @@
 import json
 import os
-from flask import (jsonify, render_template,
+from flask import (jsonify, render_template, flash,
                   request, url_for, flash,current_app, abort,session,redirect)
 from functools import wraps
 from sqlalchemy.sql import text
@@ -22,7 +22,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
-
+from wtforms.validators import Email
 
 #ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
@@ -73,17 +73,24 @@ def login():
             return redirect(url_for('login'))
         login_user(user)
         return redirect(url_for('homepage'))
-    if current_user.is_authenticated:
-        return redirect(url_for('homepage'))
     return render_template('signup.html')
 
-@app.route('/add_new_user', methods=['post'])
-def add_new_user():
+@app.route('/add_user')
+def add_user():
+    return render_template('add_user.html')
+
+@app.route('/add_user_to_db', methods=['post'])
+def add_user_to_db():
     result = request.form.to_dict()
 
     validated = True
     validated_dict = {}
     valid_keys = ["email", "username", "password"]
+
+    email = validated_dict["email"]
+    if not Email()(email):
+        flash("Invalid email format")
+        return redirect(url_for('signup'))
 
     for key in result:
         if key not in valid_keys:

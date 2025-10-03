@@ -31,7 +31,7 @@ def gen_avatar_url(email, username):
     color = 0.2126 * (r if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4) + \
             0.7152 * (g if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4) + \
             0.0722 * (b if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4)
-    avatar_url = ("https://ui-avatars.com/api/?name=" + username + "+&background=" + bgcolor + "&color=" + color)
+    avatar_url = ("https://ui-avatars.com/api/?name=" + username + "+&background=" + str(bgcolor) + "&color=" + str(color))
     return avatar_url
 
 @cli.command("add_user")

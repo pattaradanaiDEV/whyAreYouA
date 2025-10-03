@@ -10,6 +10,11 @@
     <title>Document Title</title>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {{ messages[0] }}
+    {% endif %}
+    {% endwith %}
     <div class="app-container">
         <img src="../static/ico/stock_logo.png" alt="stock-logo" class="logo" />
       
