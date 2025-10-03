@@ -116,7 +116,7 @@ def add_user_to_db():
             phoneNum = ""
 
         avatar_url = gen_avatar_url(email, username)
-        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, cmuMail="", email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
 
         db.session.add(new_user)
         db.session.commit()

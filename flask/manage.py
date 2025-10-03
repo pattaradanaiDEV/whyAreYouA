@@ -36,12 +36,12 @@ def gen_avatar_url(email, username):
 
 @cli.command("add_user")
 def add_user():
-    user = [["Developer","Account","0001000000","DEV-ACC@cmu.ac.th","DEV-ACC@cscmumail.com","204361@DEV-ACC"],
-            ["Pongpop","Pongsuk","0000099900","pongpop.pongsuk@cmu.ac.th","","PPP@cmu!"],
-            ["Santi","Saelee","0000000000","santi.saelee@cmu.ac.th","","TunderEXP001"],
-            ["Rui","Jie","0000010000","rui.jie@cmu.ac.th","","MaiMeeRaHatWoi"]]
+    user = [["Developer","Account","0001000000","DEV-ACC@cscmumail.com","204361@DEV-ACC"],
+            ["Pongpop","Pongsuk","0000099900","PEEMAN@gmail.com","PPP@cmu!"],
+            ["Santi","Saelee","0000000000","theflash@hotmail.com","TunderEXP001"],
+            ["Rui","Jie","0000010000","rahat@gmail.com","MaiMeeRaHatWoi"]]
     for i in user :
-        db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],cmuMail=i[3],email=i[4],profile_pic=gen_avatar_url(i[4], i[0]+i[1]),password=generate_password_hash(i[5])))
+        db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],email=i[3],profile_pic=gen_avatar_url(i[3], i[0]+i[1]),password=generate_password_hash(i[4])))
     db.session.commit()
     User.query.get_or_404(1).IsM_admin=True
     User.query.get_or_404(1).availiable=True

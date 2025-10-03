@@ -13,8 +13,6 @@ class User(db.Model, UserMixin, SerializerMixin):
     IsM_admin = db.Column(db.Boolean, default=False)
     gmail = db.Column(db.String(50), nullable= True)
     phoneNum = db.Column(db.String(10), nullable = True)
-    cmuMail = db.Column(db.String(50), nullable = True)
-    userpin = db.Column(db.String(255), nullable=True)   # ค่า default = NULL
     availiable = db.Column(db.Boolean,default=False)
     password = db.Column(db.String(255))
     profile_pic = db.Column(db.String(255), nullable=True)
@@ -27,8 +25,6 @@ class User(db.Model, UserMixin, SerializerMixin):
                     "availiable",
                     "gmail",
                     "phoneNum",
-                    "cmuMail",
-                    "userpin",
                     "profile_pic",
                     "password",
                     "cart_items.CartID",
@@ -36,11 +32,10 @@ class User(db.Model, UserMixin, SerializerMixin):
                     "cart_items.Quantity",
                     "cart_items.Status",)
 
-    def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email="",profile_pic=None,password="",username=""):
+    def __init__(self, Fname, Lname="", phoneNum="", email="",profile_pic=None,password="",username=""):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum
-        self.cmuMail = cmuMail
         self.gmail = email
         self.profile_pic=profile_pic
         self.password = password
@@ -49,12 +44,6 @@ class User(db.Model, UserMixin, SerializerMixin):
         self.IsM_admin=IsM_admin
         self.availiable=availiable
         self.cart = cart
-        
-    def set_pin(self, pin):
-        self.userpin = generate_password_hash(pin)
-
-    def check_pin(self, pin):
-        return check_password_hash(self.userpin, pin)
     
     def get_id(self):
         return str(self.UserID)
