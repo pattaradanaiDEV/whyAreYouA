@@ -7,14 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/loginA.css">
-    <title>Document Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <title>Login Page</title>
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {{ messages[0] }}
-    {% endif %}
-    {% endwith %}
     <div class="app-container">
         <img src="../static/ico/stock_logo.png" alt="stock-logo" class="logo" />
       
@@ -27,19 +23,32 @@
             <span>Signin with Google</span>
             </a>
         </div>
-        <form class="text" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <p>or<br><br>login with email and password</p>
-            <div class>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Example@exmpmail.com" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" placeholder="Your Password Here" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
+        <div class="text">
+            <p>or<br><br>login with email and password</p><br>
+        </div>
+        <div class="center">
+            <form class="text mainbox" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="alert-box">
+                    <div class="notification is-danger">
+                        {{ messages[0] }}
+                    </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+                <div class="subbox">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="input-box" placeholder="Example@exmpmail.com" required>
+                </div>
+                <div class="subbox">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="input-box" placeholder="Your Password Here" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
         <div class="text">
             <hr>
             <p>Please contact Mr.Pongpop for stock edit permission:</p>
