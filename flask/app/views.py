@@ -25,21 +25,33 @@ import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
 
-#ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
-def check_user_availiable():
-    except_routes = ['login','test_DB', 'google', 'google_auth','static','https//']
-    if request.endpoint and (request.endpoint.startswith('static') or request.endpoint.endswith('.static')):
-        return None
-
-    if request.endpoint in except_routes:
+def check_user_available():
+    except_routes = [
+        'login',
+        'signup',
+        'signin',
+        'test_DB',
+        'google',
+        'google_auth',
+        'waiting',
+        'static' 
+    ]
+    
+    endpoint = request.endpoint
+    
+    if not endpoint or endpoint.startswith('static') or endpoint in except_routes:
         return None
 
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
     if not current_user.availiable:
-        return redirect(url_for('waiting'))
+        if endpoint != 'waiting':
+            return redirect(url_for('waiting'))
+
+    return None
+
         
 def madmin_required(f):
     @wraps(f)
@@ -51,6 +63,9 @@ def madmin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/waiting')
+def waiting():
+    return f"รอก่อนไอ่น้อง"
 @app.route('/homepage')
 def homepage():
     return render_template('home.html')
