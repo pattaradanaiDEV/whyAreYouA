@@ -1,73 +1,96 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/newitem.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/newitem.css">
 </head>
 
 <body>
-    <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
-    <div class="mainbox">
-        <a href="{{ url_for('stockmenu') }}"> 
-            <span class="material-icons reply-icon" style="font-size: 2rem;">arrow_back_ios_new</span>
+    <div class="header">
+        <a href="{{ url_for('homepage') }}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
         </a>
-        <div class="row">
-            <span class="recName"></span>
-            <span>New Item</span>
-        </div>
-        <div class="column">
-            <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="row align-center">
-                    <img src="../static/ico/default_image.png" class="default-icon" id="preview-img">
-                    <input type="file" name="file" accept="image/*" id="img-file" required>
-                </div>
-                <script>
-                    const imgFile = document.getElementById('preview-img');
-                    const inputBox = document.getElementById('img-file');
-
-                    inputBox.addEventListener('change', function() {
-                        const reader = new FileReader();
-                        reader.addEventListener('load', function () {
-                            imgFile.src = reader.result;
-                        });
-                        reader.readAsDataURL(this.files[0]);
-                    });
-                </script>
-                <div class="row">
-                    <input type="text" class="name-input input-box" name="getname" placeholder="Item name" required>
-                </div>
-                <div class="row">
-                    <input list="test" name="getcate" placeholder="Category" class="cate-input input-box">
-                    <datalist id="test">
-                        {% for cate in categories %}
-                        <option value="{{ cate }}">
-                        {% endfor %}
-                    </datalist>
-                    <!-- <input type="text" class="cate-input input-box" name="getcate" placeholder="Category" required> -->
-
-
-                    <input type="text" class="amount-input input-box" name="getamount" placeholder="Amount" required pattern="[0-9]{1,}">
-                </div>
-                <div class="row">
-                    <textarea class="desc-input input-box" rows="4" cols="50" name="getdes" placeholder="Description"></textarea>
-                </div>
-                <div class="row">
-                    <button class="confirm-button btm-btn" name="submit" value="confirm">Confirm</button>
-                </div>
-            </form>
-        </div>
+        <h2>New item</h2>
     </div>
+
+    <div class="mainbox">
+        <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="upload-box">
+        <label for="img-file" class="upload-label">
+            <img src="../static/ico/default_image.png" id="preview-img">
+            <span>Add Photo</span>
+        </label>
+        <input type="file" name="file" accept="image/*" id="img-file" hidden required>
+        </div>
+       <div>
+            <label class="form-label">Item Name</label>
+            <input type="text" class="input-box" name="getname" placeholder="Enter item name" required>
+
+            <label class="form-label">Category</label>
+            <div class="dropdown">
+                <input class="input-box" type="text" id="searchBox" placeholder="Select category"
+                onkeyup="filterFunction()" onclick="toggleList()" name="getcate">
+                <div id="dropdownList" class="dropdown-list">
+                {% for cate in category_list %}
+                <div onclick="selectItem('{{ cate.cateName }}')">{{ cate.cateName }}</div>
+                {% endfor %}
+                </div>
+
+            <div class="row-2">
+                <div>
+                    <label class="form-label">Item Amount</label>
+                    <input type="number" class="input-box-row2" name="getamount" value="1" min="1" required>
+                </div>
+                <div>
+                    <label class="form-label">Item Minimum</label>
+                    <input type="number" class="input-box-row2" name="getmin" value="1" min="1" required>
+                </div>
+            </div>
+
+            <label class="form-label">Item Description</label>
+            <textarea class="input-box" rows="3" name="getdes" placeholder="Enter item description"></textarea>
+        </div>
+        <button class="add-btn" name="submit" value="confirm">Add Item</button>
+    </form>
+  </div>
+
+  <script>
+    const imgFile = document.getElementById('preview-img');
+    const inputBox = document.getElementById('img-file');
+    inputBox.addEventListener('change', function () {
+      const reader = new FileReader();
+      reader.onload = () => imgFile.src = reader.result;
+      reader.readAsDataURL(this.files[0]);
+    });
+
+    function toggleList() {
+      document.getElementById("dropdownList").style.display = "block";
+    }
+    function filterFunction() {
+      let input = document.getElementById("searchBox");
+      let filter = input.value.toUpperCase();
+      let div = document.getElementById("dropdownList");
+      let items = div.getElementsByTagName("div");
+      for (let i = 0; i < items.length; i++) {
+        let txtValue = items[i].textContent || items[i].innerText;
+        items[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+      }
+    }
+    function selectItem(value) {
+      let input = document.getElementById("searchBox");
+      input.value = value;
+      document.getElementById("dropdownList").style.display = "none";
+    }
+    window.onclick = function (e) {
+      if (!e.target.matches('#searchBox')) {
+        document.getElementById("dropdownList").style.display = "none";
+      }
+    }
+  </script>
 </body>
 </html>
