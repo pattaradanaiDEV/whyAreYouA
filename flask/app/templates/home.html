@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/home.css">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='ico/stock_logo.png') }}">
     <script type="text/javascript" src="../templates/js/darkmode.js" defer></script>
     <title>Home page</title>
 </head>
@@ -25,6 +27,9 @@
                 <span class="welcome-message">Welcome!<br></span>
                 <span>{{ current_user.Fname}} {{ current_user.Lname }}</span>
             </div>
+            <form>
+                <input id="logout" type="button" value="logout">
+            </form>
         </div>
         
         <div class="action-wrapper">
@@ -39,8 +44,10 @@
             </button>
 
             <div class="notification-circle notification">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/></svg>            
-                <span class="notification-badge">3</span>
+                <a href="{{ url_for('notification') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/></svg>            
+                    <span class="notification-badge">3</span>
+                </a>
             </div>
         </div>
     </div>
@@ -86,10 +93,10 @@
 
     <div class="bottom-nav">
         <div class="nav-item">
-            <a href="{{ url_for('stockmenu') }}">
+            <a href="{{ url_for('add_user') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-451q-18-11-29-28.5T80-680v-120q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v120q0 23-11 40.5T840-611v451q0 33-23.5 56.5T760-80H200Zm-40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/></svg>
             </a>
-            <span class="action1">Stock</span>
+            <span class="action1">Add User</span>
         </div>
         <div id="qr-scan" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
@@ -114,7 +121,16 @@
             {% endif %}
         </div>
     </div>
-    <script src="../templates/js/language.js"></script>    
+    <script src="../templates/js/language.js"></script>   
+
+    <!-- pwa service-worker js -->
+    <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("{{ url_for('static', filename='service-worker.js') }}")
+        .then(reg => console.log("Service Worker registered", reg))
+        .catch(err => console.error("SW registration failed", err));
+        }
+    </script>
     
 </body>
 </html>
@@ -146,4 +162,10 @@
         darkmode = localStorage.getItem('darkmode')
         darkmode !== "active" ? enableDarkmode() : disableDarkmode()
     })
+
+    const logoutButton = document.querySelector('#logout')
+    logoutButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.location.href = "logout";
+    });
 </script>
