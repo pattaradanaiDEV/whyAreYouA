@@ -6,6 +6,7 @@ from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
+from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
@@ -37,8 +38,8 @@ def check_user_availiable():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    # if not current_user.availiable:
-    #     return redirect(url_for('waiting'))
+    if not current_user.availiable:
+        return redirect(url_for('waiting'))
         
 def madmin_required(f):
     @wraps(f)
@@ -146,7 +147,7 @@ def notification():
     return render_template('notification.html')
 
 @app.route('/newitem', methods=["GET", "POST"])
-# @madmin_required
+@madmin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -189,7 +190,7 @@ def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist', methods=["GET", "POST"])
-# @madmin_required 
+@madmin_required 
 def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
@@ -209,7 +210,7 @@ def adminlist():
     return render_template("adminlist.html", users=users)
 
 @app.route("/pending_admin", methods=["GET", "POST"])
-# @madmin_required
+@madmin_required
 def pending_user():
     if request.method == "POST":
         action = request.form.get("action")
@@ -238,6 +239,27 @@ def pending_user():
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
+@app.route('/withdraw')
+def withdraw():
+    ItemID = int(request.args.get("itemID"))
+    cart_item = CartItem.query.filter_by(
+        UserID=current_user.UserID,
+        ItemID=ItemID,
+        Status='w'
+    ).first()
+    if cart_item:
+        cart_item.Quantity += 1
+    else:
+        cart_item = CartItem(
+            UserID=current_user.UserID,
+            ItemID=ItemID,
+            Quantity=1,
+            Status='w'
+        )
+        db.session.add(cart_item)
+    db.session.commit()
+    return jsonify(current_user.to_dict())
+
 @app.route('/edit')
 @madmin_required
 def edit():
@@ -250,19 +272,6 @@ def edit():
         item=item,
         QR_Barcode=qr_b64
     )
-
-@app.route('/withdraw')
-def withdraw():
-    ItemID = int(request.args.get("itemID"))
-    cart_itemID = [ i[0] for i in current_user.cart]
-    if ItemID in cart_itemID:
-        index = cart_itemID.index(ItemID)
-        current_user.cart[index][1] += 1
-    else:
-        current_user.cart.append([ItemID, 1])
-    flag_modified(current_user, "cart")
-    db.session.commit()
-    return jsonify(current_user.to_dict())
 
 @app.route('/setting')
 def setting():
@@ -375,8 +384,10 @@ def test_DB():
     db_category = Category.query.all()
     db_item = Item.query.order_by(Item.itemID).all()
     db_user = User.query.order_by(User.UserID).all()
+    db_cart = CartItem.query.all()
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
-    forshow=["Category DB",category,"item DB",item,"User DB",users]
+    cart = list(map(lambda x:x.to_dict(), db_cart))
+    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart}]
     return jsonify(forshow)

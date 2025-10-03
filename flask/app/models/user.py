@@ -18,21 +18,23 @@ class User(db.Model, UserMixin, SerializerMixin):
     availiable = db.Column(db.Boolean,default=False)
     password = db.Column(db.String(255))
     profile_pic = db.Column(db.String(255), nullable=True)
-    cart = db.Column(JSON, default=list)
     withdraw_history = db.relationship("WithdrawHistory", back_populates="user")
-    
+    cart_items = db.relationship("CartItem",back_populates="user",cascade="all, delete-orphan")
     serialize_only = ("UserID",
-                      "Fname",
-                      "Lname",
-                      "IsM_admin",
-                      "availiable",
-                      "gmail",
-                      "phoneNum",
-                      "cmuMail",
-                      "userpin",
-                      "cart",
-                      "profile_pic",
-                      "password")
+                    "Fname",
+                    "Lname",
+                    "IsM_admin",
+                    "availiable",
+                    "gmail",
+                    "phoneNum",
+                    "cmuMail",
+                    "userpin",
+                    "profile_pic",
+                    "password",
+                    "cart_items.CartID",
+                    "cart_items.ItemID",
+                    "cart_items.Quantity",
+                    "cart_items.Status",)
 
     def __init__(self, Fname, Lname="", phoneNum="", cmuMail="", email="",profile_pic=None,password="",username=""):
         self.Fname = Fname
@@ -46,7 +48,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     def update(self,IsM_admin,availiable, cart):
         self.IsM_admin=IsM_admin
         self.availiable=availiable
-        self.cart += cart
+        self.cart = cart
         
     def set_pin(self, pin):
         self.userpin = generate_password_hash(pin)
@@ -54,14 +56,11 @@ class User(db.Model, UserMixin, SerializerMixin):
     def check_pin(self, pin):
         return check_password_hash(self.userpin, pin)
     
-    # def google_login(self, Fname, Lname, email,profile_url):
-    #     self.Fname=Fname
-    #     self.Lname=Lname
-    #     self.gmail=email
-    #     self.profile_pic=profile_url
-    
     def get_id(self):
         return str(self.UserID)
 
-    def insert_cart(self, itemID, Qualtity):
-        self.cart.append([itemID, Qualtity])
+    def insert_cart(self, itemID, quantity, status="w"):
+        cart_item = CartItem(UserID=self.UserID, ItemID=itemID, Quantity=quantity, Status=status)
+        db.session.add(cart_item)
+        return cart_item
+

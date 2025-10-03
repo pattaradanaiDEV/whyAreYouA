@@ -9,11 +9,6 @@ class Category(db.Model,SerializerMixin):
         "cateID",
         "cateName",
     )
-    # { cateID : 0
-    #   cateName : ระเบิดนิวเคลียร์
-    #   {   itemID : 0-n
-    #   }    
-    # }
     def __init__(self,cateName):
         self.cateName = cateName
     
