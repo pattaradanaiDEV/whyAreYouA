@@ -14,7 +14,7 @@ class WithdrawHistory(db.Model, SerializerMixin):
     user = db.relationship("User", back_populates="withdraw_history")
     items = db.relationship("Item", back_populates="withdraw_history")
 
-    serialize_only = ("withdrawID", "Quantity", "DateTime", "items")
+    serialize_only = ("withdrawID", "Quantity", "DateTime", "items.itemID","items.itemName",)
 
     def __init__(self, user_id, item_id, quantity):
         self.UserID = user_id

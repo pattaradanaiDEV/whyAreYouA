@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Withdraw Item</title>
+</head>
+<body>
+    {% comment %} {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %} {% endcomment %}
+    <h2>Withdraw Item</h2>
+    <p><b>Item Name:</b> {{ item.itemName }}</p>
+    <p><b>In Stock:</b> {{ item.itemAmount }}</p>
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+        <label for="getQuantity">Quantity:</label>
+        <input type="number" name="getQuantity" id="getQuantity" min="1" max="{{ item.itemAmount }}" required>
+
+        <div>
+        <button type="submit" name="action" value="confirm">Confirm</button>
+        <button type="submit" name="action" value="add-to-cart">Add to Cart</button>
+        <button type="button" onclick="gobackto()" formnovalidate>Cancel</button>
+        </div>
+    </form>
+</body>
+</html>
+<script>
+    function gobackto(){
+        window.location.href ='/category'
+    }
+</script>

@@ -147,14 +147,12 @@ def category():
     data_category = Category.query.all()
     categories = [c.to_dict() for c in data_category]
 
-    data_items = Item.query.all()
+    data_items = Item.query.order_by(Item.itemID).all()
     items = [i.to_dict() for i in data_items]
-    #madmin = current_user.isM_admin if current_user.is_authenticated else False
     return render_template(
         'category.html',
         categories=categories,
         items=items,
-        is_admin=True
     )
 
 @app.route('/notification')
@@ -200,7 +198,7 @@ def newitem():
                 item.cateID = catename_list.index(catename.lower())+1
                 
             db.session.commit()
-            return redirect(url_for("test_DB"))
+            return redirect(url_for('category'))
     category_list = Category.query.all()
     return render_template('newitem.html',category_list=category_list)
 
@@ -262,26 +260,56 @@ def pending_user():
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
-@app.route('/withdraw')
+@app.route("/withdraw", methods=["GET", "POST"])
 def withdraw():
-    ItemID = int(request.args.get("itemID"))
-    cart_item = CartItem.query.filter_by(
-        UserID=current_user.UserID,
-        ItemID=ItemID,
-        Status='w'
-    ).first()
-    if cart_item:
-        cart_item.Quantity += 1
-    else:
-        cart_item = CartItem(
-            UserID=current_user.UserID,
-            ItemID=ItemID,
-            Quantity=1,
-            Status='w'
-        )
-        db.session.add(cart_item)
-    db.session.commit()
-    return jsonify(current_user.to_dict())
+    item_id = int(request.args.get("itemID"))
+    action = request.args.get("action", default=None)
+    referer = request.args.get("next") or request.referrer or url_for("homepage") #ref หน้าก่อนหน้า
+    item = Item.query.filter_by(itemID=item_id).first()
+    if not item:
+        return "Item not found", 404
+    
+    if request.method == "POST":
+        quantity = int(request.form.get("getQuantity", 0))
+        action = request.form.get("action")
+
+        if action == "add-to-cart":
+            cart_item = CartItem.query.filter_by(
+                UserID=current_user.UserID,
+                ItemID=item.itemID,
+                Status='w'
+            ).first()
+            if cart_item:
+                cart_item.Quantity += quantity
+            else:
+                cart_item = CartItem(
+                    UserID=current_user.UserID,
+                    ItemID=item.itemID,
+                    Quantity=quantity,
+                    Status='w'
+                )
+                db.session.add(cart_item)
+            db.session.commit()
+            return redirect(url_for('category'))
+
+        elif action == "confirm":
+            if item.itemAmount >= quantity:
+                item.itemAmount -= quantity
+                history = WithdrawHistory(
+                    user_id=current_user.UserID,
+                    item_id=item_id,
+                    quantity=quantity
+                )
+                db.session.add(history)
+                db.session.commit()
+                #flash(f"เบิก {item.itemName} จำนวน {quantity} สำเร็จ", "success")
+            return redirect(url_for('category'))
+
+    return render_template(
+        "withdraw.html",
+        item=item,
+        referer=referer
+    )
 
 @app.route('/edit')
 @madmin_required
@@ -424,9 +452,11 @@ def test_DB():
     db_item = Item.query.order_by(Item.itemID).all()
     db_user = User.query.order_by(User.UserID).all()
     db_cart = CartItem.query.all()
+    db_WDhis = WithdrawHistory.query.all()
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
     cart = list(map(lambda x:x.to_dict(), db_cart))
-    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart}]
+    WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
+    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart},{"Withdraw-History":WDhis}]
     return jsonify(forshow)
