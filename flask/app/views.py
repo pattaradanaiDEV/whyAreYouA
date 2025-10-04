@@ -206,9 +206,65 @@ def newitem():
 def stockmenu():
     return render_template('stockmenu.html')
 
-@app.route('/cart')
+@app.route('/cart', methods=['GET', 'POST'])
 def cart():
-    return render_template('cart.html')
+    cart_items = (
+        CartItem.query
+        .filter(CartItem.UserID == current_user.UserID)
+        .filter(CartItem.Status.in_(['w', 'e']))
+        .all()
+    )
+    if request.method == 'POST':
+        action = request.form.get('action')
+        cart_id = request.form.get('cart_id')
+        quantity = request.form.get('quantity', type=int)
+
+        if action in ['increase', 'decrease', 'update_input']:
+            cart_item = CartItem.query.get(cart_id)
+            if not cart_item:
+                flash("ไม่พบสินค้าในตะกร้า ❌", "danger")
+                return redirect(url_for('cart'))
+
+            if action == 'increase':
+                cart_item.Quantity += 1
+            elif action == 'decrease' and cart_item.Quantity > 1:
+                cart_item.Quantity -= 1
+            elif action == 'update_input' and quantity > 0:
+                cart_item.Quantity = quantity
+
+            db.session.commit()
+            flash(f"อัปเดตจำนวนของ {cart_item.item.itemName} แล้ว", "success")
+            return redirect(url_for('cart'))
+
+        elif action == 'delete':
+            cart_item = CartItem.query.get(cart_id)
+            if cart_item:
+                name = cart_item.item.itemName
+                db.session.delete(cart_item)
+                db.session.commit()
+                flash(f"ลบ {name} ออกจากตะกร้าแล้ว ", "info")
+            return redirect(url_for('cart'))
+
+        elif action == 'confirm_cart':
+            for c in cart_items:
+                item = Item.query.get(c.ItemID)
+                if not item:
+                    continue
+                if c.Status == 'w':
+                    item.itemAmount -= c.Quantity
+                    history = WithdrawHistory(
+                        user_id=current_user.UserID,
+                        item_id=item.itemID,
+                        quantity=c.Quantity
+                    )
+                    db.session.add(history)
+                elif c.Status == 'e':
+                    item.itemAmount += c.Quantity
+                db.session.delete(c)
+            db.session.commit()
+            flash("ยืนยันตะกร้าเรียบร้อย!", "success")
+            return redirect(url_for('cart'))
+    return render_template('cart.html', cart_items=cart_items)
 
 @app.route('/adminlist', methods=["GET", "POST"])
 @madmin_required 
@@ -304,7 +360,6 @@ def withdraw():
                 db.session.commit()
                 #flash(f"เบิก {item.itemName} จำนวน {quantity} สำเร็จ", "success")
             return redirect(url_for('category'))
-
     return render_template(
         "withdraw.html",
         item=item,
