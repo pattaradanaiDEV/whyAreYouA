@@ -138,6 +138,14 @@ def category():
 def notification():
     return render_template('notification.html')
 
+@app.route('/statistic')
+def statistic():
+    return render_template('statistic.html')
+
+@app.route('/history')
+def history():
+    return render_template('history.html')
+
 @app.route('/newitem', methods=["GET", "POST"])
 # @madmin_required
 def newitem():

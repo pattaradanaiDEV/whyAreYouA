@@ -1,50 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="../static/css/setting.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Setting Page</title>
 </head>
-<body>
+<body class="lightmode"> 
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}">
-            <span class="material-icons">arrow_back_ios_new</span>
+            <span class="material-icons">arrow_back_ios</span>
         </a>
-    </div>
-
-    <div class="profile">
-        <span class="material-icons">account_circle</span>
-    </div>
-
-    <div class="bar">
-        <div class="item">
-            <span class="material-icons">contrast</span>
-            <span>Appearance</span>
-            <input type="checkbox" class="checkbox" id="checkbox">
-            <label for="checkbox" class="label">
-                <i class="material-icons moon">dark_mode</i>
-                <i class="material-icons sun">sunny</i>
-                <div class="ball"></div>
-            </label>
-        </div>
-
-        <div class="item">
-            <span class="material-icons">language</span>
-            <span>Language</span>
+        <div class="center">
+            <span>Setting</span>
         </div>
     </div>
 
+    <!-- กด card item แล้ว drop down ของที่เบิก -->
 </body>
 </html>
-<script>
-    const checkbox = document.getElementById('checkbox');
 
-    checkbox.addEventListener('change',() => {
-        document.body.classList.toggle('dark');
-    });
-</script>

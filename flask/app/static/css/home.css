@@ -28,6 +28,9 @@ body {
   color: var(--text--color);
   font-family: 'Inter', sans-serif;
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 svg {
@@ -60,23 +63,24 @@ svg {
 }
 
 .top-bar {
-  align-items: center;
   display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
+  justify-content: space-between; 
+  align-items: center;
+  background: var(--bg--color);
+  padding: 10px 10px;
 }
 
 .action-wrapper {
   align-items: center;
   display: flex;
-  gap: 12px;
+  gap: 1rem;
   margin-left: auto;
 }
 
 .profile-wrapper {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .profile-circle {
@@ -88,7 +92,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* สำคัญ! ให้รูปตัดตามวงกลม */
+  overflow: hidden;
 }
 
 .profile-img {
@@ -98,8 +102,8 @@ svg {
 }
 
 .user-icon {
-  width: 50px;
-  height: 50px;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
   background: var(--buttonbg--color);
   display: flex;
@@ -228,42 +232,156 @@ svg {
   width: 25px;
 }
 
-.bottom-nav {
-  align-items: center;
-  background-color: var(--base--color);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  bottom: 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  height: 60px;
-  justify-content: space-around;
+.topfive{
+  text-align: center;
+  margin: 10px auto;
   padding: 10px;
-  position: fixed;
-  width: 100%;
 }
 
-.nav-item {
+.topfive span{
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text2--color);
+}
+
+.topused-container{
+  padding: 10px;
+  padding-bottom: 80px;
   align-items: center;
-  color: var(--text--color);
-  display: flex;
-  flex-direction: column;
-  font-size: 0.75rem;
-}
-
-.nav-item svg {
-  height: 2rem;
-  width: 2rem;
-}
-
-.topused-container {
-  display: flex;
   justify-content: center;
 }
 
-.topused-container img {
-  height: 40%;
-  width: 60%;
+.item-card{
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  width: fit-content;
+  margin: 10px;
+  padding: 10px;
+  background: none;
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.item-card:hover {
+  transform: translateY(-3px);
+}
+
+.item-card img{
+  width: 8rem;
+  height: 8rem;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.item-card span{
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.img-wrapper{
+  position: relative;
+  display: inline-block;
+}
+
+.status-dot{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.status-dot.green{
+  background-color: #4caf50;
+}
+
+.status-dot.yellow{
+  background-color: #ffff1b;
+}
+.status-dot.red{
+  background-color: #FF0000;
+}
+
+.item-info{
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.item-info span{
+  font-size: 1.2rem;
+}
+
+.item-name{
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text2--color);
+}
+
+.item-qty{
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.item-category{
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.quick-btn {
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--base--color);
+  color: var(--text--color);
+  cursor: pointer;
+  transition: 0.2s;
+}
+.quick-btn:hover {
+  background: gray;
+}
+
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--base--color);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-sizing: border-box;
+}
+
+.nav-item {
+  flex: 1; /* 👈 ให้ทุกช่องกว้างเท่ากัน */
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  color: var(--text--color);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.nav-item svg {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.nav-item span {
+  font-size: 0.8rem;
+  white-space: nowrap; /* ป้องกันตัดบรรทัด */
 }
 
 #language-switch {

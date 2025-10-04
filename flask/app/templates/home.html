@@ -33,10 +33,10 @@
         </div>
         
         <div class="action-wrapper">
-            <button id="language-switch">
+            <!-- <button id="language-switch">
                 <span>TH</span>
                 <span>EN</span>
-            </button>
+            </button> -->
 
             <button id="theme-switch">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
@@ -52,56 +52,140 @@
         </div>
     </div>
     
-    <div class="search-container">
+    <!-- <div class="search-container">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
         <input type="search" class="search-input" id="search-input" name="query" placeholder="Search">
-    </div>
+    </div> -->
     
     <div class="category-container">
         <div class="category">
             <button class="circle-button circle-button-lightmode">
-                <img src="../static/ico/stock.png" alt="stock">
+                <a href="{{ url_for('statistic') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-120v-80h800v80H80Zm40-120v-280h120v280H120Zm200 0v-480h120v480H320Zm200 0v-360h120v360H520Zm200 0v-600h120v600H720Z"/></svg>
+                </a>
             </button>
-            <span>Stock</span>
+            <span>Statistics</span>
         </div>
         
         <div class="category">
             <button class="circle-button circle-button-lightmode">
-                <img src="../static/ico/stock.png" alt="stock">
+                <a href="{{ url_for('history') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg>
+                </a>
             </button>
-            <span>Stock</span>
+            <span>History</span>
         </div>
+        
 
         <div class="category">
             <button class="circle-button circle-button-lightmode">
-                <img src="../static/ico/stock.png" alt="stock">
+                <a href="{{ url_for('newitem')}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
+                </a>
             </button>
-            <span>Stock</span>
+            <span>Add</span>
         </div>
 
         <div class="category"> 
             <button class="circle-button circle-button-lightmode">
-                <img src="../static/ico/stock.png" alt="stock">
+                <a href="{{ url_for('setting') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm112-260q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Z"/></svg>
+                </a>
             </button>
-            <span>Stock</span>
+            <span>Settings</span>
         </div>
     </div>
 
-    <div class="graph-container">
-
+    <div class="topfive">
+        <span>Top 5 Disbursemented Items</span>
     </div>
+
+    <div class="topused-container">
+        <div class="item-card">
+            <div class="img-wrapper">
+                <img src="../static/ico/pen_top.webp">
+                <div class="status-dot green"></div>
+            </div>
+            <div class="item-info">
+                <span class="item-name">Pen</span>
+                <span class="item-category">Stationary</span>
+                <span class="item-qty">Disbursemented Amount</span>
+
+                <button class="quick-btn">Withdraw</button>
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="img-wrapper">
+                <img src="../static/ico/pen_top.webp">
+                <div class="status-dot yellow"></div>
+            </div>
+            <div class="item-info">
+                <span class="item-name">Name</span>
+                <span class="item-category">Category</span>
+                <span class="item-qty">Disbursemented Amount</span>
+
+                <button class="quick-btn">Withdraw</button>
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="img-wrapper">
+                <img src="../static/ico/pen_top.webp">
+                <div class="status-dot red"></div>
+            </div>
+            <div class="item-info">
+                <span class="item-name">Name</span>
+                <span class="item-category">Category</span>
+                <span class="item-qty">Disbursemented Amount</span>
+
+                <button class="quick-btn">Withdraw</button>
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="img-wrapper">
+                <img src="../static/ico/pen_top.webp">
+                <div class="status-dot red"></div>
+            </div>
+            <div class="item-info">
+                <span class="item-name">Name</span>
+                <span class="item-category">Category</span>
+                <span class="item-qty">Disbursemented Amount</span>
+
+                <button class="quick-btn">Withdraw</button>
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="img-wrapper">
+                <img src="../static/ico/pen_top.webp">
+                <div class="status-dot red"></div>
+            </div>
+            <div class="item-info">
+                <span class="item-name">Name</span>
+                <span class="item-category">Category</span>
+                <span class="item-qty">Disbursemented Amount</span>
+
+                <button class="quick-btn">Withdraw</button>
+            </div>
+        </div>
+    </div>
+
 
     <div class="bottom-nav">
         <div class="nav-item">
-            <a href="{{ url_for('stockmenu') }}">
+            <a href="{{ url_for('category') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-451q-18-11-29-28.5T80-680v-120q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v120q0 23-11 40.5T840-611v451q0 33-23.5 56.5T760-80H200Zm-40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/></svg>
             </a>
             <span class="action1">Stock</span>
         </div>
+
         <div id="qr-scan" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
             <span class="action2">QR Scan</span>
         </div>
+
         <div class="nav-item">
             {% if current_user.IsM_admin %}
                 <a href="{{ url_for('adminlist') }}">

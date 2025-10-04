@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../static/css/statistic.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Statistics Page</title>
+</head>
+<body class="lightmode"> 
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
+    <div class="top-bar">
+        <a href="{{ url_for('homepage') }}">
+            <span class="material-icons">arrow_back_ios</span>
+        </a>
+        <div class="center">
+            <span>Statistic</span>
+        </div>
+    </div>
+
+    <div class="action-btn">
+        <button class="quick-btn">Last 7 days</button>
+
+        <button class="quick-btn">Last 30 days</button>
+
+        <button class="quick-btn">Last 1 semester</button>
+
+        <button class="quick-btn">Last 1 year</button>
+    </div>
+
+    <canvas id="myChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+    type: 'bar',  
+    data: {
+        labels: ['Category A', 'Category B', 'Category C', 'Category D', 'Category E'],
+        datasets: [{
+        label: 'Amount',
+        data: [12, 19, 7, 8, 10, 16, 22],
+        backgroundColor: ['#4caf50', '#ffeb3b', '#f44336']
+        }]
+    },
+    options: {
+        indexAxis: 'y', 
+        scales: {
+        x: { beginAtZero: true }
+        }
+    }
+    });
+    </script>
+</body>
+</html>
+

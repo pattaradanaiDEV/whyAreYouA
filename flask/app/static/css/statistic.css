@@ -1,0 +1,75 @@
+:root{
+    --bg--color: #FFF;
+    --base--color: #EEEEEE;
+    --text--color: #000;
+    --text2--color: #777;
+    --border--color: gray;
+    --box--color: #eee;
+    --box2--color: #e0f7fa;
+    --boxhover--color: #6993f5;
+}
+
+.darkmode{
+    --bg--color: #212121;
+    --base--color: #121212;
+    --text--color: #FFF;
+    --text2--color: #bbb;
+    --border--color: #000;
+    --box--color: #121212;
+    --box2--color: #004d40;
+    --boxhover--color: #6993f5;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background: var(--bg--color);
+    margin: 0;
+    padding: 0;
+}
+
+.top-bar{
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border--color);
+    background-color: var(--base--color);
+    position: sticky;
+    top: 0;
+}
+
+.top-bar span{
+    color: var(--text--color);
+    font-size: 1.5rem;
+}
+
+.center{
+    flex: 1;
+    text-align: center;
+    margin: 0;
+}
+
+.center span{
+    font-weight: 600;
+    color: var(--text--color);
+}
+
+.action-btn{
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+}
+
+.quick-btn {
+    margin-top: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--base--color);
+    color: var(--text--color);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .quick-btn:hover {
+    background: gray;
+  }
