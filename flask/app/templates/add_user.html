@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/stockmenu.css">
+    <title>Add User Page</title>
+</head>
+
+<body class="th">
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
+    <script src="../templates/js/language.js"></script>
+    <div class="mainbox">
+        <div class="reply-icon">
+            <a href="{{ url_for('homepage') }}"> 
+                <span class="material-icons" style="font-size: 2rem;">arrow_back_ios_new</span> 
+            </a> 
+        </div>
+        <div class="row">
+            <span class="recName"></span>
+            <span class="stock-menu">Stock Menu</span>
+        </div>
+        <div class="column">
+           	<a type="button" class="nav-box" href="{{ url_for('category') }}">
+                <span class="category">Category</span>
+                <img src="../static/ico/category.png" class="category-icon" >
+            </a>
+           	<a type="button" class="nav-box" href="{{ url_for('newitem') }}">
+                <span class="new-item">New Item</span>
+            	<img src="../static/ico/addStock.png" class="addStock-icon">
+            </a>
+		</div>
+    </div>
+</body>
+</html>
+
+<script>
+function navigateTo(url) {
+    window.location.href = url;
+}
+</script>

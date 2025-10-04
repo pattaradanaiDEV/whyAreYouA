@@ -1,11 +1,12 @@
 import json
 import os
-from flask import (jsonify, render_template,
+from flask import (jsonify, render_template, flash,
                   request, url_for, flash,current_app, abort,session,redirect)
 from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
+from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
@@ -22,23 +23,35 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
+from wtforms.validators import Email
 
-
-#ใช้เพื่อป้องกันคนที่ยังไม่ถูกอนุญาติเข้ามาใช้งาน
 @app.before_request
-def check_user_availiable():
-    except_routes = ['login','test_DB', 'google', 'google_auth','static','https//']
-    if request.endpoint and (request.endpoint.startswith('static') or request.endpoint.endswith('.static')):
-        return None
-
-    if request.endpoint in except_routes:
+def check_user_available():
+    except_routes = [
+        'login',
+        'signup',
+        'signin',
+        'test_DB',
+        'google',
+        'google_auth',
+        'waiting',
+        'static' 
+    ]
+    
+    endpoint = request.endpoint
+    
+    if not endpoint or endpoint.startswith('static') or endpoint in except_routes:
         return None
 
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    # if not current_user.availiable:
-    #     return redirect(url_for('waiting'))
+    if not current_user.availiable:
+        if endpoint != 'waiting':
+            return redirect(url_for('waiting'))
+
+    return None
+
         
 def madmin_required(f):
     @wraps(f)
@@ -50,6 +63,9 @@ def madmin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/waiting')
+def waiting():
+    return f"รอก่อนไอ่น้อง"
 @app.route('/homepage')
 def homepage():
     return render_template('home.html')
@@ -73,17 +89,24 @@ def login():
             return redirect(url_for('login'))
         login_user(user)
         return redirect(url_for('homepage'))
-    if current_user.is_authenticated:
-        return redirect(url_for('homepage'))
     return render_template('signup.html')
 
-@app.route('/add_new_user', methods=['post'])
-def add_new_user():
+@app.route('/add_user')
+def add_user():
+    return render_template('add_user.html')
+
+@app.route('/add_user_to_db', methods=['post'])
+def add_user_to_db():
     result = request.form.to_dict()
 
     validated = True
     validated_dict = {}
     valid_keys = ["email", "username", "password"]
+
+    email = validated_dict["email"]
+    if not Email()(email):
+        flash("Invalid email format")
+        return redirect(url_for('signup'))
 
     for key in result:
         if key not in valid_keys:
@@ -108,7 +131,7 @@ def add_new_user():
             phoneNum = ""
 
         avatar_url = gen_avatar_url(email, username)
-        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, cmuMail="", email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
 
         db.session.add(new_user)
         db.session.commit()
@@ -147,7 +170,7 @@ def history():
     return render_template('history.html')
 
 @app.route('/newitem', methods=["GET", "POST"])
-# @madmin_required
+@madmin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -190,7 +213,7 @@ def cart():
     return render_template('cart.html')
 
 @app.route('/adminlist', methods=["GET", "POST"])
-# @madmin_required 
+@madmin_required 
 def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
@@ -210,7 +233,7 @@ def adminlist():
     return render_template("adminlist.html", users=users)
 
 @app.route("/pending_admin", methods=["GET", "POST"])
-# @madmin_required
+@madmin_required
 def pending_user():
     if request.method == "POST":
         action = request.form.get("action")
@@ -239,10 +262,47 @@ def pending_user():
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
+@app.route('/withdraw')
+def withdraw():
+    ItemID = int(request.args.get("itemID"))
+    cart_item = CartItem.query.filter_by(
+        UserID=current_user.UserID,
+        ItemID=ItemID,
+        Status='w'
+    ).first()
+    if cart_item:
+        cart_item.Quantity += 1
+    else:
+        cart_item = CartItem(
+            UserID=current_user.UserID,
+            ItemID=ItemID,
+            Quantity=1,
+            Status='w'
+        )
+        db.session.add(cart_item)
+    db.session.commit()
+    return jsonify(current_user.to_dict())
+
 @app.route('/edit')
 @madmin_required
 def edit():
     ItemID = request.args.get("itemID")
+    cart_item = CartItem.query.filter_by(
+        UserID=current_user.UserID,
+        ItemID=ItemID,
+        Status='e'
+    ).first()
+    if cart_item:
+        cart_item.Quantity += 1
+    else:
+        cart_item = CartItem(
+            UserID=current_user.UserID,
+            ItemID=ItemID,
+            Quantity=1, 
+            Status='e'
+        )
+        db.session.add(cart_item)
+    db.session.commit()
     userID = request.args.get("userID")
     item = Item.query.filter_by(itemID=ItemID).first()
     qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
@@ -251,19 +311,6 @@ def edit():
         item=item,
         QR_Barcode=qr_b64
     )
-
-@app.route('/withdraw')
-def withdraw():
-    ItemID = int(request.args.get("itemID"))
-    cart_itemID = [ i[0] for i in current_user.cart]
-    if ItemID in cart_itemID:
-        index = cart_itemID.index(ItemID)
-        current_user.cart[index][1] += 1
-    else:
-        current_user.cart.append([ItemID, 1])
-    flag_modified(current_user, "cart")
-    db.session.commit()
-    return jsonify(current_user.to_dict())
 
 @app.route('/setting')
 def setting():
@@ -376,8 +423,10 @@ def test_DB():
     db_category = Category.query.all()
     db_item = Item.query.order_by(Item.itemID).all()
     db_user = User.query.order_by(User.UserID).all()
+    db_cart = CartItem.query.all()
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
-    forshow=["Category DB",category,"item DB",item,"User DB",users]
+    cart = list(map(lambda x:x.to_dict(), db_cart))
+    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart}]
     return jsonify(forshow)
