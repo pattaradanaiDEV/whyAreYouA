@@ -5,11 +5,6 @@
   <title>Withdraw Item</title>
 </head>
 <body>
-    {% comment %} {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endwith %} {% endcomment %}
     <h2>Withdraw Item</h2>
     <p><b>Item Name:</b> {{ item.itemName }}</p>
     <p><b>In Stock:</b> {{ item.itemAmount }}</p>
