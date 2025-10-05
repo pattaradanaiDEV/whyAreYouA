@@ -1,7 +1,7 @@
 import json
 import os
 from flask import (jsonify, render_template, flash,
-                  request, url_for, flash,current_app, abort,session,redirect)
+                  request, url_for, flash, current_app, abort, session, redirect)
 from functools import wraps
 from sqlalchemy.sql import text
 from app import app
@@ -10,8 +10,9 @@ from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.user import User
 from app.models.item import Item
-from flask import Blueprint
 from app.models.withdrawHistory import WithdrawHistory
+from app.models.notification import Notification
+from flask import Blueprint
 from flask_login import login_user, login_required, logout_user, current_user
 import pandas as pd
 from flask_wtf.csrf import CSRFProtect
@@ -24,7 +25,12 @@ import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
+from sqlalchemy import func
+from datetime import datetime, timedelta
 
+# -----------------------
+# Helper decorators & functions
+# -----------------------
 @app.before_request
 def check_user_available():
     except_routes = [
@@ -35,11 +41,14 @@ def check_user_available():
         'google',
         'google_auth',
         'waiting',
-        'static' 
+        'static',
+        'notification',
+        'notification_delete',
+        'notification_mark_read'
     ]
-    
+
     endpoint = request.endpoint
-    
+
     if not endpoint or endpoint.startswith('static') or endpoint in except_routes:
         return None
 
@@ -52,23 +61,70 @@ def check_user_available():
 
     return None
 
-        
+
 def madmin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.IsM_admin:
             peeman = User.query.get(2)
             return f"You are not Main_admin please contact {peeman.Fname} {peeman.Lname}"  # Forbidden
-
         return f(*args, **kwargs)
     return decorated_function
 
+def cleanup_expired_notifications():
+    """Remove expired notifications from DB"""
+    now = datetime.utcnow()
+    expired = Notification.query.filter(Notification.expire_at <= now).all()
+    if expired:
+        for n in expired:
+            db.session.delete(n)
+        db.session.commit()
+
+def create_low_stock_notification_if_needed(item, actor_user_id=None):
+    if item.itemAmount < (item.itemMin if item.itemMin is not None else 0):
+        message = f"Item low stock: {item.itemName} ({item.itemAmount} < min {item.itemMin})"
+        Notification.create(actor_user_id, "low_stock", message)
+
+# -----------------------
+# Routes
+# -----------------------
 @app.route('/waiting')
 def waiting():
     return f"รอก่อนไอ่น้อง"
+
 @app.route('/homepage')
 def homepage():
-    return render_template('home.html')
+    # cleanup notifications
+    cleanup_expired_notifications()
+
+    # Top 5 withdrawn items in last 6 months
+    six_months_ago = datetime.utcnow() - timedelta(days=180)
+    top_items_q = (
+        db.session.query(WithdrawHistory.itemID, func.count(WithdrawHistory.withdrawID).label("total"))
+        .filter(WithdrawHistory.DateTime >= six_months_ago)
+        .group_by(WithdrawHistory.itemID)
+        .order_by(func.count(WithdrawHistory.withdrawID).desc())
+        .limit(5)
+        .all()
+    )
+    top_items = []
+    for item_id, total in top_items_q:
+        item = Item.query.get(item_id)
+        if item:
+            top_items.append({
+                "itemID": item.itemID,
+                "itemName": item.itemName,
+                "itemAmount": item.itemAmount,
+                "itemPicture": item.itemPicture,
+                "total": int(total)
+            })
+
+    # notification count (unread, non-expired)
+    noti_count = 0
+    if current_user.is_authenticated:
+        noti_count = Notification.query.filter(Notification.is_read == False, Notification.expire_at > datetime.utcnow()).count()
+
+    return render_template('home.html', top_items=top_items, noti_count=noti_count)
 
 @app.route('/signup')
 @app.route('/signin')
@@ -103,38 +159,39 @@ def add_user_to_db():
     validated_dict = {}
     valid_keys = ["email", "username", "password"]
 
-    email = validated_dict["email"]
-    if not Email()(email):
-        flash("Invalid email format")
-        return redirect(url_for('signup'))
-
+    # basic validation
     for key in result:
         if key not in valid_keys:
             continue
-
         value = result[key].strip()
         if not value or value == "undefined":
             validated = False
             break
         validated_dict[key] = value
 
-    if validated:
-        email = validated_dict["email"]
-        username = validated_dict["username"]
-        password = validated_dict["password"]
-        user = User.query.filter_by(email=email).first()
+    if not validated:
+        flash("Invalid input")
+        return redirect(url_for('signup'))
 
-        if user:
-            flash("Email address already in use")
-        phoneNum = result["phoneNum"].strip()
-        if not phoneNum or phoneNum == "undefined":
-            phoneNum = ""
+    email = validated_dict["email"]
+    username = validated_dict["username"]
+    password = validated_dict["password"]
 
-        avatar_url = gen_avatar_url(email, username)
-        new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+    user = User.query.filter_by(gmail=email).first()
+    if user:
+        flash("Email already used")
+        return redirect(url_for('signup'))
 
-        db.session.add(new_user)
-        db.session.commit()
+    phoneNum = result.get("phoneNum", "").strip()
+    avatar_url = gen_avatar_url(email, username)
+    new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
+    db.session.add(new_user)
+    db.session.commit()
+
+    # create signup notification (admins should see)
+    Notification.create(new_user.UserID, "signup", f"New user signup: {new_user.Fname} ({new_user.gmail})")
+    flash("User added. Waiting admin approval.")
+    return redirect(url_for('login'))
 
 def gen_avatar_url(email, username):
     bgcolor = (generate_password_hash(email, method="sha256") + generate_password_hash(username, method="sha256"))[-6:]
@@ -142,8 +199,16 @@ def gen_avatar_url(email, username):
     avatar_url = ("https://ui-avatars.com/api/?name=" + username + "+&background=" + bgcolor + "&color=" + color)
     return avatar_url
 
-@app.route('/category')
+@app.route('/category' ,methods=["GET", "POST"])
 def category():
+    if request.method == "POST":
+        action = request.form.get('action')
+        item_id = request.form.get('item_id')
+        if action == "delete":
+            item = Item.query.get(item_id)
+            db.session.delete(item)
+            db.session.commit()
+            return redirect(url_for('category'))
     data_category = Category.query.all()
     categories = [c.to_dict() for c in data_category]
 
@@ -152,12 +217,39 @@ def category():
     return render_template(
         'category.html',
         categories=categories,
-        items=items,
+        items=items
     )
 
 @app.route('/notification')
+@login_required
+@madmin_required
 def notification():
-    return render_template('notification.html')
+    cleanup_expired_notifications()
+    notes = Notification.query.filter(Notification.expire_at > datetime.utcnow()).order_by(Notification.created_at.desc()).all()
+    notes_dict = [n.to_dict() for n in notes]
+    return render_template('notification.html', notifications=notes_dict)
+
+@app.route('/notification/delete/<int:noti_id>', methods=['POST'])
+@login_required
+@madmin_required
+def notification_delete(noti_id):
+    n = Notification.query.get(noti_id)
+    if n:
+        db.session.delete(n)
+        db.session.commit()
+        return jsonify({"ok": True})
+    return jsonify({"ok": False}), 404
+
+@app.route('/notification/mark_read/<int:noti_id>', methods=['POST'])
+@login_required
+@madmin_required
+def notification_mark_read(noti_id):
+    n = Notification.query.get(noti_id)
+    if n:
+        n.is_read = True
+        db.session.commit()
+        return jsonify({"ok": True})
+    return jsonify({"ok": False}), 404
 
 @app.route('/statistic')
 def statistic():
@@ -180,23 +272,22 @@ def newitem():
             file.save(filepath)
 
         if action == "confirm" :
-            
             catename = request.form.get("getcate")
             data_category = Category.query.all()
             categories = [c.to_dict() for c in data_category]
             catename_list = [cname['cateName'].lower() for cname in categories]
             item = Item(ItemName=request.form.get("getname"),
-                        ItemAmount=request.form.get("getamount"),
+                        ItemAmount=int(request.form.get("getamount", 0)),
                         ItemPicture=filename,
-                        itemMin=request.form.get("getmin"))
+                        itemMin=int(request.form.get("getmin", 0)))
             db.session.add(item)
-            
+
             if catename.lower() not in catename_list :
                 db.session.add(Category(cateName=catename))
                 item.cateID = len(catename_list)+1
             else :
                 item.cateID = catename_list.index(catename.lower())+1
-                
+
             db.session.commit()
             return redirect(url_for('category'))
     category_list = Category.query.all()
@@ -222,18 +313,25 @@ def cart():
         if action in ['increase', 'decrease', 'update_input']:
             cart_item = CartItem.query.get(cart_id)
             if not cart_item:
-                flash("ไม่พบสินค้าในตะกร้า ❌", "danger")
+                flash("ไม่พบสินค้าในตะกร้า", "danger")
                 return redirect(url_for('cart'))
 
+            item = Item.query.get(cart_item.ItemID)
             if action == 'increase':
+                if item and cart_item.Quantity + 1 > item.itemAmount:
+                    flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
+                    return redirect(url_for('cart'))
                 cart_item.Quantity += 1
             elif action == 'decrease' and cart_item.Quantity > 1:
                 cart_item.Quantity -= 1
             elif action == 'update_input' and quantity > 0:
+                if item and quantity > item.itemAmount:
+                    flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
+                    return redirect(url_for('cart'))
                 cart_item.Quantity = quantity
 
             db.session.commit()
-            flash(f"อัปเดตจำนวนของ {cart_item.item.itemName} แล้ว", "success")
+            flash(f"อัปเดตจำนวนของแล้ว", "success")
             return redirect(url_for('cart'))
 
         elif action == 'delete':
@@ -251,15 +349,21 @@ def cart():
                 if not item:
                     continue
                 if c.Status == 'w':
+                    if c.Quantity > item.itemAmount:
+                        flash(f"ไม่สามารถเบิก {item.itemName} ได้ จำนวนเกินสต็อก", "danger")
+                        return redirect(url_for('cart'))
                     item.itemAmount -= c.Quantity
-                    history = WithdrawHistory(
-                        user_id=current_user.UserID,
-                        item_id=item.itemID,
-                        quantity=c.Quantity
-                    )
+                    history = WithdrawHistory(user_id=current_user.UserID, item_id=item.itemID, quantity=c.Quantity)
                     db.session.add(history)
+                    # create withdraw notification
+                    Notification.create(current_user.UserID, "withdraw", f"{current_user.Fname} withdrew {c.Quantity} x {item.itemName}")
+                    # low stock check
+                    create_low_stock_notification_if_needed(item, current_user.UserID)
+
                 elif c.Status == 'e':
+                    # items returned from edit (increase stock)
                     item.itemAmount += c.Quantity
+
                 db.session.delete(c)
             db.session.commit()
             flash("ยืนยันตะกร้าเรียบร้อย!", "success")
@@ -267,7 +371,7 @@ def cart():
     return render_template('cart.html', cart_items=cart_items)
 
 @app.route('/adminlist', methods=["GET", "POST"])
-@madmin_required 
+@madmin_required
 def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
@@ -311,31 +415,40 @@ def pending_user():
                 user.availiable = True
             db.session.commit()
 
-        return redirect(url_for("pending_user"))    
-    
+        return redirect(url_for("pending_user"))
     users = User.query.filter_by(availiable=False).all()
     return render_template("pending_admin.html", users=users)
 
 @app.route("/withdraw", methods=["GET", "POST"])
 def withdraw():
     item_id = int(request.args.get("itemID"))
-    action = request.args.get("action", default=None)
-    referer = request.args.get("next") or request.referrer or url_for("homepage") #ref หน้าก่อนหน้า
     item = Item.query.filter_by(itemID=item_id).first()
     if not item:
         return "Item not found", 404
-    
+
     if request.method == "POST":
         quantity = int(request.form.get("getQuantity", 0))
         action = request.form.get("action")
 
+        # validate
+        if quantity <= 0:
+            flash("จำนวนต้องมากกว่า 0", "danger")
+            return redirect(request.referrer or url_for('category'))
+
         if action == "add-to-cart":
+            if quantity > item.itemAmount:
+                flash("จำนวนเกินสต็อก", "danger")
+                return redirect(url_for('withdraw', itemID=item_id))
             cart_item = CartItem.query.filter_by(
                 UserID=current_user.UserID,
                 ItemID=item.itemID,
                 Status='w'
             ).first()
             if cart_item:
+                # ensure not exceed itemAmount
+                if cart_item.Quantity + quantity > item.itemAmount:
+                    flash("จำนวนรวมในตะกร้าเกินสต็อก", "danger")
+                    return redirect(url_for('withdraw', itemID=item_id))
                 cart_item.Quantity += quantity
             else:
                 cart_item = CartItem(
@@ -346,6 +459,7 @@ def withdraw():
                 )
                 db.session.add(cart_item)
             db.session.commit()
+            flash("เพิ่มลงตะกร้าแล้ว", "success")
             return redirect(url_for('category'))
 
         elif action == "confirm":
@@ -357,82 +471,148 @@ def withdraw():
                     quantity=quantity
                 )
                 db.session.add(history)
+                Notification.create(current_user.UserID, "withdraw", f"{current_user.Fname} withdrew {quantity} x {item.itemName}")
+                create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
-                #flash(f"เบิก {item.itemName} จำนวน {quantity} สำเร็จ", "success")
+                flash("เบิกเรียบร้อย", "success")
+            else:
+                flash("จำนวนในสต็อกไม่เพียงพอ", "danger")
             return redirect(url_for('category'))
+
     return render_template(
         "withdraw.html",
-        item=item,
-        referer=referer
+        item=item
     )
 
-@app.route('/edit')
+@app.route('/edit', methods=["GET", "POST"])
 @madmin_required
 def edit():
     ItemID = request.args.get("itemID")
-    cart_item = CartItem.query.filter_by(
-        UserID=current_user.UserID,
-        ItemID=ItemID,
-        Status='e'
-    ).first()
-    if cart_item:
-        cart_item.Quantity += 1
-    else:
-        cart_item = CartItem(
-            UserID=current_user.UserID,
-            ItemID=ItemID,
-            Quantity=1, 
-            Status='e'
-        )
-        db.session.add(cart_item)
-    db.session.commit()
-    userID = request.args.get("userID")
-    item = Item.query.filter_by(itemID=ItemID).first()
+    if not ItemID:
+        return redirect(url_for('category'))
+    item = Item.query.filter_by(itemID=int(ItemID)).first()
+    if not item:
+        return "Item not found", 404
+
+    if request.method == "POST":
+        action = request.form.get("action")
+        # handle file upload
+        file = request.files.get('file')
+        filename = item.itemPicture
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+
+        if action == "add-to-cart":
+            qty = int(request.form.get("getamount", 1))
+            if qty <= 0 or qty > item.itemAmount:
+                flash("จำนวนไม่ถูกต้องหรือเกินสต็อก", "danger")
+                return redirect(url_for('edit', itemID=item.itemID))
+            cart_item = CartItem.query.filter_by(UserID=current_user.UserID, ItemID=item.itemID, Status='e').first()
+            if cart_item:
+                if cart_item.Quantity + qty > item.itemAmount:
+                    flash("จำนวนรวมในตะกร้าเกินสต็อก", "danger")
+                    return redirect(url_for('edit', itemID=item.itemID))
+                cart_item.Quantity += qty
+            else:
+                cart_item = CartItem(UserID=current_user.UserID, ItemID=item.itemID, Quantity=qty, Status='e')
+                db.session.add(cart_item)
+            db.session.commit()
+            flash("เพิ่มเข้า cart edit เรียบร้อย", "success")
+            return redirect(url_for('category'))
+
+        elif action == "confirm":
+            # update database fields
+            new_name = request.form.get("getname", item.itemName)
+            new_amount = int(request.form.get("getamount", item.itemAmount))
+            new_min = int(request.form.get("getmin", item.itemMin if item.itemMin is not None else 0))
+            new_cate = request.form.get("getcate")
+            # validations
+            if new_min > new_amount:
+                flash("Item minimum ต้องไม่มากกว่า Item amount", "danger")
+                return redirect(url_for('edit', itemID=item.itemID))
+            # update
+            item.itemName = new_name
+            item.itemAmount = new_amount
+            item.itemMin = new_min
+            item.itemPicture = filename
+            # category assignment: try to resolve cateName to id
+            if new_cate:
+                category = Category.query.filter(func.lower(Category.cateName) == new_cate.lower()).first()
+                if category:
+                    item.cateID = category.cateID
+                else:
+                    # create category
+                    new_cat = Category(cateName=new_cate)
+                    db.session.add(new_cat)
+                    db.session.commit()
+                    item.cateID = new_cat.cateID
+            db.session.commit()
+            flash("อัปเดตข้อมูลสินค้าเรียบร้อย", "success")
+            return redirect(url_for('category'))
+
+        elif action == "cancel":
+            return redirect(url_for('category'))
+
+    # GET
+    # prepare categories for dropdown
+    categories = Category.query.order_by(Category.cateID).all()
     qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
     return render_template(
         'edit.html',
         item=item,
-        QR_Barcode=qr_b64
+        QR_Barcode=qr_b64,
+        categories=categories
     )
 
 @app.route('/setting')
 def setting():
     return render_template('setting.html')
 
-bp = ("item" , __name__ )
 @app.route('/item/<int:itemID>/withdraw')
 def withdraw_byQR(itemID):
     item = Item.query.get_or_404(itemID)
     if item.itemAmount > 0 :
-        item.itemAmount-=1
+        item.itemAmount -= 1
+        history = WithdrawHistory(user_id=None, item_id=itemID, quantity=1)
+        db.session.add(history)
+        Notification.create(None, "withdraw", f"QR withdraw: 1 x {item.itemName}")
+        create_low_stock_notification_if_needed(item, None)
         db.session.commit()
-        return f"เบิก{item.itemName}สำเร็จ"
+        return f"เบิก {item.itemName} สำเร็จ"
     else:
         return f"{item.itemName} หมดแล้วไอน้อง"
+
+@app.route('/delete/item/<int:itemID>', methods=['POST'])
+@madmin_required
+def delete_item_post(itemID):
+    item = Item.query.get(itemID)
+    if item:
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({"ok": True})
+    return jsonify({"ok": False}), 404
 
 @app.route('/delete/item')
 @madmin_required
 def delete_item():
-    return redirect('/category') 
+    return redirect('/category')
 
 @app.route('/export/withdraw_history')
 def export():
     data = WithdrawHistory.query.all()
     data_list = [i.to_dict() for i in data]
-    list = []
+    list_data = []
     for i in data_list:
-        print(i)
         history = {
             "Withdraw date" : i["DateTime"],
-           # "Username" : user["Fname"] + " " + user["Lname"],
-           # "Phone number" : user["phoneNum"],
-           # "CMU Mail" : user["cmuMail"],
             "Item Name" : i["items"]["itemName"],
             "Category" : i["items"]["category"]["cateName"],
             "Quantity" : i["Quantity"]
         }
-        list.append(history)
-    df = pd.DataFrame(list)
+        list_data.append(history)
+    df = pd.DataFrame(list_data)
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="WithdrawHistory")
@@ -443,7 +623,7 @@ def export():
         download_name="withdraw_History.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-   
+
 @app.route('/google')
 def google():
     oauth.register(
@@ -462,38 +642,35 @@ def google():
 def google_auth():
     try:
         token = oauth.google.authorize_access_token()
-        #app.logger.debug(str(token))
     except Exception as ex:
-        #app.logger.error(f"Error getting token: {ex}")
         return redirect(url_for('homepage'))
-    #app.logger.debug(str(token))
     userinfo = token['userinfo']
-    app.logger.debug(" Google User " + str(userinfo))
     email = userinfo.get('email')
     picture = userinfo.get('picture', None)
     Fname = userinfo.get('given_name', "")
+    Lname = userinfo.get('family_name', "")
     try:
         with db.session.begin():
             user = (User.query.filter_by(gmail=email).with_for_update().first())
             if not user:
                 password = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
                                 for i in range(12))
-                if "family_name" in userinfo:
-                    Lname = userinfo.get('family_name', "")
-                    new_user = User(Fname=Fname, Lname=Lname, email=email,profile_pic=picture, password = password)
+                if Lname:
+                    new_user = User(Fname=Fname, Lname=Lname, gmail=email, profile_pic=picture, password = generate_password_hash(password))
                 else:
-                    new_user = User(Fname=Fname, email=email,profile_pic=picture, password=password)
+                    new_user = User(Fname=Fname, gmail=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
                 db.session.commit()
+                # create signup notification for admins
+                Notification.create(new_user.UserID, "signup", f"New signup: {new_user.Fname} ({new_user.gmail})")
     except Exception as ex:
-        db.session.rollback()  # Rollback on failure
+        db.session.rollback()
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
         return redirect(url_for('login'))
-  
+
     user = User.query.filter_by(gmail=email).first()
     login_user(user)
     return redirect('/homepage')
-
 
 @app.route('/logout')
 def logout():
@@ -508,10 +685,12 @@ def test_DB():
     db_user = User.query.order_by(User.UserID).all()
     db_cart = CartItem.query.all()
     db_WDhis = WithdrawHistory.query.all()
+    db_noti = Notification.query.all()
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
     cart = list(map(lambda x:x.to_dict(), db_cart))
     WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
-    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart},{"Withdraw-History":WDhis}]
+    noti = list(map(lambda x:x.to_dict(),db_noti))
+    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart},{"Withdraw-History":WDhis},{"notification":noti}]
     return jsonify(forshow)

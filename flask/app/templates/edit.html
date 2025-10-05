@@ -1,15 +1,116 @@
 <head>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="../static/css/newitem.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/newitem.css">
+    <link rel="stylesheet" href="../static/css/category.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Item Edit Page</title>
 </head>
 <body>
-    <div class="header">
-        <a href="{{ url_for('category') }}" class="back-btn">
-            <span class="material-icons">arrow_back</span>
-        </a>
+    <div class="top-bar">
+    	<div class="back">
+        	<a href="{{ url_for('category') }}">
+                <span class="material-icons">arrow_back_ios_new</span> 
+            </a>
+    	</div>
+    	<div class="category">
+        	<span>Edit</span>
+    	</div>
+        <div></div>
     </div>
-    <h1>{{ item.itemName }}</h1>
-    <p>จำนวน: {{ item.itemAmount }}</p>
-    <img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code">
+
+    <div class="center">
+      <div class="mainbox">
+        <form method="post" action="{{ url_for('edit', itemID=item.itemID) }}" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="upload-box">
+            <label for="img-file" class="upload-label">
+                {% if item.itemPicture %}
+                    <img src="/static/img/{{ item.itemPicture }}" id="preview-img" style="width:80px;height:80px;border-radius:8px;">
+                {% else %}
+                    <img src="../static/ico/default_image.png" id="preview-img" style="width:80px;height:80px;border-radius:8px;">
+                {% endif %}
+                <span>Change Photo</span>
+            </label>
+            <input type="file" name="file" accept="image/*" id="img-file" hidden>
+          </div>
+
+          <label class="form-label">Item Name</label>
+          <input type="text" class="input-box" name="getname" value="{{ item.itemName }}" required>
+
+          <label class="form-label">Category</label>
+          <div class="dropdown">
+              <input class="input-box" type="text" id="searchBox" placeholder="Select category"
+              onkeyup="filterFunction()" onclick="toggleList()" name="getcate">
+              <div id="dropdownList" class="dropdown-list">
+              {% for cate in categories %}
+              <div onclick="selectItem('{{ cate.cateName }}')">{{ cate.cateName }}</div>
+              {% endfor %}
+              </div>
+          </div>
+
+          <div class="row-2">
+            <div class="input-box-row2-left">
+              <label class="form-label">Item Amount</label>
+              <div class="center">
+                <input type="number" class="input-box-row2" name="getamount" value="{{ item.itemAmount }}" min="0" required>
+              </div>
+            </div>
+            <div class="input-box-row2-right">
+              <label class="form-label">Item Minimum</label>
+              <div class="center">
+                <input type="number" class="input-box-row2" name="getmin" value="{{ item.itemMin or 0 }}" min="0" required>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;">
+            <button class="add-btn" name="action" value="confirm">Confirm</button>
+            <button class="add-btn" name="action" value="add-to-cart">Add to Cart</button>
+            <button class="add-btn" name="action" value="cancel" type="submit">Cancel</button>
+          </div>
+        </form>
+
+        <div style="margin-top:16px;">
+            <h4>QR</h4>
+            <img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code" style="width:150px;height:150px;">
+        </div>
+      </div>
+    </div>
+
+<script>
+    const imgFile = document.getElementById('preview-img');
+    const inputBox = document.getElementById('img-file');
+    inputBox && inputBox.addEventListener('change', function () {
+      const reader = new FileReader();
+      reader.onload = () => imgFile.src = reader.result;
+      reader.readAsDataURL(this.files[0]);
+    });
+    function toggleList() {
+      document.getElementById("dropdownList").style.display = "block";
+    }
+    function filterFunction() {
+      let input = document.getElementById("searchBox");
+      let filter = input.value.toUpperCase();
+      let div = document.getElementById("dropdownList");
+      let items = div.getElementsByTagName("div");
+      for (let i = 0; i < items.length; i++) {
+        let txtValue = items[i].textContent || items[i].innerText;
+        items[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+      }
+    }
+    function selectItem(value) {
+      let input = document.getElementById("searchBox");
+      input.value = value;
+      document.getElementById("dropdownList").style.display = "none";
+    }
+    window.onclick = function (e) {
+      if (!e.target.matches('#searchBox')) {
+        document.getElementById("dropdownList").style.display = "none";
+      }
+    }
+</script>
 </body>

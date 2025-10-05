@@ -13,7 +13,7 @@ class Item(db.Model,SerializerMixin):
     itemMin = db.Column(db.Integer)
 
     category = db.relationship("Category", back_populates="items")
-    cart_items = db.relationship("CartItem", back_populates="item")
+    cart_items = db.relationship("CartItem", back_populates="item" ,  cascade="all, delete-orphan")
     serialize_only = (
         "itemID",
         "itemName",
@@ -22,7 +22,7 @@ class Item(db.Model,SerializerMixin):
         "itemMin",
         "category",
     )
-    withdraw_history = db.relationship("WithdrawHistory", back_populates = "items")
+    withdraw_history = db.relationship("WithdrawHistory", back_populates = "items",  cascade="all, delete-orphan")
     def __init__(self,ItemName,ItemAmount,ItemPicture,itemMin):
         self.itemName = ItemName
         self.itemAmount = ItemAmount

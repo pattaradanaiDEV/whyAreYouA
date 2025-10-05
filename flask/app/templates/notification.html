@@ -2,87 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../static/css/notification.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Notifications Page</title>
+    <link rel="stylesheet" href="../static/css/category.css">
+    <title>Notifications</title>
+    <style>
+      .notification-list { padding:12px; }
+      .notification-item { display:flex; justify-content:space-between; padding:10px; border-radius:8px; margin-bottom:10px; background:#fff; }
+      .notification-item.unread { background:#e6f7ff; }
+      .swipe-delete { color:red; cursor:pointer; }
+    </style>
 </head>
-<body class="lightmode"> 
-    <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
+<body class="lightmode">
     <div class="top-bar">
-        <a href="{{ url_for('homepage') }}">
-            <span class="material-icons">arrow_back_ios</span>
-        </a>
-        <div class="center">
-            <span>Notifications</span>
-        </div>
+    	<div class="back">
+        	<a href="{{ url_for('homepage') }}">
+                <span class="material-icons">arrow_back_ios_new</span> 
+            </a>
+    	</div>
+    	<div class="category">
+        	<span>Notification</span>
+    	</div>
+        <div></div>
     </div>
 
-    <div class="item unread" data-id="1">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
-        <div class="item-text">
-            <span>Fname Lname has disbursemented</span>
-            <span>15.00 6 Sep 2025</span>
-        </div>
+    <div class="notification-list">
+        {% if notifications %}
+            {% for n in notifications %}
+            <div class="notification-item {% if not n.is_read %}unread{% endif %}" data-id="{{ n.id }}">
+                <div>
+                    <div><strong>{{ n.type|upper }}</strong></div>
+                    <div>{{ n.message }}</div>
+                    <div style="font-size:0.9rem;color:#666;">{{ n.created_at }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <button onclick="markRead({{ n.id }})">Mark read</button>
+                    <button onclick="deleteNoti({{ n.id }})" style="background:none;border:1px solid #eee;padding:6px;border-radius:6px;">Delete</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No notifications</p>
+        {% endif %}
     </div>
 
-    <div class="item unread" data-id="2">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
-        <div class="item-text">
-            <span>Fname Lname has pending to be admin</span>
-            <span>15.00 6 Sep 2025</span>
-        </div>
-    </div>
-
-    <div class="item">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
-        <div class="item-text">
-            <span>Pencil amount is low.</span>
-            <span>15.00 6 Sep 2025</span>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const items = document.querySelectorAll(".item");
-      
-          // โหลดรายการที่เคยอ่านแล้วจาก localStorage
-          const readNotifications = JSON.parse(localStorage.getItem("readNotifications")) || [];
-      
-          items.forEach(item => {
-            const id = item.dataset.id;
-      
-            // ถ้า id นี้เคยอ่านแล้ว -> เปลี่ยน class
-            if (readNotifications.includes(id)) {
-              item.classList.remove("unread");
-              item.classList.add("read");
-            }
-      
-            // เมื่อคลิก -> mark เป็นอ่านแล้ว
-            item.addEventListener("click", () => {
-              if (!readNotifications.includes(id)) {
-                readNotifications.push(id);
-                localStorage.setItem("readNotifications", JSON.stringify(readNotifications));
-              }
-      
-              item.classList.remove("unread");
-              item.classList.add("read");
-      
-              // ถ้าคุณจะพาไปหน้าอื่นก็ทำที่นี่
-              // window.location.href = "/noti-detail/" + id;
-            });
-          });
-        });
-      </script>
+<script>
+async function deleteNoti(id){
+    const res = await fetch(`/notification/delete/${id}`, { method: 'POST' });
+    if(res.ok) location.reload();
+    else alert('Delete failed');
+}
+async function markRead(id){
+    const res = await fetch(`/notification/mark_read/${id}`, { method: 'POST' });
+    if(res.ok) location.reload();
+    else alert('Mark read failed');
+}
+</script>
 </body>
 </html>
-

@@ -8,19 +8,14 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/category.css">
     <title>Category Page</title>
+    <style>
+      /* small mobile-first adjustments */
+      #item-list .item-card { gap:8px; padding:10px; }
+      .item-icon img { width:50px;height:50px;border-radius:8px; }
+    </style>
 </head>
-
-<body class="">
-    <script src="/js/darkmode.js"></script>
-    <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
-	<div class="top-bar">
+<body>
+    <div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('homepage') }}">
                 <span class="material-icons">arrow_back_ios_new</span> 
@@ -54,46 +49,59 @@
 	</div>
 
     <div id="item-list"></div>
-    <input type="hidden" id="is_admin" value="{{ 1 if current_user.IsM_admin else 0 }}">
-</body>
-</html>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
     const items = {{ items|tojson }};
-    const is_admin = document.getElementById("is_admin").value === "1";
+    function getDisplayHTML(it) {
+        let pictureHtml = '';
+        if (it.itemPicture) {
+            pictureHtml = `<img src="/static/img/${it.itemPicture}" width="50" height="50" style="border-radius:8px;">`;
+        } else {
+            let ch = it.itemName ? it.itemName.substring(0,1) : '?';
+            pictureHtml = `<div class="item-icon" style="width:50px;height:50px;border-radius:8px;background:#ddd;display:flex;align-items:center;justify-content:center;font-weight:600;">${ch}</div>`;
+        }
+        return `
+             <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
+                <div class="delete-bg">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                        <input type="hidden" name="item_id" value="${it.itemID}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                    </form>
+                </div>
+                <div class="item-content" id="content-${it.itemID}"
+                    ontouchstart="startSwipe(event, ${it.itemID})"
+                    ontouchmove="moveSwipe(event, ${it.itemID})"
+                    ontouchend="endSwipe(event, ${it.itemID})">
+                    
+                    <div class="item-left">${pictureHtml}</div>
+                    <div class="item-info">
+                        <div class="item-name">${it.itemName}</div>
+                        <div class="item-category">${it.category.cateName}</div>
+                        <div class="item-stock">Stock: ${it.itemAmount}</div>
+                    </div>
+                    <div class="item-actions">
+                        ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
+                        <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
+                    </div>
+                </div>
+            </div>`;
+    }
 
     function renderItems(data) {
         $("#item-list").empty();
         data.forEach(it => {
-            let html = `
-            <div class="item-card">
-                <div class="item-left">
-                    <div class="item-icon">
-                        ${it.itemName.substring(0,1)}
-                    </div>
-                </div>
-                <div class="item-info">
-                    <div class="item-name">${it.itemName}</div>
-                    <div class="item-category">${it.category.cateName}</div>
-                    <div class="item-stock">Stock: ${it.itemAmount}</div>
-                </div>
-                <div class="item-actions">
-                    ${is_admin 
-                        ? `<button class="btn edit" onclick="edit_item(${it.itemID}, 1)">Edit</button>` 
-                        : ""
-                    }
-                    <button class="btn withdraw" onclick="withdraw(${it.itemID}, 1)">Withdraw</button>
-                </div>
-            </div>`;
-            $("#item-list").append(html);
+            it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
+            $("#item-list").append(getDisplayHTML(it));
         });
     }
-    function edit_item(itemID, userID) {
-        window.location.href = `/edit?itemID=${itemID}&userID=${userID}`;
+    function gotoEdit(id){
+        window.location.href = `/edit?itemID=${id}`;
     }
-    function withdraw(itemID, userID) {
-        window.location.href = `/withdraw?itemID=${itemID}&userID=${userID}`;
+    function withdraw(itemID) {
+        window.location.href = `/withdraw?itemID=${itemID}`;
     }
     function filterCategory(cateName) {
         if (cateName === "all") {
@@ -103,22 +111,61 @@
         }
     }
     function searchCategory(query) {
-        if (query === "") {
-            renderItems(items);
-            return;
-        }
-
+        if (query === "") { renderItems(items); return; }
         const filteredData = items.filter(item =>
             item.itemName.toLowerCase().includes(query.toLowerCase()) || item.category.cateName.toLowerCase().includes(query.toLowerCase())
         );
-
         renderItems(filteredData);
     }
     document.querySelector('.search-bar input').addEventListener('input', function(event) {
         searchCategory(event.target.value.trim());
     });
+    window.onload = function() { filterCategory("all"); };
 
-    window.onload = function() {
-        filterCategory("all");
-    };
+    // swipe-to-delete on item card (admin only)
+    let startX = 0;
+    let currentX = 0;
+    let swiping = false;
+    let moved = false;
+
+    function startSwipe(e, id) {
+        startX = e.touches[0].clientX;
+        swiping = true;
+        moved = false;
+    }
+
+    function moveSwipe(e, id) {
+        if (!swiping) return;
+        currentX = e.touches[0].clientX;
+        let diff = currentX - startX;
+
+        if (Math.abs(diff) > 10) moved = true;
+
+        if (diff < 0 && Math.abs(diff) < 100) {
+            document.getElementById(`content-${id}`).style.transform = `translateX(${diff}px)`;
+        }
+    }
+
+    function endSwipe(e, id) {
+        const item = document.getElementById(`item-${id}`);
+        const content = document.getElementById(`content-${id}`);
+        let diff = currentX - startX;
+        swiping = false;
+
+        if (!moved || Math.abs(diff) < 30) {
+            item.classList.remove("swiped");
+            content.style.transform = "translateX(0)";
+            return;
+        }
+
+        if (diff < -60) {
+            item.classList.add("swiped");
+            content.style.transform = "translateX(-80px)";
+        } else {
+            item.classList.remove("swiped");
+            content.style.transform = "translateX(0)";
+        }
+    }
 </script>
+</body>
+</html>

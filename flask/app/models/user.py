@@ -18,6 +18,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     profile_pic = db.Column(db.String(255), nullable=True)
     withdraw_history = db.relationship("WithdrawHistory", back_populates="user")
     cart_items = db.relationship("CartItem",back_populates="user",cascade="all, delete-orphan")
+    notifications = db.relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     serialize_only = ("UserID",
                     "Fname",
                     "Lname",

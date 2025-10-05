@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Withdraw Item</title>
+    <meta charset="UTF-8">
+    <title>Withdraw Item</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/newitem.css">
+    <link rel="stylesheet" href="../static/css/category.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <h2>Withdraw Item</h2>
-    <p><b>Item Name:</b> {{ item.itemName }}</p>
-    <p><b>In Stock:</b> {{ item.itemAmount }}</p>
+    <div class="top-bar">
+    	<div class="back">
+        	<a href="{{ url_for('category') }}">
+                <span class="material-icons">arrow_back_ios_new</span> 
+            </a>
+    	</div>
+    	<div class="category">
+        	<span>Withdraw</span>
+    	</div>
+        <div></div>
+    </div>
 
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
-        <label for="getQuantity">Quantity:</label>
-        <input type="number" name="getQuantity" id="getQuantity" min="1" max="{{ item.itemAmount }}" required>
-
-        <div>
-        <button type="submit" name="action" value="confirm">Confirm</button>
-        <button type="submit" name="action" value="add-to-cart">Add to Cart</button>
-        <button type="button" onclick="gobackto()" formnovalidate>Cancel</button>
+    <div class="center">
+      <div class="mainbox">
+        <div style="display:flex;gap:12px;align-items:center;">
+            {% if item.itemPicture %}
+                <img src="/static/img/{{ item.itemPicture }}" width="120" height="120" style="border-radius:12px;">
+            {% else %}
+                <div style="width:120px;height:120px;border-radius:12px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:48px;">
+                    {{ item.itemName[0] }}
+                </div>
+            {% endif %}
+            <div>
+                <h3>{{ item.itemName }}</h3>
+                <p>In Stock: {{ item.itemAmount }}</p>
+            </div>
         </div>
-    </form>
+
+        <form method="POST" style="margin-top:12px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="getQuantity" min="1" max="{{ item.itemAmount }}" value="1" class="input-box" required>
+
+            <div style="display:flex;gap:8px;margin-top:12px;">
+                <button type="submit" name="action" value="confirm" class="add-btn">Confirm</button>
+                <button type="submit" name="action" value="add-to-cart" class="add-btn">Add to Cart</button>
+                <button type="button" onclick="gobackto()" class="add-btn" style="background:#ccc;color:#000;">Cancel</button>
+            </div>
+        </form>
+      </div>
+    </div>
+
+<script>
+    function gobackto(){ window.location.href ='/category' }
+</script>
 </body>
 </html>
-<script>
-    function gobackto(){
-        window.location.href ='/category'
-    }
-</script>
