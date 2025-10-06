@@ -122,6 +122,7 @@ def homepage():
                 "itemName": item.itemName,
                 "itemAmount": item.itemAmount,
                 "itemPicture": item.itemPicture,
+                "itemMin": item.itemMin,
                 "total": int(total)
             })
 

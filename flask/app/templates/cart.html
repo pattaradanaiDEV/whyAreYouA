@@ -12,6 +12,14 @@
     <link rel="stylesheet" href="../static/css/category.css">
 </head>
 <body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="container mt-4">
         <div class="top-bar">
     	    <div class="back">
@@ -39,7 +47,7 @@
                 </form>
             </div>
 
-            <div class="cart-content" id="content-{{ c.CartID }}">
+            <div class="cart-content item-container" id="content-{{ c.CartID }}">
                 {% if c.item.itemPicture %}
                 <img src="{{ url_for('static', filename='img/' ~ c.item.itemPicture) }}"
                     width="70" height="70" class="rounded">
@@ -84,9 +92,9 @@
         {% endfor %}
 
         {% if not cart_items %}
-            <p class="text-center text-muted mt-5">ไม่มีของในตะกร้า 🛍️</p>
+            <p class="text text-center mt-5">ไม่มีของในตะกร้า 🛍️</p>
         {% else %}
-            <form method="POST" class="text-center">
+            <form method="POST" class="text text-center">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
                 <input type="hidden" name="action" value="confirm_cart">
                 <button class="confirm-btn">Confirm Cart</button>

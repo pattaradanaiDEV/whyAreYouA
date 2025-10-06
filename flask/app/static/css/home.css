@@ -538,3 +538,7 @@ svg {
   cursor: pointer;
   z-index: 10000;
 }
+
+.text {
+  color: var(--text2--color);
+}

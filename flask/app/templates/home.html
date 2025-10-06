@@ -109,7 +109,12 @@
                     {% else %}
                         <div class="item-icon" style="width:80px;height:80px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:#ddd;">{{ it.itemName[0] }}</div>
                     {% endif %}
-                    <div class="status-dot green"></div>
+                        <div class="status-dot 
+                        {% if it.itemAmount > it.itemMin %}green
+                        {% elif it.itemAmount > 0 %}yellow
+                        {% else %}red
+                        {% endif %}
+                    "></div>
                 </div>
                 <div class="item-info">
                     <span class="item-name">{{ it.itemName }}</span>
@@ -120,7 +125,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <p class="text-center text-muted">No data yet</p>
+            <p class="text-center text">No data yet</p>
         {% endif %}
     </div>
 

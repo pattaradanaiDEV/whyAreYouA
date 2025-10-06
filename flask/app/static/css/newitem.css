@@ -181,3 +181,7 @@ body {
 .add-btn:hover {
   background: #333;
 }
+
+.text {
+  color: var(--text--color);
+}

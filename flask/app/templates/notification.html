@@ -8,14 +8,16 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/category.css">
     <title>Notifications</title>
-    <style>
-      .notification-list { padding:12px; }
-      .notification-item { display:flex; justify-content:space-between; padding:10px; border-radius:8px; margin-bottom:10px; background:#fff; }
-      .notification-item.unread { background:#e6f7ff; }
-      .swipe-delete { color:red; cursor:pointer; }
-    </style>
 </head>
 <body class="lightmode">
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('homepage') }}">
@@ -33,13 +35,13 @@
             {% for n in notifications %}
             <div class="notification-item {% if not n.is_read %}unread{% endif %}" data-id="{{ n.id }}">
                 <div>
-                    <div><strong>{{ n.type|upper }}</strong></div>
-                    <div>{{ n.message }}</div>
-                    <div style="font-size:0.9rem;color:#666;">{{ n.created_at }}</div>
+                    <div class="noti-name"><strong>{{ n.type|upper }}</strong></div>
+                    <div class="noti-message">{{ n.message }}</div>
+                    <div class="create-date">{{ n.created_at }}</div>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:6px;">
-                    <button onclick="markRead({{ n.id }})">Mark read</button>
-                    <button onclick="deleteNoti({{ n.id }})" style="background:none;border:1px solid #eee;padding:6px;border-radius:6px;">Delete</button>
+                    <button onclick="markRead({{ n.id }})" class="read-btn">Mark read</button>
+                    <button onclick="deleteNoti({{ n.id }})" class="del-btn">Delete</button>
                 </div>
             </div>
             {% endfor %}

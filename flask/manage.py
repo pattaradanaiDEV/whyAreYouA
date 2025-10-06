@@ -36,7 +36,7 @@ def gen_avatar_url(email, username):
 
 @cli.command("add_user")
 def add_user():
-    user = [["Developer","Account","0001000000","DEV-ACC@cscmumail.com","204361@DEV-ACC"],
+    user = [["Developer","Account","0001000000","DEVACC@cscmu","dev361"],
             ["Pongpop","Pongsuk","0000099900","PEEMAN@gmail.com","PPP@cmu!"],
             ["Santi","Saelee","0000000000","theflash@hotmail.com","TunderEXP001"],
             ["Rui","Jie","0000010000","rahat@gmail.com","MaiMeeRaHatWoi"]]
@@ -101,13 +101,13 @@ def seed_db():
     item = Item(ItemName="Hammer", ItemAmount=18, ItemPicture="Hammer.jpg", itemMin=20)
     item.cateID = 5
     db.session.add(item)
-    item = Item(ItemName="Screwdriver Set", ItemAmount=25, ItemPicture="Laptop_Dell_XPS.jpg", itemMin=10)
+    item = Item(ItemName="Screwdriver Set", ItemAmount=25, ItemPicture="Screwdriver_Set.jpg", itemMin=10)
     item.cateID = 5
     db.session.add(item)
     item = Item(ItemName="Wrench", ItemAmount=12, ItemPicture="Wrench.jpg", itemMin=5)
     item.cateID = 5
     db.session.add(item)
-    item = Item(ItemName="Electric Drill", ItemAmount=8, ItemPicture=" Electric_Drill.jpg", itemMin=8)
+    item = Item(ItemName="Electric Drill", ItemAmount=8, ItemPicture="Electric_Drill.jpg", itemMin=8)
     item.cateID = 5
     db.session.add(item)
     item = Item(ItemName="Tape Measure", ItemAmount=30, ItemPicture="Tape_Measure.jpg", itemMin=15)

@@ -11,6 +11,14 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('category') }}">
@@ -34,8 +42,8 @@
                 </div>
             {% endif %}
             <div>
-                <h3>{{ item.itemName }}</h3>
-                <p>In Stock: {{ item.itemAmount }}</p>
+                <h3 class="text">{{ item.itemName }}</h3>
+                <p class="text">In Stock: {{ item.itemAmount }}</p>
             </div>
         </div>
 

@@ -9,6 +9,14 @@
   <title>Item Edit Page</title>
 </head>
 <body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="top-bar">
     	<div class="back">
         	<a href="{{ url_for('category') }}">
@@ -75,7 +83,7 @@
         </form>
 
         <div style="margin-top:16px;">
-            <h4>QR</h4>
+            <h4 class="text">QR</h4>
             <img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code" style="width:150px;height:150px;">
         </div>
       </div>

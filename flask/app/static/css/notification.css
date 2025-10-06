@@ -7,17 +7,23 @@
     --box--color: #eee;
     --box2--color: #e0f7fa;
     --boxhover--color: #e6f2ff;
+    --noti-unread--color: #bbb;
+    --noti-read--color: #eee;
+    --create-date--color: #555;
 }
 
 .darkmode{
     --bg--color: #212121;
     --base--color: #121212;
     --text--color: #FFF;
-    --text2--color: #bbb;
+    --text2--color: #ccc;
     --border--color: #000;
     --box--color: #121212;
-    --box2--color: #004d40;
+    --box2--color: #000066;
     --boxhover--color: #6993f5;
+    --noti-unread--color: #414141;
+    --noti-read--color: #313131;
+    --create-date--color: #757575;
 }
 
 body{
@@ -109,3 +115,47 @@ body{
     background: var(--boxhover--color);
 }
 
+.notification-list {
+    padding:12px;
+}
+
+.notification-item {
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:10px;
+    background: var(--noti-read--color);
+}
+.notification-item.unread {
+    background: var(--noti-unread--color);
+}
+.swipe-delete {
+    color:red;
+    cursor:pointer;
+}
+
+.create-date {
+    color: var(--create-date--color);
+}
+
+.noti-name {
+    color: var(--text--color)
+}
+
+.noti-message {
+    color: var(--text--color)
+}
+
+.read-btn {
+    background: var(--box2--color);
+    color: var(--text--color);
+}
+
+.del-btn {
+    background:none;
+    border:1px solid #eee;
+    padding:6px;
+    border-radius:6px;
+    color: var(--text--color);
+}

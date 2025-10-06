@@ -1,6 +1,6 @@
 :root{
   /* --basebg--color: linear-gradient(#e1caca, #FFF); */
-  --basebg--color: linear-gradient(to top, rgb(255, 255, 224) 0%,#fff 50%);
+  --basebg--color: #fff;
   /* --base--color: #fff; */
   --text--color: #000;
   --text2--color: #000;
@@ -22,7 +22,7 @@
 }
 
 body {
-  background: var(--basebg--color);
+  background-color: var(--basebg--color);
   background-repeat: no-repeat;
   background-attachment: fixed;
   margin: 0;
@@ -106,6 +106,14 @@ body {
   background-color: lightgray;
 }
 
+.btn.edit:hover {
+  background-color: lightgray;
+}
+
+.btn.withdraw:hover {
+  background-color: rgb(65, 65, 65);
+}
+
 #item-list {
   display: flex;
   flex-direction: column;
@@ -130,7 +138,7 @@ body {
     gap: 10px;
     padding: 10px;
     width: 100%;
-    background: var(--item-card--color);
+    background-color: var(--item-card--color);
     transition: transform 0.3s ease;
     z-index: 1; 
 }
