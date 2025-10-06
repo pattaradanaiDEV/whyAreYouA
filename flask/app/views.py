@@ -88,6 +88,12 @@ def create_low_stock_notification_if_needed(item, actor_user_id=None):
 # -----------------------
 # Routes
 # -----------------------
+@app.route('/')
+def landing():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return redirect(url_for('homepage'))
+
 @app.route('/waiting')
 def waiting():
     return f"รอก่อนไอ่น้อง"
