@@ -577,6 +577,10 @@ def edit():
 def setting():
     return render_template('setting.html')
 
+@app.route('/languages')
+def languages():
+    return render_template('languages.html')
+
 @app.route('/item/<int:itemID>/withdraw')
 def withdraw_byQR(itemID):
     item = Item.query.get_or_404(itemID)
