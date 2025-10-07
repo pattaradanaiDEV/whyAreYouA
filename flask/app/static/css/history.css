@@ -5,8 +5,8 @@
     --text2--color: #777;
     --border--color: gray;
     --box--color: #eee;
-    --box2--color: #e0f7fa;
-    --boxhover--color: #6993f5;
+    --box2--color: #a9ecf5;
+    --boxhover--color: #bcd0fe;
 }
 
 .darkmode{
@@ -56,10 +56,15 @@ body{
 .item{
     display: flex;
     align-items: center;
+    /* flex-direction: column; */
     background: var(--box--color);
     padding: 20px;
     margin-top: 25px;
     border-radius: 5px;
+}
+
+.column{
+    flex-direction: column;
 }
 
 .item :first-child{
@@ -109,3 +114,13 @@ body{
     background: var(--boxhover--color);
 }
 
+.detail{
+    display: flex;
+    flex-direction: column;
+    color: var(--text--color);
+}
+
+.detail span{
+    display: block;
+    color: var(--text--color);
+}

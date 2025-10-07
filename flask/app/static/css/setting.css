@@ -14,7 +14,7 @@
     --base--color: #121212;
     --text--color: #FFF;
     --text2--color: #bbb;
-    --border--color: #000;
+    --border--color: #eee;
     --box--color: #121212;
     --box2--color: #004d40;
     --boxhover--color: #6993f5;
@@ -31,7 +31,6 @@ body{
     display: flex;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid var(--border--color);
     background-color: var(--base--color);
     position: sticky;
     top: 0;
@@ -53,59 +52,73 @@ body{
     color: var(--text--color);
 }
 
-.item{
+.profile{
     display: flex;
     align-items: center;
-    background: var(--box--color);
-    padding: 20px;
-    margin-top: 25px;
-    border-radius: 5px;
+    justify-content: center;
+    flex-direction: column;
+    margin: 20px auto;
 }
 
-.item :first-child{
-    margin-right: 12px;
+.profile img{
+    width: 5rem;
+    height: 5rem;
 }
 
-.item-text {
-    display: flex;       
-    flex-direction: column; 
-    align-items: flex-start; 
+.profile-circle {
+    background-color: var(--base--color);
+    border-radius: 50%;
+    flex-shrink: 0;
+    width: 5rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+.profile-text {
+    color: var(--text2--color);
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    align-items: center;
+    margin: 10px;
 }
 
-.item-text span {
-    font-size: 1rem;
-    text-align: left; 
-    width: 100%;      
+.profile-text span{
+    font-size: 1.2rem;
 }
 
-.item-text span:last-child{
-    align-self: flex-start;
-    text-align: left;
-    font-size: 0.85rem;
-    opacity: 50%;
+.action{
+    margin: 0;
+    padding: 0;
 }
 
-.item svg{
-    width: 3rem;
-    height: 3rem;
+.action-btn{
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border--color);
 }
 
-.item.unread{
-    background: var(--box2--color);
+.action-btn svg{
+    fill: var(--text--color);
 }
 
-.item.read{
-    background: var(--box--color);
+.action-btn:hover{
+    background: #6993f5;
 }
 
-.item span{
+.action-btn span{
     color: var(--text--color);
-    flex: 1;
-    text-align: left;
-    line-height: 1.4;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
-.item:hover{
-    background: var(--boxhover--color);
+#logout-bar svg{
+    fill: red;
 }
-
