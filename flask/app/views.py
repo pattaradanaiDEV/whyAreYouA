@@ -143,7 +143,7 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        user = User.query.filter_by(gmail=email).first()
+        user = User.query.filter_by(email=email).first()
         if not user:
             flash("There no such user. Please try again")
             return redirect(url_for('login'))
@@ -184,7 +184,7 @@ def add_user_to_db():
     username = validated_dict["username"]
     password = validated_dict["password"]
 
-    user = User.query.filter_by(gmail=email).first()
+    user = User.query.filter_by(email=email).first()
     if user:
         flash("Email already used")
         return redirect(url_for('signup'))
@@ -196,7 +196,7 @@ def add_user_to_db():
     db.session.commit()
 
     # create signup notification (admins should see)
-    Notification.create(new_user.UserID, "signup", f"New user signup: {new_user.Fname} ({new_user.gmail})")
+    Notification.create(new_user.UserID, "signup", f"New user signup: {new_user.Fname} ({new_user.email})")
     flash("User added. Waiting admin approval.")
     return redirect(url_for('login'))
 
@@ -658,24 +658,24 @@ def google_auth():
     Lname = userinfo.get('family_name', "")
     try:
         with db.session.begin():
-            user = (User.query.filter_by(gmail=email).with_for_update().first())
+            user = (User.query.filter_by(email=email).with_for_update().first())
             if not user:
                 password = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
                                 for i in range(12))
                 if Lname:
-                    new_user = User(Fname=Fname, Lname=Lname, gmail=email, profile_pic=picture, password = generate_password_hash(password))
+                    new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password = generate_password_hash(password))
                 else:
-                    new_user = User(Fname=Fname, gmail=email, profile_pic=picture, password=password)
+                    new_user = User(Fname=Fname, email=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
                 db.session.commit()
                 # create signup notification for admins
-                Notification.create(new_user.UserID, "signup", f"New signup: {new_user.Fname} ({new_user.gmail})")
+                Notification.create(new_user.UserID, "signup", f"New signup: {new_user.Fname} ({new_user.email})")
     except Exception as ex:
         db.session.rollback()
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
         return redirect(url_for('login'))
 
-    user = User.query.filter_by(gmail=email).first()
+    user = User.query.filter_by(email=email).first()
     login_user(user)
     return redirect('/homepage')
 
