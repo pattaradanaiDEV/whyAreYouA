@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../static/css/languages.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Languages Page</title>
+</head>
+<body class="lightmode"> 
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
+    <div class="top-bar">
+        <a href="{{ url_for('setting') }}">
+            <span class="material-icons">arrow_back_ios</span>
+        </a>
+        <div class="center">
+            <span>Choose your language</span>
+        </div>
+    </div>
+
+    <div class="action-btn">
+        <img src="../static/ico/united-kingdom.png">
+        <span>English</span>
+        <button class="check-btn" aria-label="Select English"></button>
+    </div>
+
+    <div class="action-btn">
+        <img src="../static/ico/thailand.png">
+        <span>Thai</span>
+        <button class="check-btn" aria-label="Select Thai"></button>
+
+    </div>
+</body>
+</html>
+
+<script>
+    const options = document.querySelectorAll('.action-btn');
+
+    options.forEach(option => {
+    option.addEventListener('click', () => {
+        // เอา selected ออกจากทุกอัน
+        options.forEach(o => o.classList.remove('selected'));
+        // ใส่ selected ให้กับอันที่กด
+        option.classList.add('selected');
+    });
+    });
+
+</script>
