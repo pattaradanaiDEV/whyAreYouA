@@ -82,11 +82,14 @@ def cleanup_expired_notifications():
 
 def create_low_stock_notification_if_needed(item, actor_user_id=None):
     if item.itemAmount < (item.itemMin if item.itemMin is not None else 0):
-        message = f"Item low stock: {item.itemName} ({item.itemAmount} < min {item.itemMin})"
-        Notification.create(actor_user_id, "low_stock", message)
+        message = f"Item low stock: {item.itemName} (มีจำนวนเหลือแค่ {item.itemAmount} ชิ้น แล้ว)"
+        ntype = "⚠️Low_Stock"
+        if item.itemAmount == 0 :
+            message = f"Item low stock: {item.itemName} (เหลือ 0 ชิ้น แล้ว)"
+            ntype="⚠️Item Running Out"
         db.session.add(Notification(
                     user_id=actor_user_id,
-                    ntype="low_stock",
+                    ntype=ntype,
                     message=message
                 ))
 
@@ -417,6 +420,11 @@ def pending_user():
             user = User.query.get(int(user_id))
             if user:
                 user.availiable = True
+                db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="Grant",
+                        message=f"คุณ {current_user.Fname} {current_user.Lname} ได้อนุญาติสิทธิเข้าใช้งานระบบให้กับ คุณ {user.Fname} {user.Lname}"
+                    ))
                 db.session.commit()
 
         elif action == "decline" and user_id:
@@ -429,6 +437,12 @@ def pending_user():
             users = User.query.filter_by(availiable=False).all()
             for user in users:
                 user.availiable = True
+                db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="Grant",
+                        message=f"คุณ {current_user.Fname} {current_user.Lname} ได้อนุญาติสิทธิเข้าใช้งานระบบให้กับ คุณ {user.Fname} {user.Lname}"
+                    ))
+            
             db.session.commit()
 
         return redirect(url_for("pending_user"))
