@@ -11,7 +11,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     Lname = db.Column(db.String(24))
     Username = db.Column(db.String(24))
     IsM_admin = db.Column(db.Boolean, default=False)
-    gmail = db.Column(db.String(50), nullable= True)
+    email = db.Column(db.String(50), nullable= True)
     phoneNum = db.Column(db.String(10), nullable = True)
     availiable = db.Column(db.Boolean,default=False)
     password = db.Column(db.String(255))
@@ -24,7 +24,7 @@ class User(db.Model, UserMixin, SerializerMixin):
                     "Lname",
                     "IsM_admin",
                     "availiable",
-                    "gmail",
+                    "email",
                     "phoneNum",
                     "profile_pic",
                     "password",
@@ -37,7 +37,7 @@ class User(db.Model, UserMixin, SerializerMixin):
         self.Fname = Fname
         self.Lname = Lname
         self.phoneNum = phoneNum
-        self.gmail = email
+        self.email = email
         self.profile_pic=profile_pic
         self.password = password
     
