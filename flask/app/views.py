@@ -96,6 +96,8 @@ def landing():
 
 @app.route('/waiting')
 def waiting():
+    if current_user.availiable == True:
+        return redirect(url_for('homepage'))
     return f"รอก่อนไอ่น้อง"
 
 @app.route('/homepage')
