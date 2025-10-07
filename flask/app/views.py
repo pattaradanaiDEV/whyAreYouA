@@ -84,10 +84,12 @@ def create_low_stock_notification_if_needed(item, actor_user_id=None):
     if item.itemAmount < (item.itemMin if item.itemMin is not None else 0):
         message = f"Item low stock: {item.itemName} ({item.itemAmount} < min {item.itemMin})"
         Notification.create(actor_user_id, "low_stock", message)
+        db.session.add(Notification(
+                    user_id=actor_user_id,
+                    ntype="low_stock",
+                    message=message
+                ))
 
-# -----------------------
-# Routes
-# -----------------------
 @app.route('/')
 def landing():
     if not current_user.is_authenticated:
@@ -194,9 +196,14 @@ def add_user_to_db():
     new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
     db.session.add(new_user)
     db.session.commit()
+    db.session.add(Notification(
+        user_id=new_user.UserID,
+        ntype="request",
+        message=f"{new_user.Fname} {new_user.Lname} ได้ขอเข้าใช้งานระบบ"
+    ))
+    db.session.commit()
 
     # create signup notification (admins should see)
-    Notification.create(new_user.UserID, "signup", f"New user signup: {new_user.Fname} ({new_user.email})")
     flash("User added. Waiting admin approval.")
     return redirect(url_for('login'))
 
@@ -362,9 +369,11 @@ def cart():
                     item.itemAmount -= c.Quantity
                     history = WithdrawHistory(user_id=current_user.UserID, item_id=item.itemID, quantity=c.Quantity)
                     db.session.add(history)
-                    # create withdraw notification
-                    Notification.create(current_user.UserID, "withdraw", f"{current_user.Fname} withdrew {c.Quantity} x {item.itemName}")
-                    # low stock check
+                    db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="withdraw",
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity}"
+                    ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
                 elif c.Status == 'e':
@@ -478,7 +487,11 @@ def withdraw():
                     quantity=quantity
                 )
                 db.session.add(history)
-                Notification.create(current_user.UserID, "withdraw", f"{current_user.Fname} withdrew {quantity} x {item.itemName}")
+                db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="withdraw",
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
+                    ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
                 flash("เบิกเรียบร้อย", "success")
@@ -556,7 +569,7 @@ def edit():
                     db.session.commit()
                     item.cateID = new_cat.cateID
             db.session.commit()
-            flash("อัปเดตข้อมูลสินค้าเรียบร้อย", "success")
+            flash("อัปเดตข้อมูลเรียบร้อย", "success")
             return redirect(url_for('category'))
 
         elif action == "cancel":
@@ -588,7 +601,11 @@ def withdraw_byQR(itemID):
         item.itemAmount -= 1
         history = WithdrawHistory(user_id=None, item_id=itemID, quantity=1)
         db.session.add(history)
-        Notification.create(None, "withdraw", f"QR withdraw: 1 x {item.itemName}")
+        db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="withdraw",
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
+                    ))
         create_low_stock_notification_if_needed(item, None)
         db.session.commit()
         return f"เบิก {item.itemName} สำเร็จ"
@@ -653,29 +670,33 @@ def google():
 def google_auth():
     try:
         token = oauth.google.authorize_access_token()
+        #app.logger.debug(str(token))
     except Exception as ex:
+        #app.logger.error(f"Error getting token: {ex}")
         return redirect(url_for('homepage'))
+    #app.logger.debug(str(token))
     userinfo = token['userinfo']
+    app.logger.debug(" Google User " + str(userinfo))
     email = userinfo.get('email')
     picture = userinfo.get('picture', None)
     Fname = userinfo.get('given_name', "")
-    Lname = userinfo.get('family_name', "")
     try:
         with db.session.begin():
-            user = (User.query.filter_by(email=email).with_for_update().first())
+            user = User.query.filter_by(email=email).with_for_update().first()
             if not user:
-                password = ''.join(secrets.choice(string.ascii_uppercase + string.digits)
-                                for i in range(12))
-                if Lname:
-                    new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password = generate_password_hash(password))
-                else:
-                    new_user = User(Fname=Fname, email=email, profile_pic=picture, password=password)
+                password = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for i in range(12))
+                Lname = userinfo.get('family_name', "")
+                new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
-                db.session.commit()
-                # create signup notification for admins
-                Notification.create(new_user.UserID, "signup", f"New signup: {new_user.Fname} ({new_user.email})")
+                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
+
+                db.session.add(Notification(
+                    user_id=new_user.UserID,
+                    ntype="request",
+                    message=f"{Fname} {Lname} ได้ขอเข้าใช้งานระบบ"
+                ))
     except Exception as ex:
-        db.session.rollback()
+        db.session.rollback()  # Rollback on failure
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
         return redirect(url_for('login'))
 
