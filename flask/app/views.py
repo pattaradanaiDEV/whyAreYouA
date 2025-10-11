@@ -298,7 +298,8 @@ def newitem():
             item = Item(ItemName=request.form.get("getname"),
                         ItemAmount=int(request.form.get("getamount", 0)),
                         ItemPicture=filename,
-                        itemMin=int(request.form.get("getmin", 0)))
+                        itemMin=int(request.form.get("getmin", 0)),
+                        itemDesc=str(request.form.get("getdes", 0)))
             db.session.add(item)
 
             if catename.lower() not in catename_list :
@@ -542,9 +543,6 @@ def edit():
 
         if action == "add-to-cart":
             qty = int(request.form.get("getamount", 1))
-            if qty <= 0 or qty > item.itemAmount:
-                flash("จำนวนไม่ถูกต้องหรือเกินสต็อก", "danger")
-                return redirect(url_for('edit', itemID=item.itemID))
             cart_item = CartItem.query.filter_by(UserID=current_user.UserID, ItemID=item.itemID, Status='e').first()
             if cart_item:
                 if cart_item.Quantity + qty > item.itemAmount:
@@ -555,7 +553,7 @@ def edit():
                 cart_item = CartItem(UserID=current_user.UserID, ItemID=item.itemID, Quantity=qty, Status='e')
                 db.session.add(cart_item)
             db.session.commit()
-            flash("เพิ่มเข้า cart edit เรียบร้อย", "success")
+            flash("เพิ่มเข้าตะกร้าเรียบร้อย", "success")
             return redirect(url_for('category'))
 
         elif action == "confirm":
@@ -564,10 +562,6 @@ def edit():
             new_amount = int(request.form.get("getamount", item.itemAmount))
             new_min = int(request.form.get("getmin", item.itemMin if item.itemMin is not None else 0))
             new_cate = request.form.get("getcate")
-            # validations
-            if new_min > new_amount:
-                flash("Item minimum ต้องไม่มากกว่า Item amount", "danger")
-                return redirect(url_for('edit', itemID=item.itemID))
             # update
             item.itemName = new_name
             item.itemAmount = new_amount

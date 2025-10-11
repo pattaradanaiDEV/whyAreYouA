@@ -68,49 +68,49 @@ def seed_db():
         db.session.add(Category(cateName=name))
     db.session.commit()
     
-    item = Item(ItemName="Ballpoint Pen", ItemAmount=120, ItemPicture="Ballpoint_Pen.jpg", itemMin=60)
+    item = Item(ItemName="Ballpoint Pen", ItemAmount=120, ItemPicture="Ballpoint_Pen.jpg", itemMin=60, itemDesc="I have a pen, I have an apple.")
     item.cateID = 2
     db.session.add(item)
-    item = Item(ItemName="Notebook A5", ItemAmount=75, ItemPicture="Notebook_A5.jpg", itemMin=30)
+    item = Item(ItemName="Notebook A5", ItemAmount=75, ItemPicture="Notebook_A5.jpg", itemMin=30, itemDesc="Not a laptop computer.")
     item.cateID = 2
     db.session.add(item)
-    item = Item(ItemName="Highlighter Set", ItemAmount=30, ItemPicture="Highlighter_Set.jpg", itemMin=15)
+    item = Item(ItemName="Highlighter Set", ItemAmount=30, ItemPicture="Highlighter_Set.jpg", itemMin=15, itemDesc="Very colourful.")
     item.cateID = 2
     db.session.add(item)
-    item = Item(ItemName="Stapler", ItemAmount=20, ItemPicture="Stapler.jpg", itemMin=10)
+    item = Item(ItemName="Stapler", ItemAmount=20, ItemPicture="Stapler.jpg", itemMin=10, itemDesc="Bind papers together.")
     item.cateID = 2
     db.session.add(item)
-    item = Item(ItemName="Paper Clips Box", ItemAmount=50, ItemPicture="Paper_Clips_Box.jpg", itemMin=25)
+    item = Item(ItemName="Paper Clips Box", ItemAmount=50, ItemPicture="Paper_Clips_Box.jpg", itemMin=25, itemDesc="Ammo for stapler.")
     item.cateID = 2
     db.session.add(item)
-    item = Item(ItemName="Laptop Dell XPS", ItemAmount=10, ItemPicture="Laptop_Dell_XPS.jpg", itemMin=5)
+    item = Item(ItemName="Laptop Dell XPS", ItemAmount=10, ItemPicture="Laptop_Dell_XPS.jpg", itemMin=5, itemDesc="An actual laptop computer.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="Wireless Mouse", ItemAmount=40, ItemPicture="Wireless_Mouse.jpg", itemMin=20)
+    item = Item(ItemName="Wireless Mouse", ItemAmount=40, ItemPicture="Wireless_Mouse.jpg", itemMin=20, itemDesc="Cursor mover.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="Mechanical Keyboard", ItemAmount=25, ItemPicture="Mechanical_Keyboard.jpg", itemMin=12)
+    item = Item(ItemName="Mechanical Keyboard", ItemAmount=25, ItemPicture="Mechanical_Keyboard.jpg", itemMin=12, itemDesc="If blue, it's loud. If brown, it's silent.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="External HDD 1TB", ItemAmount=15, ItemPicture="External_HDD_1TB.jpg", itemMin=7)
+    item = Item(ItemName="External HDD 1TB", ItemAmount=15, ItemPicture="External_HDD_1TB.jpg", itemMin=7, itemDesc="A storage disk with 1 TB space.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="Monitor 24", ItemAmount=10, ItemPicture="Monitor_24.jpg", itemMin=5)
+    item = Item(ItemName="Monitor 24", ItemAmount=10, ItemPicture="Monitor_24.jpg", itemMin=5, itemDesc="Computer monitor.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="Hammer", ItemAmount=18, ItemPicture="Hammer.jpg", itemMin=20)
+    item = Item(ItemName="Hammer", ItemAmount=18, ItemPicture="Hammer.jpg", itemMin=20, itemDesc="Not come with sickle.")
     item.cateID = 6
     db.session.add(item)
-    item = Item(ItemName="Screwdriver Set", ItemAmount=25, ItemPicture="Screwdriver_Set.jpg", itemMin=10)
+    item = Item(ItemName="Screwdriver Set", ItemAmount=25, ItemPicture="Screwdriver_Set.jpg", itemMin=10, itemDesc="Suit for every size, but not every shape.")
     item.cateID = 6
     db.session.add(item)
-    item = Item(ItemName="Wrench", ItemAmount=12, ItemPicture="Wrench.jpg", itemMin=5)
+    item = Item(ItemName="Wrench", ItemAmount=12, ItemPicture="Wrench.jpg", itemMin=5, itemDesc="Croissant hammer.")
     item.cateID = 6
     db.session.add(item)
-    item = Item(ItemName="Electric Drill", ItemAmount=8, ItemPicture="Electric_Drill.jpg", itemMin=8)
+    item = Item(ItemName="Electric Drill", ItemAmount=8, ItemPicture="Electric_Drill.jpg", itemMin=8, itemDesc="Hole maker.")
     item.cateID = 6
     db.session.add(item)
-    item = Item(ItemName="Tape Measure", ItemAmount=30, ItemPicture="Tape_Measure.jpg", itemMin=15)
+    item = Item(ItemName="Tape Measure", ItemAmount=30, ItemPicture="Tape_Measure.jpg", itemMin=15, itemDesc="Measuring tape.")
     item.cateID = 6
     db.session.add(item)
     db.session.commit()

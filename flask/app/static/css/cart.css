@@ -185,3 +185,7 @@ input[type=number] {
 .text {
   color: var(--text--color);
 }
+
+.danger {
+  background-color: rgb(220, 66, 66);
+}

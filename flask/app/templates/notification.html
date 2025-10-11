@@ -43,21 +43,25 @@
             </div>
             {% endfor %}
         {% else %}
-            <p>No notifications</p>
+            <p class="noti-name">No notifications</p>
         {% endif %}
     </div>
 
 <script>
-async function deleteNoti(id){
-    const res = await fetch(`/notification/delete/${id}`, { method: 'POST' });
-    if(res.ok) location.reload();
-    else alert('Delete failed');
-}
-async function markRead(id){
-    const res = await fetch(`/notification/mark_read/${id}`, { method: 'POST' });
-    if(res.ok) location.reload();
-    else alert('Mark read failed');
-}
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this item?");
+    }
+    async function deleteNoti(id){
+        confirmDelete()
+        const res = await fetch(`/notification/delete/${id}`, { method: 'POST' });
+        if(res.ok) location.reload();
+        else alert('Delete failed');
+    }
+    async function markRead(id){
+        const res = await fetch(`/notification/mark_read/${id}`, { method: 'POST' });
+        if(res.ok) location.reload();
+        else alert('Mark read failed');
+    }
 </script>
 </body>
 </html>

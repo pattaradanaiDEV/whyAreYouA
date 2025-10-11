@@ -39,7 +39,15 @@
             </a>
     	</div>
 	</div>
-
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-box">
+        <div class="notification">
+            {{ messages[0] }}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
 	<div class="search-bar">
     	<span class="material-icons">search</span>
     	<input type="text" class="search-input" placeholder="Search">
@@ -51,7 +59,7 @@
             {% if cate['cateName'] != 'Free cate'%}
             <button class="category-item" onclick="filterCategory('{{ cate['cateName'] }}')">
                 {{ cate['cateName'] }}
-            </button> 
+            </button>
             {% endif %}  
         {% endfor %}
 	</div>
@@ -71,28 +79,42 @@
             }
             return `
                 <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
-                    <div class="delete-bg">
-                        <form method="POST">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
-                            <input type="hidden" name="item_id" value="${it.itemID}">
-                            <input type="hidden" name="action" value="delete">
-                            <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
-                        </form>
-                    </div>
-                    <div class="item-content" id="content-${it.itemID}"
-                        ontouchstart="startSwipe(event, ${it.itemID})"
-                        ontouchmove="moveSwipe(event, ${it.itemID})"
-                        ontouchend="endSwipe(event, ${it.itemID})">
-                        
-                        <div class="item-left">${pictureHtml}</div>
-                        <div class="item-info">
-                            <div class="item-name">${it.itemName}</div>
-                            <div class="item-category">${it.category.cateName}</div>
-                            <div class="item-stock">Stock: ${it.itemAmount}</div>
+                    <div class="row">
+                        <div class="delete-bg">
+                            <form method="POST" onsubmit="return confirmDelete()">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                                <input type="hidden" name="item_id" value="${it.itemID}">
+                                <input type="hidden" name="action" value="delete">
+                                <button type="submit" class="btn btn-del">ลบ</button>
+                            </form>
                         </div>
+                        <div class="item-content" id="content-${it.itemID}"
+                            ontouchstart="startSwipe(event, ${it.itemID})"
+                            ontouchmove="moveSwipe(event, ${it.itemID})"
+                            ontouchend="endSwipe(event, ${it.itemID})">
+                            
+                            <div class="item-left">
+                                ${pictureHtml}
+                            </div>
+                            <div class="item-info">
+                                <div class="item-name">${it.itemName}</div>
+                                <div class="item-category">${it.category.cateName}</div>
+                                <div class="item-stock">Stock: ${it.itemAmount}</div>
+                            </div>
+                            <div class="item-actions">
+                                ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
+                                <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="item-actions">
-                            ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
-                            <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
+                            <details class="detail">
+                                <summary>Description</summary>
+                                <div class="item-card">
+                                    ${it.itemDesc}
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </div>`;
@@ -173,6 +195,14 @@
                 item.classList.remove("swiped");
                 content.style.transform = "translateX(0)";
             }
+        }
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this item?");
+        }
+        async function deleteNoti(id){
+            const res = await fetch(`/delete/item/<int:itemID>`, { method: 'POST' });
+            if(res.ok) location.reload();
+            else alert('Delete failed');
         }
     </script>
 </body>

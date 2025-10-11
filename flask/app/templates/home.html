@@ -103,7 +103,7 @@
                         <div class="item-icon" style="width:80px;height:80px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:#ddd;">{{ it.itemName[0] }}</div>
                     {% endif %}
                         <div class="status-dot 
-                        {% if it.itemAmount > it.itemMin %}green
+                        {% if it.itemAmount >= it.itemMin %}green
                         {% elif it.itemAmount > 0 %}yellow
                         {% else %}red
                         {% endif %}

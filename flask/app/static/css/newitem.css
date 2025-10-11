@@ -2,12 +2,14 @@
     --bg--color: #f9fafb;
     --base--color: #FFF;
     --text--color: #000;
+    --text3--color: #000;
 }
 
 .darkmode{
     --bg--color: #212121;
     --base--color: #121212;
     --text--color: #eee;
+    --text3--color: #fff;
 }
 
 
@@ -184,4 +186,20 @@ body {
 
 .text {
   color: var(--text--color);
+}
+
+.alert-box {
+  border-radius: 10px;
+  margin: 10px;
+  background-color: rgb(220, 66, 66);
+}
+
+.notification {
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text3--color);
 }

@@ -32,6 +32,20 @@
     	    </div>
             <div></div>
         </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert-box">
+            <div class="notification
+            {% with msg_cate = get_flashed_messages(category_filter=['danger']) %}
+            {% if msg_cate %}
+            danger
+            {% endif %}
+            {% endwith %}">
+                {{ messages[0] }}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
         {% for c in cart_items %}
         <div class="cart-item" id="cart-{{ c.CartID }}"
             ontouchstart="startSwipe(event, {{ c.CartID }})"

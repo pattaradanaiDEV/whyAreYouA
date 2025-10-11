@@ -4,6 +4,7 @@
   /* --base--color: #fff; */
   --text--color: #000;
   --text2--color: #000;
+  --text3--color: #000;
   --buttonbg--color: rgb(231, 231, 231);
   /* --buttonbg--color: linear-gradient(to top left, #7a7676 0%, #fff 30%, #fff 70%, #6b5f5f 100%); */
   --border--color: lightgray;
@@ -15,6 +16,7 @@
   --base--color: #282c40;
   --text--color: #888;
   --text2--color: #aaa;
+  --text3--color: #fff;
   --buttonbg--color: #aaa;
   --border--color: gray;
   --hover--color: gray;
@@ -83,6 +85,11 @@ body {
   color: #000;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
 .show_category {
   display: flex;
   flex-direction: row;
@@ -123,6 +130,7 @@ body {
 
 .item-card {
   display: flex;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
   border-radius: 12px;
@@ -206,9 +214,7 @@ body {
   top: 0;
   bottom: 0;
   width: 90px;
-  background: rgb(247, 23, 23);
   color: white;
-  display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
@@ -236,4 +242,32 @@ body {
 .btn.withdraw {
   background: #111827;
   color: white;
+}
+
+.btn-del {
+  color: white;
+  background: rgb(247, 23, 23);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.detail {
+  color: var(--text2--color);
+}
+
+.alert-box {
+  border-radius: 10px;
+  margin: 10px;
+  background-color: rgb(0, 155, 8);
+}
+
+.notification {
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text3--color);
 }

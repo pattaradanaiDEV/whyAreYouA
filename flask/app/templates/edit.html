@@ -1,11 +1,11 @@
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../static/css/newitem.css">
-    <link rel="stylesheet" href="../static/css/category.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../static/css/newitem.css">
+  <link rel="stylesheet" href="../static/css/category.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Item Edit Page</title>
 </head>
 <body>
@@ -29,6 +29,16 @@
         <div></div>
     </div>
 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-box">
+        <div class="notification">
+            {{ messages[0] }}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    
     <div class="center">
       <div class="mainbox">
         <form method="post" action="{{ url_for('edit', itemID=item.itemID) }}" enctype="multipart/form-data">
@@ -51,7 +61,7 @@
 
           <label class="form-label">Category</label>
           <div class="dropdown">
-              <input class="input-box" type="text" id="searchBox" placeholder="Select category"
+              <input class="input-box" type="text" id="searchBox" value="{{ item.category.cateName }}"
               onkeyup="filterFunction()" onclick="toggleList()" name="getcate">
               <div id="dropdownList" class="dropdown-list">
               {% for cate in categories %}
@@ -73,6 +83,11 @@
                 <input type="number" class="input-box-row2" name="getmin" value="{{ item.itemMin or 0 }}" min="0" required>
               </div>
             </div>
+          </div>
+
+          <label class="form-label">Description</label>
+          <div class="center">
+            <input type="text" class="input-box" name="getdes" value="{{ item.itemDesc }}">
           </div>
 
           <div style="display:flex;gap:8px;">

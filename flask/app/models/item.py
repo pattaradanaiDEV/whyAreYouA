@@ -11,6 +11,7 @@ class Item(db.Model,SerializerMixin):
     itemAmount = db.Column(db.Integer)
     itemPicture = db.Column(db.String(255))
     itemMin = db.Column(db.Integer)
+    itemDesc = db.Column(db.String(500))
 
     category = db.relationship("Category", back_populates="items")
     cart_items = db.relationship("CartItem", back_populates="item" ,  cascade="all, delete-orphan")
@@ -21,13 +22,15 @@ class Item(db.Model,SerializerMixin):
         "itemPicture",
         "itemMin",
         "category",
+        "itemDesc"
     )
     withdraw_history = db.relationship("WithdrawHistory", back_populates = "items",  cascade="all, delete-orphan")
-    def __init__(self,ItemName,ItemAmount,ItemPicture,itemMin):
+    def __init__(self,ItemName,ItemAmount,ItemPicture,itemMin,itemDesc):
         self.itemName = ItemName
         self.itemAmount = ItemAmount
         self.itemPicture = ItemPicture
         self.itemMin = itemMin
+        self.itemDesc = itemDesc
     
     def generate_qr(self, data: str):
         qr = segno.make(data)
@@ -36,9 +39,10 @@ class Item(db.Model,SerializerMixin):
         qr_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
         return qr_b64
 
-    def update(self,ItemName,ItemAmount,ItemPicture,itemMin):
+    def update(self,ItemName,ItemAmount,ItemPicture,itemMin,itemDesc):
         self.itemName = ItemName
-        self.itemAmount=ItemAmount
-        self.itemPicture=ItemPicture
-        self.itemMin=itemMin
+        self.itemAmount = ItemAmount
+        self.itemPicture = ItemPicture
+        self.itemMin = itemMin
+        self.itemDesc = itemDesc
         
