@@ -7,6 +7,8 @@ from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
+from sqlalchemy.orm import outerjoin
+from app.models.user_notification_status import UserNotificationStatus
 from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.user import User
@@ -109,21 +111,23 @@ def waiting():
 
 @app.route('/homepage')
 def homepage():
-    # cleanup notifications
     cleanup_expired_notifications()
 
-    # Top 5 withdrawn items in last 6 months
     six_months_ago = datetime.utcnow() - timedelta(days=180)
     top_items_q = (
-        db.session.query(WithdrawHistory.itemID, func.count(WithdrawHistory.withdrawID).label("total"))
+        db.session.query(
+            WithdrawHistory.itemID,
+            func.sum(WithdrawHistory.Quantity).label("total_quantity")
+        )
         .filter(WithdrawHistory.DateTime >= six_months_ago)
         .group_by(WithdrawHistory.itemID)
-        .order_by(func.count(WithdrawHistory.withdrawID).desc())
+        .order_by(func.sum(WithdrawHistory.Quantity).desc())
         .limit(5)
         .all()
     )
+    
     top_items = []
-    for item_id, total in top_items_q:
+    for item_id, total_quantity in top_items_q:
         item = Item.query.get(item_id)
         if item:
             top_items.append({
@@ -132,16 +136,24 @@ def homepage():
                 "itemAmount": item.itemAmount,
                 "itemPicture": item.itemPicture,
                 "itemMin": item.itemMin,
-                "total": int(total)
+                "total": int(total_quantity) if total_quantity is not None else 0
             })
 
-    # notification count (unread, non-expired)
     noti_count = 0
     if current_user.is_authenticated:
-        noti_count = Notification.query.filter(Notification.is_read == False, Notification.expire_at > datetime.utcnow()).count()
+        now = datetime.now(timezone.utc)
+        query = db.session.query(func.count(Notification.id)).outerjoin(
+            UserNotificationStatus,
+            (Notification.id == UserNotificationStatus.notification_id) &
+            (UserNotificationStatus.user_id == current_user.UserID)
+        ).filter(
+            Notification.expire_at > now,
+            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
+            (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
+        )
+        noti_count = query.scalar()
 
     return render_template('home.html', top_items=top_items, noti_count=noti_count)
-
 @app.route('/signin')
 def redirect_to_login():
     return redirect(url_for('login'))
@@ -267,37 +279,71 @@ def category():
         categories=categories,
         items=items
     )
-
+    
 @app.route('/notification')
 @login_required
-@madmin_required
 def notification():
-    cleanup_expired_notifications()
-    notes = Notification.query.filter(Notification.expire_at > datetime.utcnow()).order_by(Notification.created_at.desc()).all()
-    notes_dict = [n.to_dict() for n in notes]
-    return render_template('notification.html', notifications=notes_dict)
-
-@app.route('/notification/delete/<int:noti_id>', methods=['POST'])
-@login_required
-@madmin_required
-def notification_delete(noti_id):
-    n = Notification.query.get(noti_id)
-    if n:
-        db.session.delete(n)
-        db.session.commit()
-        return jsonify({"ok": True})
-    return jsonify({"ok": False}), 404
+    user_id = current_user.UserID
+    now = datetime.now(timezone.utc)
+    notifications_with_status = (
+        db.session.query(
+            Notification,
+            UserNotificationStatus.is_read
+        )
+        .outerjoin(
+            UserNotificationStatus,
+            (Notification.id == UserNotificationStatus.notification_id) &
+            (UserNotificationStatus.user_id == user_id)
+        )
+        .filter(
+            Notification.expire_at > now,
+            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False) 
+        )
+        .order_by(Notification.created_at.desc())
+        .all()
+    )
+    bkk_tz = timezone(timedelta(hours=7))
+    
+    results = []
+    for notif, is_read_status in notifications_with_status:
+        local_time = notif.created_at.astimezone(bkk_tz).strftime('%Y-%m-%d %H:%M:%S')
+        results.append({
+            'id': notif.id,
+            'message': notif.message,
+            'ntype': notif.ntype,
+            'created_at': local_time,
+            'is_read': is_read_status if is_read_status is not None else False
+        })
+    
+    return render_template('notification.html', notifications=results)
 
 @app.route('/notification/mark_read/<int:noti_id>', methods=['POST'])
 @login_required
-@madmin_required
 def notification_mark_read(noti_id):
-    n = Notification.query.get(noti_id)
-    if n:
-        n.is_read = True
-        db.session.commit()
-        return jsonify({"ok": True})
-    return jsonify({"ok": False}), 404
+    user_id = current_user.UserID
+    status = UserNotificationStatus.query.filter_by(user_id=user_id, notification_id=noti_id).first()
+    if status:
+        status.is_read = True
+    else:
+        status = UserNotificationStatus(user_id=user_id, notification_id=noti_id)
+        status.is_read = True
+        db.session.add(status)
+    db.session.commit()
+    return jsonify({"ok": True})
+
+@app.route('/notification/delete/<int:noti_id>', methods=['POST'])
+@login_required
+def notification_delete(noti_id):
+    user_id = current_user.UserID
+    status = UserNotificationStatus.query.filter_by(user_id=user_id, notification_id=noti_id).first()
+    if status:
+        status.is_deleted = True 
+    else:
+        status = UserNotificationStatus(user_id=user_id, notification_id=noti_id)
+        status.is_deleted = True
+        db.session.add(status)
+    db.session.commit()
+    return jsonify({"ok": True})
 
 @app.route('/statistic')
 def statistic():
@@ -406,7 +452,7 @@ def cart():
                     db.session.add(history)
                     db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity}"
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
@@ -535,7 +581,7 @@ def withdraw():
                 db.session.add(history)
                 db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
@@ -642,7 +688,7 @@ def withdraw_byQR(itemID):
         db.session.add(history)
         db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
                     ))
         create_low_stock_notification_if_needed(item, None)
@@ -760,11 +806,23 @@ def test_DB():
     db_cart = CartItem.query.all()
     db_WDhis = WithdrawHistory.query.all()
     db_noti = Notification.query.all()
+    db_noti_status = UserNotificationStatus.query.all()
+
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
     cart = list(map(lambda x:x.to_dict(), db_cart))
     WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
     noti = list(map(lambda x:x.to_dict(),db_noti))
-    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart},{"Withdraw-History":WDhis},{"notification":noti}]
+    noti_status = list(map(lambda x:x.to_dict(), db_noti_status))
+
+    forshow=[
+        {"Category DB": category},
+        {"item DB": item},
+        {"User DB": users},
+        {"Cart": cart},
+        {"Withdraw-History": WDhis},
+        {"notification": noti},
+        {"notification_status": noti_status} # New entry here
+    ]
     return jsonify(forshow)

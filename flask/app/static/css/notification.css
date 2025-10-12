@@ -1,160 +1,152 @@
-:root{
-    --bg--color: #FFF;
-    --base--color: #EEEEEE;
-    --text--color: #000;
-    --text2--color: #777;
-    --border--color: gray;
-    --box--color: #eee;
-    --box2--color: #e0f7fa;
-    --boxhover--color: #e6f2ff;
-    --noti-unread--color: #bbb;
-    --noti-read--color: #eee;
-    --create-date--color: #555;
+:root {
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --title-color: #C85A1A;
+    --card-bg: #ffffff;
+    --timestamp-color: #888;
+    --delete-bg: #e53935;
+    --font-main: 'Inter', sans-serif; /* ใช้ Font Inter ที่ทันสมัยกว่า */
 }
 
-.darkmode{
-    --bg--color: #212121;
-    --base--color: #121212;
-    --text--color: #FFF;
-    --text2--color: #ccc;
-    --border--color: #000;
-    --box--color: #121212;
-    --box2--color: #000066;
-    --boxhover--color: #6993f5;
-    --noti-unread--color: #414141;
-    --noti-read--color: #313131;
-    --create-date--color: #757575;
-}
-
-body{
-    font-family: Arial, sans-serif;
-    background: var(--bg--color);
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
     margin: 0;
-    padding: 0;
+    padding-top: 60px; /* เพิ่มระยะห่างสำหรับ Top Bar ที่จะ Fixed ไว้ด้านบน */
 }
 
-.top-bar{
+.top-bar {
     display: flex;
     align-items: center;
-    padding: 16px;
-    background-color: var(--base--color);
-    position: sticky;
+    padding: 0 16px;
+    background-color: var(--card-bg);
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
 }
 
-.top-bar span{
-    color: var(--text--color);
-    font-size: 1.5rem;
+.back-arrow {
+    color: var(--title-color);
+    text-decoration: none;
+    margin-right: 10px;
+    padding: 8px; /* ทำให้พื้นที่กดใหญ่ขึ้น */
 }
 
-.center{
-    flex: 1;
-    text-align: center;
-    margin: 0;
-}
-
-.center span{
+.page-title {
+    color: var(--title-color);
+    font-size: 1.2rem;
     font-weight: 600;
-    color: var(--text--color);
-}
-
-.item{
-    display: flex;
-    align-items: center;
-    background: var(--box--color);
-    padding: 20px;
-    margin-top: 25px;
-    border-radius: 5px;
-}
-
-.item :first-child{
-    margin-right: 12px;
-}
-
-.item-text {
-    display: flex;       
-    flex-direction: column; 
-    align-items: flex-start; 
-}
-
-.item-text span {
-    font-size: 1rem;
-    text-align: left; 
-    width: 100%;      
-}
-
-.item-text span:last-child{
-    align-self: flex-start;
-    text-align: left;
-    font-size: 0.85rem;
-    opacity: 50%;
-}
-
-.item svg{
-    width: 3rem;
-    height: 3rem;
-}
-
-.item.unread{
-    background: var(--box2--color);
-}
-
-.item.read{
-    background: var(--box--color);
-}
-
-.item span{
-    color: var(--text--color);
-    flex: 1;
-    text-align: left;
-    line-height: 1.4;
-}
-
-.item:hover{
-    background: var(--boxhover--color);
+    margin: 0;
+    text-align: center;
+    flex-grow: 1; /* ทำให้ Title อยู่กึ่งกลางเสมอ */
+    margin-right: 30px; /* ชดเชยพื้นที่ของปุ่ม back */
 }
 
 .notification-list {
-    padding:12px;
+    padding: 16px;
 }
 
-.notification-item {
-    display:flex;
-    justify-content:space-between;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:10px;
-    background: var(--noti-read--color);
-}
-.notification-item.unread {
-    background: var(--noti-unread--color);
-}
-.swipe-delete {
-    color:red;
-    cursor:pointer;
+.notification-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
-.create-date {
-    color: var(--create-date--color);
+.notification-item-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 2; /* ทำให้เนื้อหาหลักอยู่ด้านบน action delete */
+    transition: transform 0.3s ease;
 }
 
-.noti-name {
-    color: var(--text--color)
+.notification-content {
+    padding: 16px;
 }
 
-.noti-message {
-    color: var(--text--color)
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-.read-btn {
-    background: var(--box2--color);
-    color: var(--text--color);
+.notification-type {
+    font-weight: 600;
+    color: var(--text-color);
 }
 
-.del-btn {
-    background:none;
-    border:1px solid #eee;
-    padding:6px;
-    border-radius:6px;
-    color: var(--text--color);
+.mark-read-btn {
+    background: none;
+    border: none;
+    color: var(--title-color);
+    cursor: pointer;
+    padding: 0;
 }
+
+.notification-message {
+    margin: 0 0 12px 0;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.notification-timestamp {
+    font-size: 0.75rem;
+    color: var(--timestamp-color);
+}
+
+.delete-action {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 110px;
+    background-color: var(--delete-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.no-notifications {
+    text-align: center;
+    color: #888;
+    margin-top: 40px;
+}
+
+/* --- Responsive Design for Tablets (iPad) and Desktops --- */
+@media (min-width: 768px) {
+    .notification-list {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 24px;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+    }
+
+    .notification-message {
+        font-size: 1rem;
+    }
+
+    .notification-timestamp {
+        font-size: 0.85rem;
+    }
+}
+
