@@ -48,6 +48,16 @@
     </div>
 
 <script>
+    var offset = new Date().getTimezoneOffset();
+    var hours = offset/60;
+    var minite = offset%60;
+    if (minite == 0 ){
+        minite = "";
+    }
+    // console.log(offset);
+    // console.log(hours);
+    // console.log(minite);
+
     function confirmDelete() {
         return confirm("Are you sure you want to delete this item?");
     }
@@ -62,6 +72,34 @@
         if(res.ok) location.reload();
         else alert('Mark read failed');
     }
+    window.addEventListener("load", (event) => {
+        const all_date = document.getElementsByClassName("create-date");
+        //console.log(all_date);
+        // 2025-10-12 14:22:46
+        for (let i = 0;i < all_date.length; i++){
+            let make_shift = all_date[i].innerHTML;
+            if((make_shift.slice(14,16) + minite )>= 60){
+                make_shift = make_shift.slice(0,14) + ((make_shift.slice(14,16) + minite)%60) + make_shift.slice(16);
+            } else{
+                make_shift = make_shift.slice(0,14) + (make_shift.slice(14,16) + minite) + make_shift.slice(16);
+            }
+            if ((all_date[i].innerHTML.slice(11,13) - hours ) >= 24){
+                make_shift = make_shift.slice(0,11) + ((make_shift.slice(11,13) - hours)%24) + make_shift.slice(13);
+                if ((make_shift.slice(8,10) + 1) < 10){
+                    make_shift = make_shift.slice(0,8) + "0" + (make_shift.slice(9,10) + 1) + make_shift.slice(10);
+                } else {
+                    make_shift = make_shift.slice(0,8) + (make_shift.slice(8,10) + 1) + make_shift.slice(10);
+                }
+            } else {
+                make_shift = make_shift.slice(0,11) + (make_shift.slice(11,13) - hours) + make_shift.slice(13);
+            }
+            all_date[i].innerHTML = make_shift;
+
+            // Please make this better in the future. From Onyx.
+            // will break when end of the month PLEASE FIX
+            //console.log(make_shift);
+        }
+    })
 </script>
 </body>
 </html>
