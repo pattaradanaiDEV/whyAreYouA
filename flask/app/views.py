@@ -1,5 +1,8 @@
 import json
 import os
+import io
+import base64
+import qrcode
 import re
 from flask import (jsonify, render_template, flash,
                   request, url_for, flash, current_app, abort, session, redirect)
@@ -72,6 +75,30 @@ def madmin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/get_qr/<int:item_id>')
+def get_qr_code(item_id):
+    try:
+        item = Item.query.get_or_404(item_id)
+        qr_data = url_for('scanresult', itemID=item.itemID, _external=True)
+        
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return jsonify({
+            'success': True,
+            'qr_code_base64': img_str,
+            'item_name': item.itemName
+        })
+    except Exception as e:
+        current_app.logger.error(f"Error generating QR for item {item_id}: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 def cleanup_expired_notifications():
     """Remove expired notifications from DB"""
     now = datetime.utcnow()

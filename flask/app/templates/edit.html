@@ -18,14 +18,14 @@
         }
     </script>
     <div class="top-bar">
-    	<div class="back">
-        	<a href="{{ url_for('category') }}">
+      <div class="back">
+          <a href="{{ url_for('category') }}">
                 <span class="material-icons">arrow_back_ios_new</span> 
             </a>
-    	</div>
-    	<div class="category">
-        	<span>Edit</span>
-    	</div>
+      </div>
+      <div class="category">
+          <span>Edit</span>
+      </div>
         <div></div>
     </div>
 
@@ -97,43 +97,96 @@
           </div>
         </form>
 
-        <div style="margin-top:16px;">
-            <h4 class="text">QR</h4>
-            <img src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code" style="width:150px;height:150px;">
+        <div class="qr-container">
+            <button id="printQrBtn" class="add-btn" type="button">Print QR</button>
+            <img id="qrImage" src="data:image/png;base64,{{ QR_Barcode }}" alt="QR Code">
         </div>
-      </div>
+        </div>
     </div>
 
 <script>
-    const imgFile = document.getElementById('preview-img');
-    const inputBox = document.getElementById('img-file');
-    inputBox && inputBox.addEventListener('change', function () {
-      const reader = new FileReader();
-      reader.onload = () => imgFile.src = reader.result;
-      reader.readAsDataURL(this.files[0]);
-    });
-    function toggleList() {
-      document.getElementById("dropdownList").style.display = "block";
+  const imgFile = document.getElementById('preview-img');
+  const inputBox = document.getElementById('img-file');
+  inputBox && inputBox.addEventListener('change', function () {
+    const reader = new FileReader();
+    reader.onload = () => imgFile.src = reader.result;
+    reader.readAsDataURL(this.files[0]);
+  });
+  function toggleList() {
+    document.getElementById("dropdownList").style.display = "block";
+  }
+  function filterFunction() {
+    let input = document.getElementById("searchBox");
+    let filter = input.value.toUpperCase();
+    let div = document.getElementById("dropdownList");
+    let items = div.getElementsByTagName("div");
+    for (let i = 0; i < items.length; i++) {
+      let txtValue = items[i].textContent || items[i].innerText;
+      items[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
     }
-    function filterFunction() {
-      let input = document.getElementById("searchBox");
-      let filter = input.value.toUpperCase();
-      let div = document.getElementById("dropdownList");
-      let items = div.getElementsByTagName("div");
-      for (let i = 0; i < items.length; i++) {
-        let txtValue = items[i].textContent || items[i].innerText;
-        items[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
-      }
-    }
-    function selectItem(value) {
-      let input = document.getElementById("searchBox");
-      input.value = value;
+  }
+  function selectItem(value) {
+    let input = document.getElementById("searchBox");
+    input.value = value;
+    document.getElementById("dropdownList").style.display = "none";
+  }
+  window.onclick = function (e) {
+    if (!e.target.matches('#searchBox')) {
       document.getElementById("dropdownList").style.display = "none";
     }
-    window.onclick = function (e) {
-      if (!e.target.matches('#searchBox')) {
-        document.getElementById("dropdownList").style.display = "none";
-      }
-    }
+  }
+
+   document.getElementById('printQrBtn').addEventListener('click', function() {
+      const qrImageSrc = document.getElementById('qrImage').src;
+      const itemName = document.querySelector('input[name="getname"]').value || 'QR Code';
+
+      const printWindow = window.open('', '_blank');
+
+      printWindow.document.write(`
+          <html>
+          <head>
+              <title>Print QR Code - ${itemName}</title>
+              <style>
+                  @page {
+                      size: A4 portrait; 
+                      margin: 2cm;      
+                  }
+
+                  body { 
+                      margin: 0; 
+                      padding: 0; 
+                      display: flex; 
+                      flex-direction: column; 
+                      align-items: center; 
+                      font-family: sans-serif;
+                  }
+
+                  h3 { 
+                      margin-bottom: 20px; 
+                      font-size: 16pt;
+                  }
+                  
+                  img { 
+                      width: 8cm;  
+                      height: 8cm;
+                      
+                      image-rendering: pixelated; 
+                      image-rendering: crisp-edges; 
+                  }
+              </style>
+          </head>
+          <body>
+              <h3>${itemName}</h3>
+              <img src="${qrImageSrc}" onload="window.print();">
+          </body>
+          </html>
+      `);
+
+      printWindow.document.close();
+      
+      printWindow.onafterprint = function() {
+          printWindow.close();
+      };
+  });
 </script>
 </body>
