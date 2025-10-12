@@ -31,11 +31,7 @@ from wtforms.validators import Email
 from sqlalchemy import func
 from datetime import datetime, timedelta, timezone
 from dateutil import tz
-#from tzlocal import get_localzone
 
-# -----------------------
-# Helper decorators & functions
-# -----------------------
 @app.before_request
 def check_user_available():
     except_routes = [
