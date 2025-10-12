@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from flask import (jsonify, render_template, flash,
                   request, url_for, flash, current_app, abort, session, redirect)
 from functools import wraps
@@ -104,7 +105,7 @@ def landing():
 def waiting():
     if current_user.availiable == True:
         return redirect(url_for('homepage'))
-    return app.send_static_file('waiting.html')
+    return render_template('waiting.html')
 
 @app.route('/homepage')
 def homepage():
@@ -141,77 +142,104 @@ def homepage():
 
     return render_template('home.html', top_items=top_items, noti_count=noti_count)
 
-@app.route('/signup')
 @app.route('/signin')
 def redirect_to_login():
     return redirect(url_for('login'))
 
-@app.route('/login', methods=["get", "post"])
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+
+        fname = request.form.get('firstname', '').strip()
+        lname = request.form.get('lastname', '').strip()
+        phone = request.form.get('phonenumber', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        profile_pic_file = request.files.get('profile_pic')
+
+        if not all([fname, lname, phone, email, password, confirm_password]):
+            flash("Please fill in all required fields.")
+            return redirect(url_for('signup'))
+            
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            flash("Invalid email address format.")
+            return redirect(url_for('signup'))
+
+        if not phone.isdigit():
+            flash("Phone number must contain only digits.")
+            return redirect(url_for('signup'))
+            
+        if len(password) < 8:
+            flash("Password must be at least 8 characters long.")
+            return redirect(url_for('signup'))
+        if not re.search(r"[A-Z]", password):
+            flash("Password must contain at least one uppercase letter.")
+            return redirect(url_for('signup'))
+        if not re.search(r"[0-9]", password):
+            flash("Password must contain at least one number.")
+            return redirect(url_for('signup'))
+            
+        if password != confirm_password:
+            flash("Passwords do not match.")
+            return redirect(url_for('signup'))
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("This email is already registered.")
+            return redirect(url_for('signup'))
+
+        profile_pic_identifier = None
+        if profile_pic_file and profile_pic_file.filename != '':
+            profile_pic_identifier = secure_filename(profile_pic_file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], profile_pic_identifier)
+            profile_pic_file.save(filepath)
+        else:
+            profile_pic_identifier = gen_avatar_url(email, fname)
+
+        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+        new_user = User(
+            Fname=fname,
+            Lname=lname,
+            phoneNum=phone,
+            email=email,
+            password=hashed_password,
+            profile_pic=profile_pic_identifier
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        db.session.add(Notification(
+            user_id=new_user.UserID,
+            ntype="request",
+            message=f"{new_user.Fname} {new_user.Lname} has requested access to the system."
+        ))
+        db.session.commit()
+
+        flash("Sign up successful! Please wait for admin approval.")
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
         user = User.query.filter_by(email=email).first()
         if not user:
-            flash("There no such user. Please try again")
+            flash("User not found. Please try again or sign up.")
             return redirect(url_for('login'))
+        
         if not check_password_hash(user.password, password):
-            flash("Incorrect password. Please try again")
+            flash("Incorrect password. Please try again.")
             return redirect(url_for('login'))
+        
         login_user(user)
         return redirect(url_for('homepage'))
     return render_template('signup.html')
-
-@app.route('/add_user')
-def add_user():
-    return render_template('add_user.html')
-
-@app.route('/add_user_to_db', methods=['post'])
-def add_user_to_db():
-    result = request.form.to_dict()
-
-    validated = True
-    validated_dict = {}
-    valid_keys = ["email", "username", "password"]
-
-    # basic validation
-    for key in result:
-        if key not in valid_keys:
-            continue
-        value = result[key].strip()
-        if not value or value == "undefined":
-            validated = False
-            break
-        validated_dict[key] = value
-
-    if not validated:
-        flash("Invalid input")
-        return redirect(url_for('signup'))
-
-    email = validated_dict["email"]
-    username = validated_dict["username"]
-    password = validated_dict["password"]
-
-    user = User.query.filter_by(email=email).first()
-    if user:
-        flash("Email already used")
-        return redirect(url_for('signup'))
-
-    phoneNum = result.get("phoneNum", "").strip()
-    avatar_url = gen_avatar_url(email, username)
-    new_user = User(Fname=username, Lname="", phoneNum=phoneNum, email=email, profile_pic=avatar_url, password=generate_password_hash(password, method="sha256"))
-    db.session.add(new_user)
-    db.session.commit()
-    db.session.add(Notification(
-        user_id=new_user.UserID,
-        ntype="request",
-        message=f"{new_user.Fname} {new_user.Lname} ได้ขอเข้าใช้งานระบบ"
-    ))
-    db.session.commit()
-
-    # create signup notification (admins should see)
-    flash("User added. Waiting admin approval.")
-    return redirect(url_for('login'))
 
 def gen_avatar_url(email, username):
     bgcolor = (generate_password_hash(email, method="sha256") + generate_password_hash(username, method="sha256"))[-6:]
