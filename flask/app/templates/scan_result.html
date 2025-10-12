@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{ item.itemName }} - Scan Result</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --title-color: #C85A1A;
+            --card-bg: #ffffff;
+            --timestamp-color: #888;
+            --delete-bg: #e53935;
+            --font-main: 'Inter', sans-serif; /* ใช้ Font Inter ที่ทันสมัยกว่า */
+        }
         html, body {
             margin: 0;
             padding: 0;
@@ -18,7 +30,36 @@
             justify-content: center;
             align-items: center;
         }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            background-color: var(--card-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
 
+        .back-arrow {
+            color: var(--title-color);
+            text-decoration: none;
+            margin-right: 10px;
+            padding: 8px; 
+        }
+
+        .page-title {
+            color: var(--title-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1; /* ทำให้ Title อยู่กึ่งกลางเสมอ */
+            margin-right: 30px; /* ชดเชยพื้นที่ของปุ่ม back */
+        }
         .container {
             width: 90%;
             max-width: 400px;
@@ -49,7 +90,7 @@
             padding: 15px;
             border: none;
             border-radius: 30px; /* ทำให้ปุ่มโค้งมนเป็นแคปซูล */
-            font-family: 'Pridi', serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1.3rem; /* ปรับขนาด font ของปุ่ม */
             font-weight: 600; /* ทำให้ตัวหนังสือหนาขึ้น */
             color: white;
@@ -75,6 +116,12 @@
     </style>
 </head>
 <body>
+    <div class="top-bar">
+        <a href="{{ url_for('homepage') }}" class="back-arrow">
+            <i class="material-icons">arrow_back_ios</i>
+        </a>
+        <h1 class="page-title">Scan Result</h1>
+    </div>
     <div class="container">
         {% if item.itemPicture %}
             <img src="{{ url_for('static', filename='img/' + item.itemPicture) }}" alt="{{ item.itemName }}" class="item-image">

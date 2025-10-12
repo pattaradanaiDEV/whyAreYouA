@@ -660,13 +660,63 @@ def edit():
     # GET
     # prepare categories for dropdown
     categories = Category.query.order_by(Category.cateID).all()
-    qr_b64 = item.generate_qr(f"http://localhost:56733/withdraw?itemID={item.itemID}")
+    full_url_for_qr = url_for('scanresult', itemID=item.itemID, _external=True)
+    qr_b64 = item.generate_qr(full_url_for_qr)
     return render_template(
         'edit.html',
         item=item,
         QR_Barcode=qr_b64,
         categories=categories
     )
+
+@app.route('/qr_scanner')
+@login_required
+def qr_scanner(): 
+    return render_template('qr_scanner.html')
+
+@app.route('/handle_scan', methods=['POST'])
+@login_required
+def handle_scan():
+    data = request.get_json()
+    scanned_url = data.get('scanned_url')
+
+    if not scanned_url:
+        return jsonify({'error': 'No URL provided'}), 400
+
+    match = re.search(r'itemID=(\d+)', scanned_url)
+    if not match:
+        return jsonify({'error': 'Invalid QR code format'}), 400
+
+    item_id = match.group(1)
+    
+    if current_user.IsM_admin:
+        redirect_url = url_for('scanresult', itemID=item_id)
+    else:
+        redirect_url = url_for('withdraw', itemID=item_id)
+        
+    return jsonify({'redirect_url': redirect_url})
+
+@app.route('/scanresult')
+@login_required
+def scanresult():
+    """
+    แสดงหน้ารายละเอียดสินค้าสำหรับ Admin หลังจากสแกน QR
+    UI ตามรูป image_057800.png
+    """
+    if not current_user.IsM_admin:
+        flash("You don't have permission to access this page.", "danger")
+        return redirect(url_for('homepage'))
+        
+    item_id = request.args.get('itemID')
+    if not item_id:
+        return "Item ID is required", 400
+
+    item = Item.query.get(item_id)
+    if not item:
+        return "Item not found", 404
+        
+    return render_template('scan_result.html', item=item)
+
 
 @app.route('/setting')
 def setting():

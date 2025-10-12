@@ -130,10 +130,10 @@
             </a>
             <span class="action1">Stock</span>
         </div>
-        <div onclick="openScanner()" class="nav-item">
+        <a href="{{ url_for('qr_scanner') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
             <span class="action2">QR Scan</span>
-        </div>
+        </a>
 
         <div class="nav-item">
             {% if current_user.IsM_admin %}
@@ -164,10 +164,6 @@
         .catch(err => console.error("SW registration failed", err));
         }
     </script>
-    <div id="qr-container">
-        <div id="reader"></div>
-        <button id="close-btn" onclick="closeScanner()">ปิดกล้อง</button>
-    </div>
 </body>
 </html>
 
@@ -204,35 +200,6 @@
         event.preventDefault();
         window.location.href = "logout";
     });
-
-    let html5QrCode;
-
-    function openScanner() {
-      document.getElementById("qr-container").style.display = "flex";
-      html5QrCode = new Html5Qrcode("reader");
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10 },
-        qrCodeMessage => {
-          console.log(`QR Code detected: ${qrCodeMessage}`);
-          html5QrCode.stop().then(() => {
-            window.location.href = qrCodeMessage; 
-          });
-        },
-        errorMessage => {
-          // console.log(`QR scan error: ${errorMessage}`);
-        }
-      );
-    }
-
-    function closeScanner() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          document.getElementById("qr-container").style.display = "none";
-        });
-      }
-    }
 
     function urlFor(link) {
         location.href = '/' + link;
