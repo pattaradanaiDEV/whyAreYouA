@@ -103,7 +103,7 @@ def landing():
 def waiting():
     if current_user.availiable == True:
         return redirect(url_for('homepage'))
-    return f"รอก่อนไอ่น้อง"
+    return app.send_static_file('waiting.html')
 
 @app.route('/homepage')
 def homepage():
@@ -545,8 +545,8 @@ def edit():
             qty = int(request.form.get("getamount", 1))
             cart_item = CartItem.query.filter_by(UserID=current_user.UserID, ItemID=item.itemID, Status='e').first()
             if cart_item:
-                if cart_item.Quantity + qty > item.itemAmount:
-                    flash("จำนวนรวมในตะกร้าเกินสต็อก", "danger")
+                if cart_item.Quantity + qty <= item.itemAmount: # currenetAmount <= itemAmount in cart + qty
+                    flash("ไม่สามรถป้อนจำนวนที่น้อยกว่าได้", "danger")
                     return redirect(url_for('edit', itemID=item.itemID))
                 cart_item.Quantity += qty
             else:
@@ -588,7 +588,7 @@ def edit():
     # GET
     # prepare categories for dropdown
     categories = Category.query.order_by(Category.cateID).all()
-    qr_b64 = item.generate_qr(f"http://localhost:56733/item/{item.itemID}/withdraw")
+    qr_b64 = item.generate_qr(f"http://localhost:56733/withdraw?itemID={item.itemID}")
     return render_template(
         'edit.html',
         item=item,

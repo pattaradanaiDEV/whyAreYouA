@@ -42,14 +42,12 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 30px;
   padding: 3vh 4vw;        
   margin: 8vh 0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   font-size: 4vw;
-  cursor: pointer;
   transition: background-color 0.2s;
 }
 
