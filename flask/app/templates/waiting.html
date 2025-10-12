@@ -9,11 +9,27 @@
     <title>waiting</title>
 </head>
 <body>
-    <div class="app-container wait-container">
-        <img src="{{ url_for('static', filename='ico/stock_logo.png') }}" alt="stock-logo" class="logo"/>
-        
-        <h1 class="wait-title">Please wait</h1>
-        <p class="wait-subtitle">For admin approval</p>
-    </div>
+        <div class="app-container wait-container">
+            <img src="{{ url_for('static', filename='ico/stock_logo.png') }}" alt="stock-logo" class="logo"/>
+            
+            <h1 class="wait-title">Please wait</h1>
+            <p class="wait-subtitle">For admin approval</p>
+
+            <div class="action-btn" id="logout-bar">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+                <span id="to_login" type="button" value="to_login" onclick="to_login()">Return to login page</span>
+            </div>
+        </div>
 </body>
 </html>
+<script>
+    function to_login() {
+        window.location.href = "login";
+    }
+
+    const logoutButton = document.querySelector('#logout')
+    logoutButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        confirmAction();
+    });
+</script>

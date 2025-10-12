@@ -58,7 +58,7 @@ def check_user_available():
         return redirect(url_for('login'))
 
     if not current_user.availiable:
-        if endpoint != 'waiting':
+        if endpoint != 'waiting' or endpoint != 'login':
             return redirect(url_for('waiting'))
 
     return None
@@ -68,8 +68,8 @@ def madmin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.IsM_admin:
-            peeman = User.query.get(2)
-            return f"You are not Main_admin please contact {peeman.Fname} {peeman.Lname}"  # Forbidden
+            pman = User.query.get(2)
+            return render_template('forbidden.html', pman = pman)  # Forbidden
         return f(*args, **kwargs)
     return decorated_function
 
