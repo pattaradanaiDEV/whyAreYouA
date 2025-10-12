@@ -11,17 +11,17 @@
 </head>
 <body>
     <div class="app-container">
-        <img src="{{ url_for('static', filename='ico/stock_logo.png') }}" alt="stock-logo" class="logo" />
+        <img src="{{ url_for('static', filename='ico/stock_logo.png') }}" alt="stock-logo" class="logo"/>
         
         <p class="app-title">CS' Stock Managing System</p>
 
         <a href="{{ url_for('google') }}" class="google-login-button">
-            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="google-logo">
             <span>Login with google</span>
         </a>
 
         <div class="divider">
-            <p>OR</p>
+            <p class="divider-text">OR</p>
         </div>
 
         <form method="post" class="login-form">

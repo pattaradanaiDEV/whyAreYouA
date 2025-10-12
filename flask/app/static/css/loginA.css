@@ -12,7 +12,7 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 400px; /* Limit max width for better appearance on larger screens */
+    
     padding: 8vw 6vw;
     text-align: center;
     box-sizing: border-box;
@@ -20,7 +20,6 @@ body {
 
 .logo {
     width: 40dvw;
-    max-width: 150px;
     margin-bottom: 24px;
 }
 
@@ -68,8 +67,7 @@ body {
 }
 
 .google-login-button img {
-    height: 24px;
-    width: 24px;
+    width: 4.5vw;
 }
 
 .submit-button {
@@ -82,6 +80,10 @@ body {
 }
 
 /* --- Divider --- */
+.divider-text {
+    font-size: 2vw;
+}
+
 .divider {
     display: flex;
     align-items: center;
@@ -119,7 +121,7 @@ body {
 
 .input-container i.material-icons {
     color: #999;
-    font-size: 22px;
+    font-size: 4.5vw;
     margin-right: 10px;
 }
 
@@ -151,7 +153,7 @@ body {
 }
 
 .upload-circle i.material-icons {
-    font-size: 50px;
+    font-size: 2vw;
     color: #AAA;
 }
 
@@ -194,7 +196,6 @@ body {
 
 .wait-container .logo {
     width: 55dvw; 
-    max-width: 220px;
     margin-bottom: 24px;
 }
 

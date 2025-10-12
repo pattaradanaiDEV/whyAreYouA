@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../static/css/setting.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Forbidden</title>
+</head>
+<body class="lightmode"> 
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
+    <div class="top-bar">
+        <a href="{{ url_for('homepage') }}">
+            <span class="material-icons">arrow_back_ios</span>
+        </a>
+        <div class="center">
+            <span>Not Allowed!</span>
+        </div>
+    </div>
+
+    <div class="profile">
+        <p class="profile-text">You do not have permission to do such action. </p>
+        <p class="profile-text">You are not Main_admin, please contact {{ pman.Fname }} {{ pman.Lname }}.</p>
+    </div>
+</body>
+</html>
