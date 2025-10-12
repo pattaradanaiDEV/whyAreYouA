@@ -33,31 +33,46 @@ body {
   width: 100%;
 }
 
+/* --- ADDED: ลบเส้นใต้ลิงก์ทั้งหมด --- */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
 svg {
   color: var(--text--color);
   fill: var(--text--color);
 }
 
 .lightmode {
-  --base--color: rgba(188, 188, 188, 0.5);
+  --base--color: rgba(221, 221, 221, 0.8); /* Adjusted for card background */
   --basebg--color: #eee;
   --border--color: gray;
   --hover--color: gray;
   --text--color: #000;
   --text2--color: #000;
   --noti-num--color: white;
+  --dark-btn-bg: #333;
+  --dark-btn-text: #fff;
+  --light-btn-bg: #ccc;
+  --light-btn-text: #333;
 
   transition: background 0.5s ease, color 0.5s ease;
 }
 
 .darkmode {
-  --base--color: #555;
+  --base--color: #444;
   --basebg--color: #212121;
   --border--color: gray;
   --hover--color: gray;
-  --text--color: #000;
-  --text2--color: #888;
+  --text--color: #fff; /* Changed for dark mode text */
+  --text2--color: #ccc;
   --noti-num--color: white;
+  --dark-btn-bg: #666;
+  --dark-btn-text: #fff;
+  --light-btn-bg: #555;
+  --light-btn-text: #ddd;
 
   transition: background 0.5s ease, color 0.5s ease;
 }
@@ -102,22 +117,16 @@ svg {
 }
 
 .user-icon {
-  width: 10rem;
-  height: 10rem;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   background: var(--buttonbg--color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   color: #f5f5f5;
   font-weight: bold;
-}
-
-.profile {
-  height: 3rem;
-  object-fit: cover;
-  width: 3rem;
 }
 
 .profile-text {
@@ -151,7 +160,6 @@ svg {
 }
 
 .notification:hover {
-  fill: var(--hover--color);
   transform: scale(1.1);
 }
 
@@ -164,37 +172,6 @@ svg {
   position: absolute;
   right: 5px;
   top: 5px;
-}
-
-.search-container {
-  align-items: center;
-  background-color: var(--base--color);
-  border: var(--border--color);
-  border-radius: 30px;
-  display: flex;
-  flex: 1;
-  margin: 20px auto;
-  padding: 10px;
-  width: 90%;
-}
-
-.search-container img {
-  height: 25px;
-  width: 25px;
-}
-
-.search-input {
-  background:transparent;
-  border: none;
-  flex: 1;
-  font-size: 1rem;
-  outline: none;
-  padding-left: 3%;
-  width: 100%;
-}
-
-.search-input::placeholder {
-  color: var(--text--color);
 }
 
 .category-container {
@@ -227,11 +204,6 @@ svg {
   background-color: #E5E7EB;
 }
 
-.circle-button img {
-  height: 25px;
-  width: 25px;
-}
-
 .topfive{
   text-align: center;
   margin: 10px auto;
@@ -247,106 +219,136 @@ svg {
 .topused-container{
   padding: 10px;
   padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+/* --- MODIFIED: ITEM CARD STYLES --- */
 .item-card{
-  width: 100%;
-  display: flex;
-  align-items: flex-start;
-  width: fit-content;
-  margin: 10px;
+  width: 90%;
+  margin: 10px auto;
   padding: 10px;
-  background: none;
-  border-radius: 10px;
+  background: var(--base--color);
+  border-radius: 20px;
   transition: transform 0.2s;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
 }
 
 .item-card:hover {
-  transform: translateY(-3px);
-}
-
-.item-card img{
-  width: 8rem;
-  height: 8rem;
-  border-radius: 20px;
-  object-fit: cover;
-}
-
-.item-card span{
-  font-size: 1rem;
-  font-weight: 500;
+  transform: translateY(-5px);
 }
 
 .img-wrapper{
   position: relative;
   display: inline-block;
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 15px;
+  flex-shrink: 0;
+}
+
+.img-wrapper img, .img-wrapper .item-icon {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 10px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  background-color: #ddd;
+  color: #333;
 }
 
 .status-dot{
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 15px;
-  height: 15px;
+  top: 15px;
+  left: 5px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+  z-index: 2;
+  border: 2px solid white;
 }
 
 .status-dot.green{
   background-color: #4caf50;
+  opacity: 0.7;
 }
-
 .status-dot.yellow{
-  background-color: #ffff1b;
+  background-color: #ffc107;
+  opacity: 0.7;
 }
 .status-dot.red{
-  background-color: #FF0000;
+  background-color: #f44336;
+  opacity: 0.7;
 }
 
 .item-info{
-  padding: 10px;
+  padding-left: 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
   align-items: flex-start;
-}
-
-.item-info span{
-  font-size: 1.2rem;
+  flex-grow: 1;
 }
 
 .item-name{
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--text2--color);
 }
 
-.item-qty{
+.item-details{
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text2--color);
+  opacity: 0.8;
 }
 
-.item-category{
-  font-size: 0.85rem;
-  color: #999;
+.button-group {
+  width:100%;
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .quick-btn {
-  margin-top: 6px;
-  padding: 6px 12px;
+  padding: 12px 20px;
   font-size: 0.85rem;
   border: none;
-  border-radius: 8px;
-  background: var(--base--color);
-  color: var(--text--color);
+  border-radius: 12px;
   cursor: pointer;
   transition: 0.2s;
+  font-weight: 500;
 }
-.quick-btn:hover {
-  background: gray;
+
+.withdraw-btn {
+  width:100%;
+  background-color: var(--dark-btn-bg);
+  color: var(--dark-btn-text);
 }
+.withdraw-btn:hover {
+  opacity: 0.8;
+}
+
+.edit-btn {
+  width:100%;
+  background-color: var(--light-btn-bg);
+  color: var(--light-btn-text);
+}
+.edit-btn:hover {
+  opacity: 0.8;
+}
+/* --- END MODIFIED ITEM CARD --- */
 
 
 .bottom-nav {
@@ -356,7 +358,7 @@ svg {
   width: 100%;
   background-color: var(--base--color);
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 10px 10px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -364,7 +366,7 @@ svg {
 }
 
 .nav-item {
-  flex: 1; /* 👈 ให้ทุกช่องกว้างเท่ากัน */
+  flex: 1;
   align-items: center;
   justify-content: center;
   display: flex;
@@ -375,46 +377,15 @@ svg {
 }
 
 .nav-item svg {
-  height: 2.5rem;
-  width: 2.5rem;
+  height: 2rem;
+  width: 2rem;
+  margin-bottom: 4px;
 }
 
 .nav-item span {
   font-size: 0.8rem;
-  white-space: nowrap; /* ป้องกันตัดบรรทัด */
+  white-space: nowrap;
 }
-
-#language-switch {
-  align-items: center;
-  background: none;
-  border: none;
-  border-radius: 50%;
-  color: var(--text2--color);
-  cursor: pointer;
-  display: flex;
-  font-weight: 600;
-  height: 3rem;
-  justify-content: center;
-  padding: 0;
-  width: 3rem;
-
-  /* background-color: var(--base--color); */
-}
-
-#language-switch span {
-  color: var(--text-color);
-  font-size: 1.5rem;
-  display: none; 
-}
-
-.en #language-switch span:first-child {
-  display: inline-block;
-}
-
-.th #language-switch span:last-child {
-  display: inline-block;
-}
-
 
 #theme-switch {
   align-items: center;
@@ -447,19 +418,8 @@ svg {
   display: block;
 }
 
-@media (max-width: 768px) {
-  .profile-text {
-    font-size: 0.8rem;
-  }
-
-  .search-container {
-    width: 90%;
-  }
-
-  .category-container {
-    gap: 10px;
-    padding: 8px;
-  }
+.text {
+  color: var(--text2--color);
 }
 
 @media (max-width: 480px) {
@@ -467,78 +427,8 @@ svg {
     height: 50px;
     width: 50px;
   }
-
-  .profile {
-    height: 30px;
-    width: 30px;
-  }
-
-  .search-container {
-    width: 95%;
-  }
-
   .circle-button {
     height: 45px;
     width: 45px;
   }
-
-  .circle-button img {
-    height: 20px;
-    width: 20px;
-  }
-
-  .nav-item img {
-    height: 28px;
-    width: 28px;
-  }
-
-  .nav-item {
-    font-size: 10px;
-  }
-}
-#qr-container {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 9999;
-}
-
-#reader {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-#reader video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: red;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  font-size: 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10000;
-}
-
-.text {
-  color: var(--text2--color);
 }
