@@ -116,7 +116,6 @@ def homepage():
 
     six_months_ago = datetime.utcnow() - timedelta(days=180)
     top_items_q = (
-<<<<<<< HEAD
         db.session.query(
             WithdrawHistory.itemID,
             func.sum(WithdrawHistory.Quantity).label("total_quantity")
@@ -125,13 +124,6 @@ def homepage():
         .group_by(WithdrawHistory.itemID)
         .order_by(func.sum(WithdrawHistory.Quantity).desc())
         .limit(5)
-=======
-        db.session.query(WithdrawHistory.itemID, func.sum(WithdrawHistory.Quantity).label("total"))
-        .filter(WithdrawHistory.DateTime >= six_months_ago)
-        .group_by(WithdrawHistory.itemID)                       # Now show total amout that got withdrawed.
-        .order_by(func.sum(WithdrawHistory.Quantity).desc())    # I don't know why but It sure take a lot of time to load when it got update.
-        .limit(5)                                               # Please look into this problem please for better user experience.
->>>>>>> 6636bcf16d3312f2c1a8f2b122daebf69e4c57f8
         .all()
     )
     
