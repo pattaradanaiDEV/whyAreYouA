@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>{{ item.itemName }} - Scan Result</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .item-image {
+            max-width: 200px; 
+            width: 50%;
+            height: auto;
+            margin-bottom: 25px; 
+            border-radius: 15px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .item-name {
+            font-size: 2rem; 
+            font-weight: 600;
+            color: #d17a22;
+            margin-bottom: 50px;
+        }
+
+        .action-button {
+            display: block;
+            width: 90%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px; /* ทำให้ปุ่มโค้งมนเป็นแคปซูล */
+            font-family: 'Pridi', serif;
+            font-size: 1.3rem; /* ปรับขนาด font ของปุ่ม */
+            font-weight: 600; /* ทำให้ตัวหนังสือหนาขึ้น */
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .withdraw-btn {
+            background-color: #C85A1A;
+        }
+
+        .edit-btn {
+            background-color: #C85A1A; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if item.itemPicture %}
+            <img src="{{ url_for('static', filename='img/' + item.itemPicture) }}" alt="{{ item.itemName }}" class="item-image">
+        {% else %}
+            <img src="https://i.imgur.com/WpTgyaW.png" alt="Default item box" class="item-image">
+        {% endif %}
+
+        <div class="item-name">{{ item.itemName }}</div>
+        
+        <a href="{{ url_for('withdraw', itemID=item.itemID) }}" class="action-button withdraw-btn">Withdraw</a>
+        <a href="{{ url_for('edit', itemID=item.itemID) }}" class="action-button edit-btn">Edit</a>
+    </div>
+</body>
+</html>
