@@ -13,6 +13,9 @@ ENV PYTHONUNBUFFERED 1
 # set work directory
 WORKDIR /flask_app
 
+# ตั้งค่า timezone
+ENV TZ=Asia/Bangkok
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # update the system and add git
 RUN apk update

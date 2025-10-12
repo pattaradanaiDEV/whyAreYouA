@@ -2,6 +2,9 @@ from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 from app import db
 from sqlalchemy import DateTime, func
+from datetime import datetime
+from tzlocal import get_localzone
+
 class WithdrawHistory(db.Model, SerializerMixin):
     __tablename__ = "withdrawHistory"
 
@@ -9,7 +12,8 @@ class WithdrawHistory(db.Model, SerializerMixin):
     UserID = db.Column(db.Integer, db.ForeignKey("user.UserID"), nullable=False)
     itemID = db.Column(db.Integer, db.ForeignKey("item.itemID"), nullable=False)
     Quantity = db.Column(db.Integer)    
-    DateTime = db.Column(DateTime, nullable=False, default=func.now())
+    DateTime = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(get_localzone()))
+
 
     user = db.relationship("User", back_populates="withdraw_history")
     items = db.relationship("Item", back_populates="withdraw_history")

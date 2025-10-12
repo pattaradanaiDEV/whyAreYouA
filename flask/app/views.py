@@ -26,7 +26,8 @@ import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
 from sqlalchemy import func
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from tzlocal import get_localzone
 
 # -----------------------
 # Helper decorators & functions
@@ -643,8 +644,11 @@ def export():
     data_list = [i.to_dict() for i in data]
     list_data = []
     for i in data_list:
+        utc_time = datetime.strptime(i["DateTime"], "%Y-%m-%d %H:%M:%S")
+        utc_time = utc_time.replace(tzinfo=timezone.utc)
+        local_time = str(utc_time.astimezone(get_localzone()))
         history = {
-            "Withdraw date" : str(i["DateTime"]) + "UTC",
+            "Withdraw date" : local_time,
             "Item Name" : i["items"]["itemName"],
             "Category" : Item.query.get(i["items"]["itemID"]).category.cateName,
             "Quantity" : i["Quantity"]
