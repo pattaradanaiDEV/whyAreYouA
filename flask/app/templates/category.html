@@ -6,13 +6,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/category.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/category.css') }}">
     <title>Category Page</title>
-    <style>
-      /* small mobile-first adjustments */
-      #item-list .item-card { gap:8px; padding:10px; }
-      .item-icon img { width:50px;height:50px;border-radius:8px; }
-    </style>
 </head>
 <body>
     <script>
@@ -24,21 +19,21 @@
         }
     </script>
     <div class="top-bar">
-    	<div class="back">
-        	<a href="{{ url_for('homepage') }}">
+        <div class="back">
+            <a href="{{ url_for('homepage') }}">
                 <span class="material-icons">arrow_back_ios_new</span> 
             </a>
-    	</div>
-    	<div class="category">
-        	<span class="material-icons">list_alt</span>
-        	<span>Category</span>
-    	</div>
+        </div>
+        <div class="category">
+            <span class="material-icons">list_alt</span>
+            <span>Category</span>
+        </div>
         <div class="cart">
             <a href="{{ url_for('cart') }}">
                 <span class="material-icons">shopping_cart</span>
             </a>
-    	</div>
-	</div>
+        </div>
+    </div>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="alert-box">
@@ -48,199 +43,175 @@
     </div>
     {% endif %}
     {% endwith %}
-	<div class="search-bar">
-    	<span class="material-icons">search</span>
-    	<input type="text" class="search-input" placeholder="Search">
-	</div>
+    <div class="search-bar">
+        <span class="material-icons">search</span>
+        <input type="text" class="search-input" placeholder="Search">
+    </div>
 
-	<div class="show_category">
-        <button class="category-item" onclick="filterCategory('all')">All Items</button>    
+    <div class="show_category">
+        <button class="category-item" onclick="filterCategory('all')">All Items</button>     
         {% for cate in categories %}
             {% if cate['cateName'] != 'Free cate'%}
             <button class="category-item" onclick="filterCategory('{{ cate['cateName'] }}')">
                 {{ cate['cateName'] }}
             </button>
-            {% endif %}  
+            {% endif %}    
         {% endfor %}
-	</div>
+    </div>
 
     <div id="item-list"></div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        const items = {{ items|tojson }}; 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const items = {{ items|tojson }}; 
 
-        function getDisplayHTML(it) {
-            let pictureHtml = '';
-            if (it.itemPicture) {
-                pictureHtml = `<img src="/static/img/${it.itemPicture}" width="50" height="50" style="border-radius:8px;">`;
-            } else {
-                let ch = it.itemName ? it.itemName.substring(0,1) : '?';
-                pictureHtml = `<div class="item-icon" style="width:50px;height:50px;border-radius:8px;background:#ddd;display:flex;align-items:center;justify-content:center;font-weight:600;">${ch}</div>`;
-            }
-            
-            return `
-                <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
-                    <div class="row">
-                        <div class="delete-bg">
-                            <form method="POST" onsubmit="return confirmDelete()">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
-                                <input type="hidden" name="item_id" value="${it.itemID}">
-                                <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="btn btn-del">ลบ</button>
-                            </form>
-                        </div>
-                        <div class="item-content" id="content-${it.itemID}"
-                            ontouchstart="startSwipe(event, ${it.itemID})"
-                            ontouchmove="moveSwipe(event, ${it.itemID})"
-                            ontouchend="endSwipe(event, ${it.itemID})">
-                            
-                            <div class="item-left">
-                                ${pictureHtml}
-                            </div>
-                            <div class="item-info">
-                                <div class="item-name">${it.itemName}</div>
-                                <div class="item-category">${it.category.cateName}</div>
-                                <div class="item-stock">Stock: ${it.itemAmount}</div>
-                            </div>
-                            <div class="item-actions">
-                                ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
-                                <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="item-actions">
-                            <details class="detail">
-                                <summary onclick="loadQrCode(${it.itemID}, this)">Detail</summary>
-                                <div class="description-content">
-                                    ${it.itemDesc || 'No description available.'}
-                                    <div id="qr-placeholder-${it.itemID}"></div>
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        async function loadQrCode(itemID, summaryElement) {
-            const detailsElement = summaryElement.parentElement;
-            // ทำงานเฉพาะตอนที่ details ถูกเปิดออกเท่านั้น
-            if (!detailsElement.open) {
-                // ป้องกันการกดซ้ำซ้อน
-                if (summaryElement.dataset.loaded === 'true') {
-                    return;
-                }
-                summaryElement.dataset.loaded = 'true';
-
-                const placeholder = document.getElementById(`qr-placeholder-${itemID}`);
-                placeholder.innerHTML = '<p>Loading QR Code...</p>';
-
-                try {
-                    const response = await fetch(`/get_qr/${itemID}`);
-                    if (!response.ok) throw new Error('Failed to fetch QR code.');
-                    const data = await response.json();
-
-                    if (data.success) {
-                        const qrImageSrc = `data:image/png;base64,${data.qr_code_base64}`;
-                        placeholder.innerHTML = `
-                            <div class="qr-container-description">
-                                <h4>QR Code</h4>
-                                <img src="${qrImageSrc}" alt="QR Code for ${data.item_name}">
-                                <button type="button" onclick="printQrForCard('${qrImageSrc}', '${data.item_name}')">Print QR</button>
-                            </div>
-                        `;
-                    } else {
-                        throw new Error(data.error || 'Unknown error occurred.');
-                    }
-                } catch (error) {
-                    placeholder.innerHTML = `<p style="color: red;">${error.message}</p>`;
-                    delete summaryElement.dataset.loaded; // ให้ลองใหม่ได้
-                }
-            }
-        }
-
-        function printQrForCard(qrImageSrc, itemName) {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html><head><title>Print QR Code - ${itemName}</title>
-                <style>
-                    @page { size: A4 portrait; margin: 2cm; }
-                    body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
-                    h3 { margin-bottom: 20px; font-size: 16pt; }
-                    img { width: 8cm; height: 8cm; image-rendering: pixelated; image-rendering: crisp-edges; }
-                </style>
-                </head><body>
-                    <h3>${itemName}</h3>
-                    <img src="${qrImageSrc}" onload="window.print();">
-                </body></html>
-            `);
-            printWindow.document.close();
-            printWindow.onafterprint = function() { printWindow.close(); };
-        }
-
-        function renderItems(data) {
-            $("#item-list").empty();
-            data.forEach(it => {
-                it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
-                $("#item-list").append(getDisplayHTML(it));
-            });
+    function getDisplayHTML(it) {
+        let pictureHtml = '';
+        if (it.itemPicture) {
+            pictureHtml = `<img src="/static/img/${it.itemPicture}" alt="${it.itemName}">`;
+        } else {
+            let ch = it.itemName ? it.itemName.substring(0,1) : '?';
+            pictureHtml = `<div class="item-icon">${ch}</div>`;
         }
         
-        function gotoEdit(id){ window.location.href = `/edit?itemID=${id}`; } // แก้ไข URL ให้ตรงกับ route
-        function withdraw(itemID) { window.location.href = `/withdraw?itemID=${itemID}`; }
-        function filterCategory(cateName) {
-            if (cateName === "all") { renderItems(items); } 
-            else { renderItems(items.filter(it => it.category.cateName === cateName)); }
-        }
-        function searchCategory(query) {
-            if (query === "") { renderItems(items); return; }
-            const filteredData = items.filter(item =>
-                item.itemName.toLowerCase().includes(query.toLowerCase()) || item.category.cateName.toLowerCase().includes(query.toLowerCase())
-            );
-            renderItems(filteredData);
-        }
-        document.querySelector('.search-bar input').addEventListener('input', function(event) {
-            searchCategory(event.target.value.trim());
-        });
-        window.onload = function() { filterCategory("all"); };
+        return `
+            <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
+                <div class="swipe-wrapper">
+                    <div class="delete-action">
+                        <form method="POST" onsubmit="return confirmDelete()">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                            <input type="hidden" name="item_id" value="${it.itemID}">
+                            <input type="hidden" name="action" value="delete">
+                            <button class="delete-btn">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </form>
+                    </div>
 
-        let startX = 0, currentX = 0, swiping = false, moved = false;
-        function startSwipe(e, id) {
-            if (!{{ 1 if current_user.IsM_admin else 0 }}) return;
-            startX = e.touches[0].clientX;
-            swiping = true;
-            moved = false;
+                    <div class="item-content" id="content-${it.itemID}"
+                        ontouchstart="startSwipe(event, ${it.itemID})"
+                        ontouchmove="moveSwipe(event, ${it.itemID})"
+                        ontouchend="endSwipe(event, ${it.itemID})">
+                        
+                        <div class="item-left">${pictureHtml}</div>
+                        <div class="item-info">
+                            <div class="item-name">${it.itemName}</div>
+                            <div class="item-category">${it.category.cateName}</div>
+                            <div class="item-stock">Stock: ${it.itemAmount}</div>
+                        </div>
+                        <div class="item-actions">
+                            ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
+                            <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
+                        </div>
+                    </div>
+                </div>
+                <details class="detail">
+                    <summary onclick="loadQrCode(${it.itemID}, this)">Detail</summary>
+                    <div class="description-content">
+                        ${it.itemDesc || 'No description available.'}
+                        <div id="qr-placeholder-${it.itemID}"></div>
+                    </div>
+                </details>
+            </div>`;
+    }
+
+    let startX = 0;
+    let currentX = 0;
+
+    function startSwipe(e, id) {
+        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        
+        const allDetails = document.querySelectorAll('#item-list .detail[open]');
+        allDetails.forEach(detail => { detail.open = false; });
+
+        const content = document.getElementById(`content-${id}`);
+        startX = e.touches[0].clientX;
+        content.style.transition = ''; 
+    }
+
+    function moveSwipe(e, id) {
+        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        const content = document.getElementById(`content-${id}`);
+        currentX = e.touches[0].clientX;
+        let diff = currentX - startX;
+        
+        if (diff < 0 && diff > -100) {
+            content.style.transform = `translateX(${diff}px)`;
         }
-        function moveSwipe(e, id) {
-            if (!swiping || !{{ 1 if current_user.IsM_admin else 0 }}) return;
-            currentX = e.touches[0].clientX;
-            let diff = currentX - startX;
-            if (Math.abs(diff) > 10) moved = true;
-            if (diff < 0 && Math.abs(diff) < 100) {
-                document.getElementById(`content-${id}`).style.transform = `translateX(${diff}px)`;
-            } else if (diff > 0) {
-                document.getElementById(`content-${id}`).style.transform = "translateX(0)";
-                document.getElementById(`item-${id}`).classList.remove("swiped");
+    }
+
+    function endSwipe(e, id) {
+        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        const content = document.getElementById(`content-${id}`);
+        let diff = currentX - startX;
+        
+        content.style.transition = 'transform 0.3s ease'; 
+        
+        if (diff < -60) {
+            content.style.transform = `translateX(-90px)`; 
+        } else {
+            content.style.transform = 'translateX(0px)';
+        }
+        startX = 0;
+        currentX = 0;
+    }
+    
+    function confirmDelete() { return confirm("Are you sure you want to delete this item?"); }
+    async function loadQrCode(itemID, summaryElement) {
+        const detailsElement = summaryElement.parentElement;
+        if (!detailsElement.open) {
+            if (summaryElement.dataset.loaded === 'true') { return; }
+            summaryElement.dataset.loaded = 'true';
+            const placeholder = document.getElementById(`qr-placeholder-${itemID}`);
+            placeholder.innerHTML = '<p>Loading QR Code...</p>';
+            try {
+                const response = await fetch(`/get_qr/${itemID}`);
+                if (!response.ok) throw new Error('Failed to fetch QR code.');
+                const data = await response.json();
+                if (data.success) {
+                    const qrImageSrc = `data:image/png;base64,${data.qr_code_base64}`;
+                    placeholder.innerHTML = `
+                        <div class="qr-container-description">
+                            <h4>QR Code</h4>
+                            <img src="${qrImageSrc}" alt="QR Code for ${data.item_name}">
+                            <button type="button" onclick="printQrForCard('${qrImageSrc}', '${data.item_name}')">Print QR</button>
+                        </div>
+                    `;
+                } else { throw new Error(data.error || 'Unknown error occurred.'); }
+            } catch (error) {
+                placeholder.innerHTML = `<p style="color: red;">${error.message}</p>`;
+                delete summaryElement.dataset.loaded;
             }
         }
-        function endSwipe(e, id) {
-            if (!{{ 1 if current_user.IsM_admin else 0 }}) return;
-            let diff = currentX - startX;
-            swiping = false;
-            if (!moved || Math.abs(diff) < 30) {
-                document.getElementById(`content-${id}`).style.transform = "translateX(0)";
-                return;
-            }
-            if (diff < -60) {
-                document.getElementById(`item-${id}`).classList.add("swiped");
-                document.getElementById(`content-${id}`).style.transform = "translateX(-80px)";
-            } else {
-                document.getElementById(`item-${id}`).classList.remove("swiped");
-                document.getElementById(`content-${id}`).style.transform = "translateX(0)";
-            }
-        }
-        function confirmDelete() { return confirm("Are you sure you want to delete this item?"); }
-    </script>
+    }
+    function printQrForCard(qrImageSrc, itemName) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`<html>...</html>`); 
+        printWindow.document.close();
+        printWindow.onafterprint = () => printWindow.close();
+    }
+    function renderItems(data) {
+        $("#item-list").empty();
+        data.forEach(it => {
+            it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
+            $("#item-list").append(getDisplayHTML(it));
+        });
+    }
+    function gotoEdit(id){ window.location.href = `/edit?itemID=${id}`; }
+    function withdraw(itemID) { window.location.href = `/withdraw?itemID=${itemID}`; }
+    function filterCategory(cateName) {
+        if (cateName === "all") { renderItems(items); } 
+        else { renderItems(items.filter(it => it.category.cateName === cateName)); }
+    }
+    function searchCategory(query) {
+        if (query === "") { renderItems(items); return; }
+        const filteredData = items.filter(item =>
+            item.itemName.toLowerCase().includes(query.toLowerCase()) || item.category.cateName.toLowerCase().includes(query.toLowerCase())
+        );
+        renderItems(filteredData);
+    }
+    document.querySelector('.search-bar input').addEventListener('input', (event) => searchCategory(event.target.value.trim()));
+    window.onload = () => filterCategory("all");
+</script>
 </body>
 </html>
