@@ -620,7 +620,7 @@ def withdraw_byQR(itemID):
         db.session.commit()
         return f"เบิก {item.itemName} สำเร็จ"
     else:
-        return f"{item.itemName} หมดแล้วไอน้อง"
+        return f"{item.itemName} หมดแล้ว"
 
 @app.route('/delete/item/<int:itemID>', methods=['POST'])
 @madmin_required
@@ -644,9 +644,9 @@ def export():
     list_data = []
     for i in data_list:
         history = {
-            "Withdraw date" : i["DateTime"],
+            "Withdraw date" : str(i["DateTime"]) + "UTC",
             "Item Name" : i["items"]["itemName"],
-            "Category" : i["items"]["category"]["cateName"],
+            "Category" : Item.query.get(i["items"]["itemID"]).category.cateName,
             "Quantity" : i["Quantity"]
         }
         list_data.append(history)
