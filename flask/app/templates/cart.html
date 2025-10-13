@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/cart.css">
-    <link rel="stylesheet" href="../static/css/category.css">
+    
+
 </head>
 <body>
     <script>
@@ -20,18 +21,15 @@
           document.body.classList.remove('darkmode');
         }
     </script>
-    <div class="container mt-4">
-        <div class="top-bar">
-    	    <div class="back">
-                <a href="{{ url_for('category') }}">
-                    <span class="material-icons">arrow_back_ios_new</span> 
-                </a>
-    	    </div>
-    	    <div class="category">
-        	    <span>Cart</span>
-    	    </div>
-            <div></div>
+    <div class="top-bar">
+        <a href="{{ url_for('category') }}">
+            <span class="material-icons">arrow_back_ios</span>
+        </a>
+        <div class="center">
+            <span id="settings">Cart</span>
         </div>
+    </div>
+    <div class="container">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert-box">
@@ -66,7 +64,7 @@
                 <img src="{{ url_for('static', filename='img/' ~ c.item.itemPicture) }}"
                     width="70" height="70" class="rounded">
                 {% else %}
-                <div style="width:70px;height:70px;border-radius:10px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:28px;">
+                <div class="item-cart">
                     {{ c.item.itemName[0] }}
                 </div>
                 {% endif %}
@@ -106,7 +104,7 @@
         {% endfor %}
 
         {% if not cart_items %}
-            <p class="text text-center mt-5">ไม่มีของในตะกร้า 🛍️</p>
+            <p class="text text-center mt-5">No items in cart 🛍️</p>
         {% else %}
             <form method="POST" class="text text-center">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 

@@ -6,7 +6,7 @@ from app.models.item import Item
 from app.models.category import Category
 from app.models.withdrawHistory import WithdrawHistory
 from werkzeug.security import generate_password_hash
-
+from app.models.notification import Notification
 
 cli = FlaskGroup(app)
 
@@ -122,6 +122,12 @@ def delete_item():
         i["cateID"] = 1
     R_category = Category.query.filter_by(cateID=2).first()
     db.session.delete(R_category)
+    db.session.commit()
+
+@cli.command("delete_noti")
+def delete_noti():
+    noti = Notification.query.filter_by(id=2).first()
+    db.session.delete(noti)
     db.session.commit()
 
 if __name__ == "__main__":

@@ -13,6 +13,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <script>
+        const darkmode = localStorage.getItem('darkmode');
+        if(darkmode === 'active') {
+          document.body.classList.add('darkmode');
+        } else {
+          document.body.classList.remove('darkmode');
+        }
+    </script>
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}" class="back-arrow">
             <i class="material-icons">arrow_back_ios</i>
@@ -35,7 +43,7 @@
                                 {% endif %}
                             </div>
                             <p class="notification-message">{{ notif.message }}</p>
-                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0] }} เวลา {{ notif.created_at.split(" ")[1] }}</span>
+                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0].split("-")[2]}}-{{notif.created_at.split(" ")[0].split("-")[1]}}-{{notif.created_at.split(" ")[0].split("-")[0]}}  เวลา {{ notif.created_at.split(" ")[1] }}</span>
                         </div>
                     </div>
                     <div class="delete-action">

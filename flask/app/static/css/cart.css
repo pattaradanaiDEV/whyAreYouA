@@ -3,7 +3,7 @@
   /* --basebg--color: linear-gradient(#ffffff 0%, #fff0f5 100%);  */
   --base--color: #fff; 
   --text--color: #000; 
-  --buttonbg--color: linear-gradient(90deg, #000, #333); 
+  --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
   --border--color: gray; 
   --hover--color: gray; 
 } 
@@ -12,7 +12,7 @@
   --basebg--color: #212121; 
   /* --basebg--color: linear-gradient(#070b1d, #282c40); */ 
   --base--color: #282c40; 
-  --text--color: #fff; 
+  --text--color: #eee; 
   --buttonbg--color: linear-gradient(90deg, #FFF, #e8e8e8); 
   --border--color: gray; 
   --hover--color: gray; 
@@ -23,22 +23,44 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     margin: 0;
+    padding: 0;
     /* font-family: 'Pridi', serif; */
     font-family: 'Inter', sans-serif;
   }
 
-.top-bar{
-    display: flex;
-    padding: 20px;
-    justify-content: space-between;
-    border-bottom: 2px solid var(--border--color);
-    margin-bottom: 2%;
+.top-bar {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--card-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
 
 .top-bar span{
-    font-size: 1.5rem;
-    font-weight: 400;
-    color: var(--text--color);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text--color);
+}
+
+.top-bar a {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text--color);
+}
+
+.center{
+  flex: 1;
+  text-align: center;
+  margin: 0;
 }
 
 .column {
@@ -47,6 +69,10 @@ body {
     font-size: 3rem;
     overflow-y: auto;       
     height: calc(100vh - 160px);  
+}
+
+.container{
+  margin-top: 80px;
 }
 
 .item-container {
@@ -122,6 +148,18 @@ body {
   transition: transform 0.3s ease;
   padding: 10px;
 }
+
+.item-cart{
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
 .delete-bg {
   position: absolute;
   right: 0;

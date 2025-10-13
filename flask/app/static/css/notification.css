@@ -5,11 +5,19 @@
     --card-bg: #ffffff;
     --timestamp-color: #888;
     --delete-bg: #e53935;
-    --font-main: 'Inter', sans-serif; /* ใช้ Font Inter ที่ทันสมัยกว่า */
+}
+
+.darkmode{
+    --bg-color: #212121;
+    --text-color: #FFF;
+    --title-color: #eee;
+    --card-bg: #121212;
+    --timestamp-color: #888;
+    --delete-bg: #e53935;
 }
 
 body {
-    font-family: var(--font-main);
+    font-family: 'Inter', sans-serif; 
     background-color: var(--bg-color);
     margin: 0;
     padding-top: 60px; /* เพิ่มระยะห่างสำหรับ Top Bar ที่จะ Fixed ไว้ด้านบน */
