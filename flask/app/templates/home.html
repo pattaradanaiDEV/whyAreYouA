@@ -101,10 +101,15 @@
                             <div class="item-icon">{{ it.itemName[0] }}</div>
                         {% endif %}
                     </div>
+                    
                     <div class="item-info">
                         <span class="item-name">{{ it.itemName }}</span>
-                        <span class="item-details inStock">In stock: </span><span class="item-details">{{ it.itemAmount }}</span>
-                        <span class="item-details withdrawn">Withdrawn: </span><span class="item-details">{{ it.total }}</span>
+                        <span class="item-details">
+                            In stock: {{it.itemAmount }}
+                        </span>
+                        <span class="item-details">
+                            Withdrawn: {{it.total }}
+                        </span>
                         <div class="button-group">
                             <button class="quick-btn withdraw-btn withdraw" onclick="location.href='/withdraw?itemID={{ it.itemID }}'">Withdraw</button>
                             {% if current_user.IsM_admin %}
