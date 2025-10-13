@@ -50,7 +50,7 @@
 
         <div class="action-btn" id="logout-bar" onclick="confirmAction()">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
-            <span id="logout">Logout</span>
+            <span id="logout-text">Logout</span>
         </div>
     </div>
 </body>
@@ -62,14 +62,12 @@
             settings: "Settings",
             greeting: "Hi!",
             languages: "Languages",
-            contact: "Contact Admin",
             logout: "Logout"
         },
         th: {
             settings: "ตั้งค่า",
             greeting: "สวัสดี",
             languages: "ภาษา",
-            contact: "ติดต่อแอดมิน",
             logout: "ล็อกเอาต์"
         }
     };
@@ -78,14 +76,15 @@
         document.querySelector('#settings').textContent = (translations[lang].settings);
         document.querySelector('#greeting').textContent = (translations[lang].greeting);
         document.querySelector('#languages').textContent = (translations[lang].languages);
-        document.querySelector('#contactAdmin').textContent = (translations[lang].contact);
-        document.querySelector('#logout').textContent = (translations[lang].logout);
+        document.querySelector('#logout-text').textContent = (translations[lang].logout);
     }
 
     changeLanguage(localStorage.getItem('lang'));
 
     function confirmAction() {
-        if (window.confirm("Are you sure you want to Logout?")) {
+        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
+            window.location.href = "logout";
+        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการล็อกเอ้าต์?")) {
             window.location.href = "logout";
         }
     }
