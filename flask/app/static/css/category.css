@@ -55,14 +55,14 @@ body {
 .top-bar span { color:var(--text2--color); }
 .back, .category, .cart { display: flex; flex-direction: column; align-items: center; }
 
-.search-bar { width: 90%; display: flex; align-items: center; border: 1px solid var(--border--color); padding: 10px; border-radius: 30px; background-color: var(--buttonbg--color); margin: 20px auto; }
+.search-bar { width: 90%; display: flex; align-items: center; padding: 10px; border-radius: 30px; background-color: var(--buttonbg--color); margin: 20px auto; }
 .search-bar span { color: black; }
 .search-input { flex: 1; border: none; font-size: 1rem; outline: none; background-color: transparent; padding-left: 10px; }
 .search-input::placeholder { color: #000; }
 
 
 .show_category { display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; padding: 10px; -webkit-overflow-scrolling: touch; }
-.category-item { flex: 0 0 auto; padding: 8px 16px; border: 1px solid var(--border--color); border-radius: 30px; background: var(--buttonbg--color); cursor: pointer; }
+.category-item { flex: 0 0 auto; padding: 8px 16px;  border-radius: 30px; background: var(--buttonbg--color); cursor: pointer; border:none;}
 .category-item:hover{ background-color: lightgray; }
 
 #item-list { display: flex; flex-direction: column; gap: 15px; padding: 10px 20px; }
@@ -70,8 +70,8 @@ body {
 .item-card {
   border-radius: 12px;
   background: var(--item-card--color, #ffffff);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  border:solid 0.1px rgb(224, 216, 216);
+  box-shadow: 8px 8px 8px rgba(0,0,0,0.05);
+  
 }
 
 .swipe-wrapper {
