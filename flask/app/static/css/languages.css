@@ -97,6 +97,10 @@ body{
     cursor: pointer;
   }
   
+  .btn-text.selected {
+    color: #222;
+  }
+
   .check-btn svg {
     display: none; /* ยังไม่เลือก → ซ่อน icon check */
   }

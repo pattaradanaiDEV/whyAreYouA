@@ -160,3 +160,31 @@
     </script>
 </body>
 </html>
+<script>
+    let darkmode = localStorage.getItem('darkmode');
+    const themeSwitch = document.getElementById('theme-switch');
+    const circleButtons = document.querySelectorAll('.circle-button');
+
+    const enableDarkmode = () => {
+        document.body.classList.replace('lightmode', 'darkmode');
+        localStorage.setItem('darkmode', 'active');
+        circleButtons.forEach(button => {
+            button.classList.replace('circle-button-lightmode', 'circle-button-darkmode');
+        })
+    }
+
+    const disableDarkmode = () => {
+        document.body.classList.replace('darkmode', 'lightmode');
+        localStorage.setItem('darkmode', null);
+        circleButtons.forEach(button => {
+            button.classList.replace('circle-button-darkmode', 'circle-button-lightmode');
+        })
+    }
+
+    if(darkmode === "active") enableDarkmode()
+
+    themeSwitch.addEventListener("click", () => {
+        darkmode = localStorage.getItem('darkmode')
+        darkmode !== "active" ? enableDarkmode() : disableDarkmode()
+    })
+</script>

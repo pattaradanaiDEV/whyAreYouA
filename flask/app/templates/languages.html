@@ -23,35 +23,70 @@
             <span class="material-icons">arrow_back_ios</span>
         </a>
         <div class="center">
-            <span>Choose your language</span>
+            <span id="choose-language">Choose your language</span>
         </div>
     </div>
 
     <div class="action-btn">
         <img src="../static/ico/united-kingdom.png">
-        <span>English</span>
+        <span class="btn-text" id="en">English</span>
         <button class="check-btn" aria-label="Select English"></button>
     </div>
 
     <div class="action-btn">
         <img src="../static/ico/thailand.png">
-        <span>Thai</span>
+        <span class="btn-text" id="th">ไทย</span>
         <button class="check-btn" aria-label="Select Thai"></button>
-
     </div>
 </body>
 </html>
 
 <script>
     const options = document.querySelectorAll('.action-btn');
+    const langStore = localStorage.getItem('lang');
+
+    const translations = {
+        en: {
+            chooseLanguage: "Choose your language"
+        },
+        th: {
+            chooseLanguage: "เลือกภาษาของคุณ"
+        }
+    };
+
+    document.querySelector('#choose-language').textContent = translations[langStore].chooseLanguage;
 
     options.forEach(option => {
-    option.addEventListener('click', () => {
-        // เอา selected ออกจากทุกอัน
-        options.forEach(o => o.classList.remove('selected'));
-        // ใส่ selected ให้กับอันที่กด
-        option.classList.add('selected');
-    });
+        if (option.querySelector('.btn-text').id === langStore) {
+            option.classList.add('selected');
+            option.querySelector('.btn-text').classList.add('selected');
+        }
+        option.addEventListener('click', () => {
+            // เอา selected ออกจากทุกอัน
+            options.forEach(o => {
+                o.classList.remove('selected');
+                o.querySelector('.btn-text').classList.remove('selected');
+            });
+            // ใส่ selected ให้กับอันที่กด
+            option.classList.add('selected');
+            spanText = option.querySelector('.btn-text');
+            spanText.classList.add('selected');
+            changeLanguage(spanText.id);
+            toggleLang(spanText.id);
+        });
     });
 
+    const lang = localStorage.getItem('lang');
+
+    const toggleLang = (lang) => {
+        if (lang == 'en') {
+            localStorage.setItem('lang', 'en');
+        } else {
+            localStorage.setItem('lang', 'th');
+        }
+    }
+
+    function changeLanguage(lang) {
+        document.querySelector('#choose-language').textContent = translations[lang].chooseLanguage;
+    }
 </script>

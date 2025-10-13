@@ -23,13 +23,35 @@
             <span class="material-icons">arrow_back_ios</span>
         </a>
         <div class="center">
-            <span>Not Allowed!</span>
+            <span id="notAllowed">Not Allowed!</span>
         </div>
     </div>
 
     <div class="profile">
-        <p class="profile-text">You do not have permission to do such action. </p>
-        <p class="profile-text">You are not Main_admin, please contact {{ pman.Fname }} {{ pman.Lname }}.</p>
+        <p class="profile-text" id="desc1">You do not have permission to do such action.</p>
+        <p class="profile-text" id="desc2">You are not Main_admin, please contact {{ pman.Fname }} {{ pman.Lname }}.</p>
     </div>
 </body>
 </html>
+<script>
+    const translations = {
+        en: {
+            notAllow: "Not Allowed!",
+            desc1: "You do not have permission to do such action.",
+            desc2: "You are not Main_admin, please contact {{ pman.Fname }} {{ pman.Lname }}."
+        },
+        th: {
+            notAllow: "ไม่ได้รับอนุญาต",
+            desc1: "คุณไม่ได้รับสิทธิ์ในการเข้าถึงหน้านี้",
+            desc2: "คุณไม่ใช่แอดมินหลัก โปรดติดต่อ {{ pman.Fname }} {{ pman.Lname }}"
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#notAllowed').textContent = (translations[lang].notAllow);
+        document.querySelector('#desc1').textContent = (translations[lang].desc1);
+        document.querySelector('#desc2').textContent = (translations[lang].desc2);
+    }
+
+    changeLanguage(localStorage.getItem('lang'));
+</script>
