@@ -103,6 +103,7 @@ body{
     padding: 16px;
     margin-bottom: 10px;
     border-bottom: 1px solid var(--border--color);
+    cursor: pointer;
 }
 
 .action-btn svg{
