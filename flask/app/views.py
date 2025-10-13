@@ -1,5 +1,8 @@
 import json
 import os
+import io
+import base64
+import qrcode
 import re
 from flask import (jsonify, render_template, flash,
                   request, url_for, flash, current_app, abort, session, redirect)
@@ -7,6 +10,8 @@ from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
+from sqlalchemy.orm import outerjoin
+from app.models.user_notification_status import UserNotificationStatus
 from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.user import User
@@ -28,11 +33,8 @@ from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
 from sqlalchemy import func
 from datetime import datetime, timedelta, timezone
-from tzlocal import get_localzone
+from dateutil import tz
 
-# -----------------------
-# Helper decorators & functions
-# -----------------------
 @app.before_request
 def check_user_available():
     except_routes = [
@@ -73,6 +75,30 @@ def madmin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/get_qr/<int:item_id>')
+def get_qr_code(item_id):
+    try:
+        item = Item.query.get_or_404(item_id)
+        qr_data = url_for('scanresult', itemID=item.itemID, _external=True)
+        
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return jsonify({
+            'success': True,
+            'qr_code_base64': img_str,
+            'item_name': item.itemName
+        })
+    except Exception as e:
+        current_app.logger.error(f"Error generating QR for item {item_id}: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 def cleanup_expired_notifications():
     """Remove expired notifications from DB"""
     now = datetime.utcnow()
@@ -109,21 +135,23 @@ def waiting():
 
 @app.route('/homepage')
 def homepage():
-    # cleanup notifications
     cleanup_expired_notifications()
 
-    # Top 5 withdrawn items in last 6 months
     six_months_ago = datetime.utcnow() - timedelta(days=180)
     top_items_q = (
-        db.session.query(WithdrawHistory.itemID, func.count(WithdrawHistory.withdrawID).label("total"))
+        db.session.query(
+            WithdrawHistory.itemID,
+            func.sum(WithdrawHistory.Quantity).label("total_quantity")
+        )
         .filter(WithdrawHistory.DateTime >= six_months_ago)
         .group_by(WithdrawHistory.itemID)
-        .order_by(func.count(WithdrawHistory.withdrawID).desc())
+        .order_by(func.sum(WithdrawHistory.Quantity).desc())
         .limit(5)
         .all()
     )
+    
     top_items = []
-    for item_id, total in top_items_q:
+    for item_id, total_quantity in top_items_q:
         item = Item.query.get(item_id)
         if item:
             top_items.append({
@@ -132,16 +160,24 @@ def homepage():
                 "itemAmount": item.itemAmount,
                 "itemPicture": item.itemPicture,
                 "itemMin": item.itemMin,
-                "total": int(total)
+                "total": int(total_quantity) if total_quantity is not None else 0
             })
 
-    # notification count (unread, non-expired)
     noti_count = 0
     if current_user.is_authenticated:
-        noti_count = Notification.query.filter(Notification.is_read == False, Notification.expire_at > datetime.utcnow()).count()
+        now = datetime.now(timezone.utc)
+        query = db.session.query(func.count(Notification.id)).outerjoin(
+            UserNotificationStatus,
+            (Notification.id == UserNotificationStatus.notification_id) &
+            (UserNotificationStatus.user_id == current_user.UserID)
+        ).filter(
+            Notification.expire_at > now,
+            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
+            (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
+        )
+        noti_count = query.scalar()
 
     return render_template('home.html', top_items=top_items, noti_count=noti_count)
-
 @app.route('/signin')
 def redirect_to_login():
     return redirect(url_for('login'))
@@ -267,37 +303,71 @@ def category():
         categories=categories,
         items=items
     )
-
+    
 @app.route('/notification')
 @login_required
-@madmin_required
 def notification():
-    cleanup_expired_notifications()
-    notes = Notification.query.filter(Notification.expire_at > datetime.utcnow()).order_by(Notification.created_at.desc()).all()
-    notes_dict = [n.to_dict() for n in notes]
-    return render_template('notification.html', notifications=notes_dict)
-
-@app.route('/notification/delete/<int:noti_id>', methods=['POST'])
-@login_required
-@madmin_required
-def notification_delete(noti_id):
-    n = Notification.query.get(noti_id)
-    if n:
-        db.session.delete(n)
-        db.session.commit()
-        return jsonify({"ok": True})
-    return jsonify({"ok": False}), 404
+    user_id = current_user.UserID
+    now = datetime.now(timezone.utc)
+    notifications_with_status = (
+        db.session.query(
+            Notification,
+            UserNotificationStatus.is_read
+        )
+        .outerjoin(
+            UserNotificationStatus,
+            (Notification.id == UserNotificationStatus.notification_id) &
+            (UserNotificationStatus.user_id == user_id)
+        )
+        .filter(
+            Notification.expire_at > now,
+            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False) 
+        )
+        .order_by(Notification.created_at.desc())
+        .all()
+    )
+    bkk_tz = timezone(timedelta(hours=7))
+    
+    results = []
+    for notif, is_read_status in notifications_with_status:
+        local_time = notif.created_at.astimezone(bkk_tz).strftime('%Y-%m-%d %H:%M:%S')
+        results.append({
+            'id': notif.id,
+            'message': notif.message,
+            'ntype': notif.ntype,
+            'created_at': local_time,
+            'is_read': is_read_status if is_read_status is not None else False
+        })
+    
+    return render_template('notification.html', notifications=results)
 
 @app.route('/notification/mark_read/<int:noti_id>', methods=['POST'])
 @login_required
-@madmin_required
 def notification_mark_read(noti_id):
-    n = Notification.query.get(noti_id)
-    if n:
-        n.is_read = True
-        db.session.commit()
-        return jsonify({"ok": True})
-    return jsonify({"ok": False}), 404
+    user_id = current_user.UserID
+    status = UserNotificationStatus.query.filter_by(user_id=user_id, notification_id=noti_id).first()
+    if status:
+        status.is_read = True
+    else:
+        status = UserNotificationStatus(user_id=user_id, notification_id=noti_id)
+        status.is_read = True
+        db.session.add(status)
+    db.session.commit()
+    return jsonify({"ok": True})
+
+@app.route('/notification/delete/<int:noti_id>', methods=['POST'])
+@login_required
+def notification_delete(noti_id):
+    user_id = current_user.UserID
+    status = UserNotificationStatus.query.filter_by(user_id=user_id, notification_id=noti_id).first()
+    if status:
+        status.is_deleted = True 
+    else:
+        status = UserNotificationStatus(user_id=user_id, notification_id=noti_id)
+        status.is_deleted = True
+        db.session.add(status)
+    db.session.commit()
+    return jsonify({"ok": True})
 
 @app.route('/statistic')
 def statistic():
@@ -406,7 +476,7 @@ def cart():
                     db.session.add(history)
                     db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity}"
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
@@ -535,7 +605,7 @@ def withdraw():
                 db.session.add(history)
                 db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
@@ -617,13 +687,63 @@ def edit():
     # GET
     # prepare categories for dropdown
     categories = Category.query.order_by(Category.cateID).all()
-    qr_b64 = item.generate_qr(f"http://localhost:56733/withdraw?itemID={item.itemID}")
+    full_url_for_qr = url_for('scanresult', itemID=item.itemID, _external=True)
+    qr_b64 = item.generate_qr(full_url_for_qr)
     return render_template(
         'edit.html',
         item=item,
         QR_Barcode=qr_b64,
         categories=categories
     )
+
+@app.route('/qr_scanner')
+@login_required
+def qr_scanner(): 
+    return render_template('qr_scanner.html')
+
+@app.route('/handle_scan', methods=['POST'])
+@login_required
+def handle_scan():
+    data = request.get_json()
+    scanned_url = data.get('scanned_url')
+
+    if not scanned_url:
+        return jsonify({'error': 'No URL provided'}), 400
+
+    match = re.search(r'itemID=(\d+)', scanned_url)
+    if not match:
+        return jsonify({'error': 'Invalid QR code format'}), 400
+
+    item_id = match.group(1)
+    
+    if current_user.IsM_admin:
+        redirect_url = url_for('scanresult', itemID=item_id)
+    else:
+        redirect_url = url_for('withdraw', itemID=item_id)
+        
+    return jsonify({'redirect_url': redirect_url})
+
+@app.route('/scanresult')
+@login_required
+def scanresult():
+    """
+    แสดงหน้ารายละเอียดสินค้าสำหรับ Admin หลังจากสแกน QR
+    UI ตามรูป image_057800.png
+    """
+    if not current_user.IsM_admin:
+        flash("You don't have permission to access this page.", "danger")
+        return redirect(url_for('homepage'))
+        
+    item_id = request.args.get('itemID')
+    if not item_id:
+        return "Item ID is required", 400
+
+    item = Item.query.get(item_id)
+    if not item:
+        return "Item not found", 404
+        
+    return render_template('scan_result.html', item=item)
+
 
 @app.route('/setting')
 def setting():
@@ -642,7 +762,7 @@ def withdraw_byQR(itemID):
         db.session.add(history)
         db.session.add(Notification(
                         user_id=current_user.UserID,
-                        ntype="withdraw",
+                        ntype="Withdraw",
                         message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
                     ))
         create_low_stock_notification_if_needed(item, None)
@@ -673,8 +793,11 @@ def export():
     list_data = []
     for i in data_list:
         utc_time = datetime.strptime(i["DateTime"], "%Y-%m-%d %H:%M:%S")
-        utc_time = utc_time.replace(tzinfo=timezone.utc)
-        local_time = str(utc_time.astimezone(get_localzone()))
+        from_zone = tz.tzutc()
+        utc_time = utc_time.replace(tzinfo=from_zone)
+        to_zone = tz.tzlocal()
+        local_time = str(utc_time.astimezone(to_zone))[0:19] # slice to clear offset (+07:00)
+        #local_time = str(utc_time.astimezone(get_localzone()))
         history = {
             "Withdraw date" : local_time,
             "Item Name" : i["items"]["itemName"],
@@ -760,11 +883,23 @@ def test_DB():
     db_cart = CartItem.query.all()
     db_WDhis = WithdrawHistory.query.all()
     db_noti = Notification.query.all()
+    db_noti_status = UserNotificationStatus.query.all()
+
     category = list(map(lambda x: x.to_dict(), db_category))
     item = list(map(lambda x:x.to_dict(), db_item))
     users = list(map(lambda x:x.to_dict(), db_user))
     cart = list(map(lambda x:x.to_dict(), db_cart))
     WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
     noti = list(map(lambda x:x.to_dict(),db_noti))
-    forshow=[{"Category DB":category},{"item DB":item},{"User DB":users},{"Cart":cart},{"Withdraw-History":WDhis},{"notification":noti}]
+    noti_status = list(map(lambda x:x.to_dict(), db_noti_status))
+
+    forshow=[
+        {"Category DB": category},
+        {"item DB": item},
+        {"User DB": users},
+        {"Cart": cart},
+        {"Withdraw-History": WDhis},
+        {"notification": noti},
+        {"notification_status": noti_status} # New entry here
+    ]
     return jsonify(forshow)

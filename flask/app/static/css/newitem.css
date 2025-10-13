@@ -203,3 +203,27 @@ body {
   line-height: 1.5;
   color: var(--text3--color);
 }
+
+.qr-container {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+}
+
+#qrImage {
+  width: 150px;
+  height: 150px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border: 1px solid #ccc;
+  padding: 5px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+#printQrBtn {
+    width: 150px;
+}
