@@ -15,7 +15,7 @@ class WithdrawHistory(db.Model, SerializerMixin):
     __tablename__ = "withdrawHistory"
 
     withdrawID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer, db.ForeignKey("user.UserID"), nullable=False)
+    UserID = db.Column(db.Integer, db.ForeignKey("user.UserID", ondelete='SET NULL'), nullable=True)
     itemID = db.Column(db.Integer, db.ForeignKey("item.itemID"), nullable=False)
     Quantity = db.Column(db.Integer)
     DateTime = db.Column(db.DateTime(timezone=True), default=lambda: test())

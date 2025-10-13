@@ -2,133 +2,154 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../static/css/adminlist.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlist.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Admin List Page</title>
+    <title>Admin List</title>
 </head>
-<body>
+<body class="lightmode">
     <script>
         const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
+        if (darkmode === 'active') { document.body.classList.replace('lightmode', 'darkmode'); }
     </script>
     <div class="header">
-        <a href="{{ url_for('homepage') }}" class="back-btn">
-            <span class="material-icons">arrow_back_ios</span>
-        </a>
-        <h2>Admin List</h2>
-    </div>
-
-    <div class="mainbox">
-        <h3 class="section-title">Mainadmin management</h3>
-        <p class="section-sub">Manage admin access and permissions</p>
-        <ul class="admin-list">
-            {% for user in users %}
-            <li class="admin-item">
-                    
-                <div class="admin-info">
-                    {% if user.profile_pic %}
-                        <img src="{{ user.profile_pic }}" class="profile-circle">
-                    {% else %}
-                        <div class="user-icon">{{ user.Fname[0].upper() }}</div>
-                    {% endif %}
-                    <div>
-                        <div class="name">{{ user.Fname }} {{ user.Lname }}</div>
-                        <div class="username">{{ user.email }}</div>
-                    </div>
-                </div>
-                
-                {% if user.UserID > 2 and current_user.UserID != user.UserID %}
-                    <form method="post" action="{{ url_for('adminlist') }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="user_id" value="{{ user.UserID }}">
-                        <label class="switch">
-                            <input type="checkbox" name="action" value="promote"
-                            {% if user.IsM_admin %}checked{% endif %}>
-                            <span class="slider round"></span>
-                        </label>
-                    </form>
+        <div class="header-left">
+            <a href="{{ url_for('homepage') }}" class="back-btn"><i class="material-icons">arrow_back_ios</i></a>
+        </div>
+        <h1 class="page-title">Admin List</h1>
+        <div class="header-right">
+            <a href="{{ url_for('pending_user')}}" class="pending-link">
+                <i class="material-icons">person_add_alt_1</i>
+                {% if pending_count > 0 %}
+                <span class="pending-badge">{{ pending_count }}</span>
                 {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-
-        <div id="confirmModal" class="modal">
-            <div class="modal-content">
-                <p id="modalMessage"></p>
-                <div class="modal-buttons">
-                    <button id="modalConfirm">Confirm</button>
-                    <button id="modalCancel">Cancel</button>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <div class="pending-admin">
-        <a href="{{ url_for('pending_user')}}">
-            <span>Pending Admin</span>
-        </a>
-    </div>
-</body>
-</body>
-</html>
-<script>
-document.querySelectorAll("form").forEach(form => {
-    const checkbox = form.querySelector("input[type=checkbox]");
+    <div class="main-content">
+        <h2 class="section-title">Main admin management</h2>
+        <p class="section-sub">Manage admin access and permissions</p>
+        
+        <div class="search-bar">
+            <i class="material-icons" style="color: var(--subtext-color);">search</i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by name">
+        </div>
 
-    // ดักไม่ให้ส่ง form ทันทีตอนเปลี่ยน checkbox
-    checkbox.addEventListener("change", (e) => {
-        e.preventDefault();
-        confirmSubmit(form, checkbox);
+        <ul class="user-list">
+            {% for user in users %}
+            <li class="user-item" data-name="{{ user.Fname.lower() }} {{ user.Lname.lower() }}">
+                <div class="swipe-wrapper">
+                    <div class="user-content" id="content-{{ user.UserID }}">
+                        <div class="profile-icon">
+                            {% if 'https://' in user.profile_pic %}
+                                <img src="{{ user.profile_pic }}" alt="Profile Picture">
+                            {% elif user.profile_pic %}
+                                <img src="{{ url_for('static', filename='img/' + user.profile_pic) }}" alt="Profile Picture">
+                            {% else %}
+                                <span>{{ user.Fname[0].upper() }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">{{ user.Fname }} {{ user.Lname }}</div>
+                            <div class="user-email">{{ user.email }}</div>
+                        </div>
+                        
+                        {% if current_user.UserID in [1, 2] %}
+                            <form method="post" action="{{ url_for('adminlist') }}" class="toggle-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                                <label class="switch">
+                                    <input type="checkbox" class="admin-toggle"
+                                           data-action-promote="promote" 
+                                           data-action-demote="demote"
+                                           {% if user.IsM_admin %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                                <input type="hidden" class="action-input" name="action" value="">
+                            </form>
+                        {% endif %}
+                    </div>
+                    
+                    {% if current_user.UserID in [1, 2] %}
+                        <div class="delete-action">
+                            <form method="POST" action="{{ url_for('adminlist') }}" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                                <input type="hidden" name="action" value="delete">
+                                <button type="submit" class="delete-btn">
+                                    <i class="material-icons">delete_outline</i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Search Functionality ---
+    const searchInput = document.getElementById('searchInput');
+    const userItems = document.querySelectorAll('.user-item');
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        userItems.forEach(item => {
+            const name = item.dataset.name;
+            item.style.display = name.includes(query) ? 'block' : 'none';
+        });
+    });
+
+    // --- Swipe & Toggle Logic ---
+    document.querySelectorAll('.user-content').forEach(content => {
+        let startX = 0, dist = 0;
+        const form = content.querySelector('.toggle-form');
+        
+        if (!form) return; 
+        content.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            content.style.transition = '';
+            form.style.transition = '';
+        });
+
+        content.addEventListener('touchmove', (e) => {
+            dist = e.touches[0].clientX - startX;
+            if (dist < 0 && dist > -100) {
+                content.style.transform = `translateX(${dist}px)`;
+                form.style.opacity = 1 - (Math.abs(dist) / 90);
+            }
+        });
+
+        content.addEventListener('touchend', () => {
+            content.style.transition = 'transform 0.3s ease';
+            form.style.transition = 'opacity 0.3s ease';
+            if (dist < -50) {
+                content.style.transform = 'translateX(-90px)';
+                form.style.opacity = 0;
+            } else {
+                content.style.transform = 'translateX(0px)';
+                form.style.opacity = 1;
+            }
+            dist = 0;
+        });
+
+        const toggle = content.querySelector('.admin-toggle');
+        const actionInput = form.querySelector('.action-input');
+        
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                actionInput.value = this.dataset.actionPromote; 
+            } else {
+                actionInput.value = this.dataset.actionDemote; 
+            }
+            form.submit();
+        });
     });
 });
-
-function confirmSubmit(form, checkbox) {
-    const li = form.closest("li");
-    const name = li.querySelector(".name").textContent;
-    const email = li.querySelector(".username").textContent;
-
-    const modal = document.getElementById("confirmModal");
-    const modalMessage = document.getElementById("modalMessage");
-    const confirmBtn = document.getElementById("modalConfirm");
-    const cancelBtn = document.getElementById("modalCancel");
-
-    if (checkbox.checked) {
-        modalMessage.textContent = `คุณแน่ใจที่จะให้ user "${name}" (${email}) เป็น main admin?`;
-    } else {
-        modalMessage.textContent = `คุณแน่ใจที่จะยกเลิกสิทธิ์ main admin ของ user "${name}" (${email})?`;
-    }
-
-    modal.style.display = "flex";
-
-    confirmBtn.onclick = () => {
-        modal.style.display = "none";
-
-        if (checkbox.checked) {
-            checkbox.value = "promote";
-        } else {
-            let hidden = form.querySelector("input[name=action]");
-            if (hidden) {
-                hidden.value = "demote";
-            } else {
-                hidden = document.createElement("input");
-                hidden.type = "hidden";
-                hidden.name = "action";
-                hidden.value = "demote";
-                form.appendChild(hidden);
-            }
-        }
-        form.submit();
-    };
-    cancelBtn.onclick = () => {
-        modal.style.display = "none";
-        checkbox.checked = !checkbox.checked;
-    };
-}
 </script>
+</body>
+</html>

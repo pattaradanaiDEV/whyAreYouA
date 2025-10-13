@@ -16,10 +16,11 @@ class User(db.Model, UserMixin, SerializerMixin):
     availiable = db.Column(db.Boolean,default=False)
     password = db.Column(db.String(255))
     profile_pic = db.Column(db.String(255), nullable=True)
-    withdraw_history = db.relationship("WithdrawHistory", back_populates="user")
-    cart_items = db.relationship("CartItem",back_populates="user",cascade="all, delete-orphan")
     
-    notification_statuses = db.relationship("UserNotificationStatus", back_populates="user", cascade="all, delete-orphan")
+    withdraw_history = db.relationship("WithdrawHistory", back_populates="user", passive_deletes=True)
+    cart_items = db.relationship("CartItem", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    notification_statuses = db.relationship("UserNotificationStatus", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    
     serialize_only = ("UserID",
                     "Fname",
                     "Lname",

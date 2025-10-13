@@ -2,53 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Admin requests</title>
-    <link rel="stylesheet" href="../static/css/pendingadmin.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pendingadmin.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Admin Pending Page</title>
+    <title>Pending Users</title>
 </head>
-<body>
+<body class="lightmode">
     <script>
         const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
+        if (darkmode === 'active') { document.body.classList.replace('lightmode', 'darkmode'); }
     </script>
-    <div class="top-bar">
-        <a href="{{ url_for('adminlist') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
-        </a>    
-        <div class="center">
-            <span class="center">Admin requests</span>
-        </div>
+    <div class="header">
+        <a href="{{ url_for('adminlist') }}" class="back-btn"><i class="material-icons">arrow_back_ios</i></a>
+        <h1 class="page-title">Pending user</h1>
     </div>
-    <div class="mainbox">
+
+    <div class="main-content">
+        <div class="request-header">
+            <h2 class="request-title">User request</h2>
+            <span class="request-count">{{ pending_count }}</span>
+        </div>
+        
+        <div class="search-bar">
+            <i class="material-icons" style="color: var(--subtext-color);">search</i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by name">
+        </div>
+
         {% if users %}
-            <ul>
+            <ul class="pending-list">
                 {% for user in users %}
-                    <li>
-                        {{ user.Fname }} {{ user.Lname }}
-                        <form method="post" action="{{ url_for('pending_user') }}" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="user_id" value="{{ user.UserID }}">
-                            <button type="submit" name="action" value="accept" class="btn btn-accept">Accept</button>
-                            <button type="submit" name="action" value="decline" class="btn btn-decline">Decline</button>
-                        </form>
-                    </li>
+                <li class="pending-card" data-name="{{ user.Fname.lower() }} {{ user.Lname.lower() }}">
+                    <div class="user-details-wrapper">
+                        <div class="profile-icon">
+                            {% if user.profile_pic %}
+                                <img src="{{ user.profile_pic }}" alt="Profile Picture">
+                            {% else %}
+                                <span>{{ user.Fname[0].upper() }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">{{ user.Fname }} {{ user.Lname }}</div>
+                            <div class="user-email">{{ user.email }}</div>
+                        </div>
+                    </div>
+                    <form method="post" action="{{ url_for('pending_user') }}" class="action-buttons">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="user_id" value="{{ user.UserID }}">
+                        <button type="submit" name="action" value="accept" class="btn btn-accept">Accept</button>
+                        <button type="submit" name="action" value="decline" class="btn btn-decline">Decline</button>
+                    </form>
+                </li>
                 {% endfor %}
             </ul>
-            <form method="post" action="{{ url_for('pending_user') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" name="action" value="accept_all" class="btn btn-accept-all">Accept All</button>
-            </form>
         {% else %}
-            <p class="text">No pending users.</p>
+            <p class="no-pending">No pending users.</p>
         {% endif %}
     </div>
+
+    {% if users %}
+    <div class="fab-container">
+        <form method="post" action="{{ url_for('pending_user') }}">
+             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+             <button type="submit" name="action" value="accept_all" class="fab" title="Accept All">
+                 <i class="material-icons">done_all</i>
+             </button>
+        </form>
+    </div>
+    {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const pendingCards = document.querySelectorAll('.pending-card');
+    
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        pendingCards.forEach(card => {
+            const name = card.dataset.name;
+            if (name.includes(query)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

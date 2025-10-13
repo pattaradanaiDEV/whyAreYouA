@@ -497,19 +497,37 @@ def adminlist():
     if request.method == "POST":
         action = request.form.get("action")
         user_id = request.form.get("user_id")
+        
+        if not user_id:
+            flash("User ID is missing.", "danger")
+            return redirect(url_for('adminlist'))
+            
+        user = User.query.get(int(user_id))
+        if not user:
+            flash("User not found.", "danger")
+            return redirect(url_for('adminlist'))
 
-        if action == "promote" and user_id:
-            user = User.query.get(int(user_id))
-            if user:
-                user.IsM_admin = True
-                db.session.commit()
-        else:
-            user = User.query.get(int(user_id))
-            if user:
-                user.IsM_admin = False
-                db.session.commit()
+        if action == "promote":
+            user.IsM_admin = True
+            flash(f"Promoted {user.Fname} to main admin.", "success")
+        elif action == "demote":
+            user.IsM_admin = False
+            flash(f"Demoted {user.Fname} from main admin.", "info")
+        elif action == "delete":
+            if user.UserID not in [1, 2] and user.UserID != current_user.UserID:
+                db.session.delete(user)
+                flash(f"User {user.Fname} has been deleted.", "success")
+            else:
+                flash("This user cannot be deleted.", "danger")
+
+        db.session.commit()
+        return redirect(url_for('adminlist'))
+
+    pending_user_count = User.query.filter_by(availiable=False).count()
     users = User.query.filter_by(availiable=True).order_by(User.UserID).all()
-    return render_template("adminlist.html", users=users)
+    
+    return render_template("adminlist.html", users=users, pending_count=pending_user_count)
+
 
 @app.route("/pending_admin", methods=["GET", "POST"])
 @madmin_required
@@ -523,33 +541,33 @@ def pending_user():
             if user:
                 user.availiable = True
                 db.session.add(Notification(
-                        user_id=current_user.UserID,
-                        ntype="Grant",
-                        message=f"คุณ {current_user.Fname} {current_user.Lname} ได้อนุญาติสิทธิเข้าใช้งานระบบให้กับ คุณ {user.Fname} {user.Lname}"
-                    ))
-                db.session.commit()
-
+                    ntype="Grant",
+                    message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}"
+                ))
+        
         elif action == "decline" and user_id:
             user = User.query.get(int(user_id))
             if user:
                 db.session.delete(user)
-                db.session.commit()
 
         elif action == "accept_all":
-            users = User.query.filter_by(availiable=False).all()
-            for user in users:
+            pending_users = User.query.filter_by(availiable=False).all()
+            if not pending_users:
+                flash("No pending users to accept.", "info")
+                return redirect(url_for("pending_user"))
+                
+            for user in pending_users:
                 user.availiable = True
                 db.session.add(Notification(
-                        user_id=current_user.UserID,
-                        ntype="Grant",
-                        message=f"คุณ {current_user.Fname} {current_user.Lname} ได้อนุญาติสิทธิเข้าใช้งานระบบให้กับ คุณ {user.Fname} {user.Lname}"
-                    ))
-            
-            db.session.commit()
-
+                    ntype="Grant",
+                    message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)"
+                ))
+        
+        db.session.commit()
         return redirect(url_for("pending_user"))
+
     users = User.query.filter_by(availiable=False).all()
-    return render_template("pending_admin.html", users=users)
+    return render_template("pending_admin.html", users=users, pending_count=len(users))
 
 @app.route("/withdraw", methods=["GET", "POST"])
 def withdraw():
