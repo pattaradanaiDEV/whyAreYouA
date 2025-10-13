@@ -80,11 +80,10 @@
                     
                     {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
                         <div class="delete-action">
-                            <form method="POST" action="{{ url_for('adminlist') }}" onsubmit="return confirm('Are you sure you want to delete {{user.Fname}} {{user.Lname}}? This action cannot be undone.');">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <form method="POST" action="{{ url_for('adminlist') }}">  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">
                                 <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="delete-btn">
+                                <button type="submit" class="delete-btn" data-user-name="{{ user.Fname }} {{ user.Lname }}">
                                     <i class="material-icons">delete_outline</i>
                                 </button>
                             </form>
@@ -130,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const form = this.closest('form');
             const actionInput = form.querySelector('.action-input');
             const userName = this.dataset.userName;
-            const isCurrentlyChecked = this.checked; // สถานะปัจจุบันของ checkbox
+            const isCurrentlyChecked = this.checked;
 
             if (isCurrentlyChecked) {
                 modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะให้ ${userName} เป็น admin`;
@@ -151,6 +150,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
             cancelBtn.onclick = () => {
                 modal.classList.remove('active');
+            };
+        });
+    });
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const form = this.closest('form');
+            const userName = this.dataset.userName;
+            modalMessage.textContent = `แน่ใจแล้วหรือไม่ที่จะลบ ${userName} ออกจากระบบ`;
+
+            modal.classList.add('active');
+
+            confirmBtn.onclick = () => {
+                form.submit(); 
+            };
+
+            cancelBtn.onclick = () => {
+                modal.classList.remove('active'); 
             };
         });
     });
