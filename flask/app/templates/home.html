@@ -25,7 +25,7 @@
                 {% endif %}
             </div>
             <div class="profile-text">
-                <span class="welcome-message">Welcome!<br></span>
+                <span class="welcome-message" id="welcome">Welcome!<br></span>
                 <span>{{ current_user.Fname}} {{ current_user.Lname }}</span>
             </div>
         </div>
@@ -53,14 +53,14 @@
             <button onclick="urlFor('statistic')" class="circle-button circle-button-lightmode">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-120v-80h800v80H80Zm40-120v-280h120v280H120Zm200 0v-480h120v480H320Zm200 0v-360h120v360H520Zm200 0v-600h120v600H720Z"/></svg>
             </button>
-            <span>Statistics</span>
+            <span id="stats">Statistics</span>
         </div>
         
         <div class="category">
             <button onclick="urlFor('history')" class="circle-button circle-button-lightmode">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg>
             </button>
-            <span>History</span>
+            <span id="hist">History</span>
         </div>
         
 
@@ -68,19 +68,19 @@
             <button onclick="urlFor('newitem')" class="circle-button circle-button-lightmode">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
             </button>
-            <span>Add</span>
+            <span id="addItem">Add</span>
         </div>
 
         <div class="category"> 
             <button onclick="urlFor('setting')" class="circle-button circle-button-lightmode">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm112-260q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Z"/></svg>
             </button>
-            <span>Settings</span>
+            <span id="settings">Settings</span>
         </div>
     </div>
 
     <div class="topfive">
-        <span>Top 5 Disbursemented Items</span>
+        <span id="topFive">Top 5 Disbursemented Items</span>
     </div>
 
     <div class="topused-container">
@@ -103,12 +103,12 @@
                     </div>
                     <div class="item-info">
                         <span class="item-name">{{ it.itemName }}</span>
-                        <span class="item-details">In stock : {{ it.itemAmount }}</span>
-                        <span class="item-details">Withdrawn : {{ it.total }}</span>
+                        <span class="item-details inStock">In stock: </span><span class="item-details">{{ it.itemAmount }}</span>
+                        <span class="item-details withdrawn">Withdrawn: </span><span class="item-details">{{ it.total }}</span>
                         <div class="button-group">
-                            <button class="quick-btn withdraw-btn" onclick="location.href='/withdraw?itemID={{ it.itemID }}'">Withdraw</button>
+                            <button class="quick-btn withdraw-btn withdraw" onclick="location.href='/withdraw?itemID={{ it.itemID }}'">Withdraw</button>
                             {% if current_user.IsM_admin %}
-                            <button class="quick-btn edit-btn" onclick="location.href='/edit?itemID={{ it.itemID }}'">Edit</button>
+                            <button class="quick-btn edit-btn edit" onclick="location.href='/edit?itemID={{ it.itemID }}'">Edit</button>
                             {% endif %}
                         </div>
                     </div>
@@ -116,7 +116,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <p class="text-center text">No data yet</p>
+            <p class="text-center text" id="noData">No data yet</p>
         {% endif %}
     </div>
 
@@ -124,11 +124,11 @@
     <div class="bottom-nav">
         <a href="{{ url_for('category') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-451q-18-11-29-28.5T80-680v-120q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v120q0 23-11 40.5T840-611v451q0 33-23.5 56.5T760-80H200Zm-40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/></svg>
-            <span class="action1">Stock</span>
+            <span class="action1" id="stock">Stock</span>
         </a>
         <a href="{{ url_for('qr_scanner') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
-            <span class="action2">QR Scan</span>
+            <span class="action2" id="qrScan">QR Scan</span>
         </a>
 
         <div class="nav-item">
@@ -138,18 +138,17 @@
                         <path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Z"/>
                     </svg>
                 </a>
-                <span class="action3">Manage Admin</span>
+                <span class="action3" id="manageAdmin">Manage Admin</span>
             {% else %}
                 <a href="{{ url_for('adminlist')}}">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                         <path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Z"/>
                     </svg>
                 </a>
-                <span class="action3">Admin Contact</span>
+                <span class="action3" id="contactAdmin">Admin Contact</span>
             {% endif %}
         </div>
     </div>
-    <script src="../templates/js/language.js"></script>    
 
     <script>
     if ("serviceWorker" in navigator) {
@@ -190,5 +189,90 @@
     
     function urlFor(link) {
         location.href = '/' + link;
+    }
+
+    const translations = {
+        en: {
+            welcome: "Settings",
+            stats: "Statistics",
+            hist: "History",
+            addItem: "Add",
+            settings: "Settings",
+            topFive: "Top 5 Disbursemented Items",
+            inStock: "In stock: ",
+            withdrawn: "Withdrawn: ",
+            withdraw: "Withdraw",
+            edit: "Edit",
+            noData: "No data yet",
+            stock: "Stock",
+            qrScan: "QR Scan",
+            manageAdmin: "Manage Admin",
+            contactAdmin: "Admin Contact"
+        },
+        th: {
+            welcome: "ยินดีต้อนรับ",
+            stats: "สถิติ",
+            hist: "ประวัติ",
+            addItem: "เพิ่ม",
+            settings: "ตั้งค่า",
+            topFive: "ของที่ถูกเบิกบ่อยที่สุด 5 อันดับแรก",
+            inStock: "ในคลัง: ",
+            withdrawn: "เบิกแล้ว: ",
+            withdraw: "เบิก",
+            edit: "แก้ไข",
+            noData: "ยังไม่มีข้อมูล ณ ขณะนี้",
+            stock: "คลัง",
+            qrScan: "สแกน QR",
+            manageAdmin: "จัดการแอดมิน",
+            contactAdmin: "ช่องทางติดต่อแอดมิน"
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#welcome').textContent = (translations[lang].welcome);
+        document.querySelector('#stats').textContent = (translations[lang].stats);
+        document.querySelector('#hist').textContent = (translations[lang].hist);
+        document.querySelector('#addItem').textContent = (translations[lang].addItem);
+        document.querySelector('#settings').textContent = (translations[lang].settings);
+        document.querySelector('#topFive').textContent = (translations[lang].topFive);
+        document.querySelector('#stock').textContent = (translations[lang].stock);
+        document.querySelector('#qrScan').textContent = (translations[lang].qrScan);
+        document.querySelector('#manageAdmin').textContent = (translations[lang].manageAdmin);
+        document.querySelector('#contactAdmin').textContent = (translations[lang].contactAdmin);
+    }
+
+    function changeLanguageHaveData(lang) {
+        document.querySelectorAll('.inStock').forEach(e => {
+            e.textContent = (translations[lang].inStock);
+        });
+        document.querySelectorAll('.withdrawn').forEach(e => {
+            e.textContent = (translations[lang].withdrawn);
+        });
+        document.querySelectorAll('.withdraw').forEach(e => {
+            e.textContent = (translations[lang].withdraw);
+        });
+        document.querySelectorAll('.edit').forEach(e => {
+            e.textContent = (translations[lang].edit);
+        });
+    }
+    
+    function changeLanguageNoData(lang) {
+        document.querySelector('#noData').textContent = (translations[lang].noData);
+    }
+
+    {% if top_items %}
+        changeLanguageHaveData(localStorage.getItem('lang'))
+    {% else %}
+        changeLanguageNoData(localStorage.getItem('lang'))
+    {% endif %}
+
+    changeLanguage(localStorage.getItem('lang'));
+
+    function confirmAction() {
+        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
+            window.location.href = "logout";
+        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการล็อกเอ้าต์?")) {
+            window.location.href = "logout";
+        }
     }
 </script>
