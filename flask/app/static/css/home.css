@@ -270,10 +270,10 @@ svg {
 
 .status-dot{
   position: absolute;
-  top: 15px;
-  left: 5px;
-  width: 30px;
-  height: 30px;
+  bottom: 15px;
+  left: 100px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   z-index: 2;
   border: 2px solid white;

@@ -43,7 +43,7 @@
                                 {% endif %}
                             </div>
                             <p class="notification-message">{{ notif.message }}</p>
-                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0] }} เวลา {{ notif.created_at.split(" ")[1] }}</span>
+                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0].split("-")[2]}}-{{notif.created_at.split(" ")[0].split("-")[1]}}-{{notif.created_at.split(" ")[0].split("-")[0]}}  เวลา {{ notif.created_at.split(" ")[1] }}</span>
                         </div>
                     </div>
                     <div class="delete-action">
