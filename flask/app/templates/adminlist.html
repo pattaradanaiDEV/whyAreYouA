@@ -28,7 +28,13 @@
             </a>
         </div>
     </div>
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
     <div class="main-content">
         <h2 class="section-title">Main admin management</h2>
         <p class="section-sub">Manage admin access and permissions</p>
@@ -57,14 +63,13 @@
                             <div class="user-email">{{ user.email }}</div>
                         </div>
                         
-                        {% if current_user.UserID in [1, 2] %}
+                        {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
                             <form method="post" action="{{ url_for('adminlist') }}" class="toggle-form">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">
                                 <label class="switch">
                                     <input type="checkbox" class="admin-toggle"
-                                           data-action-promote="promote" 
-                                           data-action-demote="demote"
+                                           data-user-name="{{ user.Fname }} {{ user.Lname }}"
                                            {% if user.IsM_admin %}checked{% endif %}>
                                     <span class="slider"></span>
                                 </label>
@@ -73,9 +78,9 @@
                         {% endif %}
                     </div>
                     
-                    {% if current_user.UserID in [1, 2] %}
+                    {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
                         <div class="delete-action">
-                            <form method="POST" action="{{ url_for('adminlist') }}" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                            <form method="POST" action="{{ url_for('adminlist') }}" onsubmit="return confirm('Are you sure you want to delete {{user.Fname}} {{user.Lname}} This action cannot be undone.');">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">
                                 <input type="hidden" name="action" value="delete">
@@ -89,6 +94,16 @@
             </li>
             {% endfor %}
         </ul>
+    </div>
+
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <p class="modal-message" id="modalMessage"></p>
+            <div class="modal-actions">
+                <button id="modalConfirm" class="modal-btn confirm">ยืนยัน</button>
+                <button id="modalCancel" class="modal-btn cancel">ยกเลิก</button>
+            </div>
+        </div>
     </div>
     
 <script>
@@ -104,12 +119,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- Swipe & Toggle Logic ---
+    const modal = document.getElementById("confirmModal");
+    const modalMessage = document.getElementById("modalMessage");
+    const confirmBtn = document.getElementById("modalConfirm");
+    const cancelBtn = document.getElementById("modalCancel");
+
+    document.querySelectorAll('.admin-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault(); // Stop the default change behavior and form submission
+
+            const form = this.closest('form');
+            const actionInput = form.querySelector('.action-input');
+            const userName = this.dataset.userName;
+
+            if (this.checked) {
+                modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะให้ ${userName} เป็น admin`;
+                actionInput.value = 'promote';
+            } else {
+                modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะยกเลิกสิทธิ์ admin ของ ${userName}`;
+                actionInput.value = 'demote';
+            }
+            
+            modal.classList.add('active'); // Show the modal
+
+            confirmBtn.onclick = () => {
+                form.submit(); // Submit the form
+            };
+
+            cancelBtn.onclick = () => {
+                this.checked = !this.checked; // Revert the checkbox state visually
+                modal.classList.remove('active'); // Hide the modal
+            };
+        });
+    });
+
     document.querySelectorAll('.user-content').forEach(content => {
         let startX = 0, dist = 0;
         const form = content.querySelector('.toggle-form');
         
         if (!form) return; 
+
         content.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
             content.style.transition = '';
@@ -137,17 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
             dist = 0;
         });
 
-        const toggle = content.querySelector('.admin-toggle');
-        const actionInput = form.querySelector('.action-input');
-        
-        toggle.addEventListener('change', function() {
-            if (this.checked) {
-                actionInput.value = this.dataset.actionPromote; 
-            } else {
-                actionInput.value = this.dataset.actionDemote; 
-            }
-            form.submit();
-        });
     });
 });
 </script>
