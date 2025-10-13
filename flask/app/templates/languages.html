@@ -43,7 +43,7 @@
 
 <script>
     const options = document.querySelectorAll('.action-btn');
-    const langStore = localStorage.getItem('lang');
+    const langStore = localStorage.getItem('lang') || 'en';
 
     const translations = {
         en: {
