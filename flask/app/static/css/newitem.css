@@ -2,12 +2,14 @@
     --bg--color: #f9fafb;
     --base--color: #FFF;
     --text--color: #000;
+    --text3--color: #000;
 }
 
 .darkmode{
     --bg--color: #212121;
     --base--color: #121212;
     --text--color: #eee;
+    --text3--color: #fff;
 }
 
 
@@ -184,4 +186,44 @@ body {
 
 .text {
   color: var(--text--color);
+}
+
+.alert-box {
+  border-radius: 10px;
+  margin: 10px;
+  background-color: rgb(220, 66, 66);
+}
+
+.notification {
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text3--color);
+}
+
+.qr-container {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+}
+
+#qrImage {
+  width: 150px;
+  height: 150px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border: 1px solid #ccc;
+  padding: 5px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+#printQrBtn {
+    width: 150px;
 }

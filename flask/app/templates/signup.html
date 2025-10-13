@@ -4,60 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/loginA.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginA.css') }}">
     <title>Login Page</title>
 </head>
 <body>
     <div class="app-container">
-        <img src="../static/ico/stock_logo.png" alt="stock-logo" class="logo" />
-      
+        <img src="{{ url_for('static', filename='ico/stock_logo.png') }}" alt="stock-logo" class="logo"/>
+        
         <p class="app-title">CS' Stock Managing System</p>
-        <div class="login-button">
-            <a href="{{ url_for('google') }}" class="button is-large is-fullwidth">
-            <span class="icon">
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px;">
-            </span>
-            <span>Signin with Google</span>
-            </a>
-        </div>
-        <div class="text">
-            <p>or<br><br>login with email and password</p><br>
-        </div>
-        <div class="center">
-            <form class="text mainbox" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <div class="alert-box">
-                    <div class="notification is-danger">
-                        {{ messages[0] }}
-                    </div>
-                </div>
-                {% endif %}
-                {% endwith %}
-                <div class="subbox">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" class="input-box" placeholder="Example@exmpmail.com" required>
-                </div>
-                <div class="subbox">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" class="input-box" placeholder="Your Password Here" required>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-        <div class="text">
-            <hr>
-            <p>Please contact Mr.Pongpop for stock edit permission:</p>
-            <p>pongpop@TBA.com</p>
-        </div>
-      </div>
-</body>
-<script>
-    const form = document.querySelector('form')
-</script>
 
+        <a href="{{ url_for('google') }}" class="google-login-button">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="google-logo">
+            <span>Login with google</span>
+        </a>
+
+        <div class="divider">
+            <p class="divider-text">OR</p>
+        </div>
+
+        <form method="post" class="login-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger">
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="input-container">
+                <i class="material-icons">email</i>
+                <input type="email" id="email" name="email" class="input-field" placeholder="Email" required>
+            </div>
+
+            <div class="input-container">
+                <i class="material-icons">lock</i>
+                <input type="password" id="password" name="password" class="input-field" placeholder="Password" required>
+            </div>
+            
+            <button type="submit" class="submit-button">Log in</button>
+        </form>
+
+        <div class="signup-link">
+            <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+        </div>
+    </div>
+</body>
 </html>

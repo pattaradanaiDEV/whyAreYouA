@@ -1,63 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="lightmode">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../static/css/notification.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/category.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- เพิ่ม CSRF Token เข้าไปใน meta tag -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Notifications</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="lightmode">
-    <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
+<body>
     <div class="top-bar">
-        <a href="{{ url_for('homepage') }}">
-            <span class="material-icons">arrow_back_ios</span>
+        <a href="{{ url_for('homepage') }}" class="back-arrow">
+            <i class="material-icons">arrow_back_ios</i>
         </a>
-        <div class="center">
-            <span>Notification</span>
-        </div>
+        <h1 class="page-title">Notification</h1>
     </div>
 
     <div class="notification-list">
         {% if notifications %}
-            {% for n in notifications %}
-            <div class="notification-item {% if not n.is_read %}unread{% endif %}" data-id="{{ n.id }}">
-                <div>
-                    <div class="noti-name"><strong>{{ n.type|upper }}</strong></div>
-                    <div class="noti-message">{{ n.message }}</div>
-                    <div class="create-date">{{ n.created_at }}</div>
+            {% for notif in notifications %}
+                <div class="notification-wrapper">
+                    <div class="notification-item-container" data-id="{{ notif.id }}">
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <span class="notification-type">{{ notif.ntype }}</span>
+                                {% if not notif.is_read %}
+                                <button class="mark-read-btn" title="Mark as read">
+                                    <i class="material-icons">mark_chat_read</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                            <p class="notification-message">{{ notif.message }}</p>
+                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0] }} เวลา {{ notif.created_at.split(" ")[1] }}</span>
+                        </div>
+                    </div>
+                    <div class="delete-action">
+                        <button class="delete-btn">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                    <button onclick="markRead({{ n.id }})" class="read-btn">Mark read</button>
-                    <button onclick="deleteNoti({{ n.id }})" class="del-btn">Delete</button>
-                </div>
-            </div>
             {% endfor %}
         {% else %}
-            <p>No notifications</p>
+            <p class="no-notifications">No new notifications.</p>
         {% endif %}
     </div>
 
 <script>
-async function deleteNoti(id){
-    const res = await fetch(`/notification/delete/${id}`, { method: 'POST' });
-    if(res.ok) location.reload();
-    else alert('Delete failed');
-}
-async function markRead(id){
-    const res = await fetch(`/notification/mark_read/${id}`, { method: 'POST' });
-    if(res.ok) location.reload();
-    else alert('Mark read failed');
-}
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const notificationItems = document.querySelectorAll('.notification-item-container');
+
+    notificationItems.forEach(item => {
+        let startX = 0;
+        let dist = 0;
+
+        item.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            item.style.transition = '';
+        });
+
+        item.addEventListener('touchmove', (e) => {
+            dist = e.touches[0].clientX - startX;
+            if (dist < 0 && dist > -100) {
+                item.style.transform = `translateX(${dist}px)`;
+            }
+        });
+
+        item.addEventListener('touchend', () => {
+            item.style.transition = 'transform 0.3s ease';
+            if (dist < -50) {
+                item.style.transform = 'translateX(-100px)';
+            } else {
+                item.style.transform = 'translateX(0px)';
+            }
+            dist = 0;
+        });
+
+        const markReadBtn = item.querySelector('.mark-read-btn');
+        if (markReadBtn) {
+            markReadBtn.addEventListener('click', () => {
+                const notifId = item.dataset.id;
+                fetch(`/notification/mark_read/${notifId}`, { 
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        markReadBtn.parentElement.parentElement.parentElement.classList.add('read');
+                        markReadBtn.remove();
+                    }
+                });
+            });
+        }
+    });
+
+    const deleteActions = document.querySelectorAll('.delete-action');
+    deleteActions.forEach(action => {
+        action.addEventListener('click', (e) => {
+            const wrapper = e.currentTarget.closest('.notification-wrapper');
+            const notifId = wrapper.querySelector('.notification-item-container').dataset.id;
+            
+            fetch(`/notification/delete/${notifId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    wrapper.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    wrapper.style.opacity = '0';
+                    wrapper.style.transform = 'scale(0.8)';
+                    setTimeout(() => wrapper.remove(), 500);
+                }
+            });
+        });
+    });
+});
 </script>
+
 </body>
 </html>
+
