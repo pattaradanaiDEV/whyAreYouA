@@ -781,6 +781,15 @@ def delete_item_post(itemID):
         return jsonify({"ok": True})
     return jsonify({"ok": False}), 404
 
+@app.route('/delete/user/<int:UserID>', methods=['POST'])
+def delete_user(UserID):
+    user = User.query.get(UserID)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"ok": True})
+    return jsonify({"ok": False}), 404
+
 @app.route('/delete/item')
 @madmin_required
 def delete_item():
@@ -807,13 +816,14 @@ def export():
         list_data.append(history)
     df = pd.DataFrame(list_data)
     output = BytesIO()
+    sheet_name = f"WithdrawHistory_{datetime.now().strftime('%Y_%m_%d')}"
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="WithdrawHistory")
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
     output.seek(0)
     return send_file(
         output,
         as_attachment=True,
-        download_name="withdraw_History.xlsx",
+        download_name= sheet_name + ".xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
