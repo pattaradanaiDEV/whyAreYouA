@@ -117,10 +117,13 @@
 
     let startX = 0;
     let currentX = 0;
+    let isDragging = false; 
 
     function startSwipe(e, id) {
         if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
         
+        isDragging = false; 
+
         const allDetails = document.querySelectorAll('#item-list .detail[open]');
         allDetails.forEach(detail => { detail.open = false; });
 
@@ -131,30 +134,44 @@
 
     function moveSwipe(e, id) {
         if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        
         const content = document.getElementById(`content-${id}`);
         currentX = e.touches[0].clientX;
         let diff = currentX - startX;
+
+        if (Math.abs(diff) > 10) { // Threshold of 10 pixels
+            isDragging = true;
+        }
         
-        if (diff < 0 && diff > -100) {
+        if (isDragging && diff < 0 && diff > -100) {
             content.style.transform = `translateX(${diff}px)`;
         }
     }
 
     function endSwipe(e, id) {
         if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
-        const content = document.getElementById(`content-${id}`);
-        let diff = currentX - startX;
         
+        const content = document.getElementById(`content-${id}`);
         content.style.transition = 'transform 0.3s ease'; 
         
+        if (!isDragging) {
+            content.style.transform = 'translateX(0px)'; // Ensure it snaps back on a simple tap
+            return; // Exit function if it was just a tap
+        }
+
+        let diff = currentX - startX;
         if (diff < -60) {
             content.style.transform = `translateX(-90px)`; 
         } else {
             content.style.transform = 'translateX(0px)';
         }
+        
         startX = 0;
         currentX = 0;
+        isDragging = false;
     }
+
+    
     
     function confirmDelete() { return confirm("Are you sure you want to delete this item?"); }
     async function loadQrCode(itemID, summaryElement) {
