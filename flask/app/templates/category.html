@@ -18,19 +18,19 @@
           document.body.classList.remove('darkmode');
         }
     </script>
-    <div class="top-bar">
-        <div class="back">
-            <a href="{{ url_for('homepage') }}">
-                <span class="material-icons">arrow_back_ios_new</span> 
+    <div class="header">
+        <div class="header-left">
+            <a href="{{ url_for('homepage') }}" class="back-btn">
+                <i class="material-icons">arrow_back_ios</i>
             </a>
         </div>
-        <div class="category">
-            <span class="material-icons">list_alt</span>
-            <span>Category</span>
-        </div>
+        <h1 class="page-title">Category</h1>
         <div class="cart">
-            <a href="{{ url_for('cart') }}">
-                <span class="material-icons">shopping_cart</span>
+            <a href="{{ url_for('cart')}}" class="cart-link">
+                <i class="material-icons" style="color:black;">shopping_cart</i>
+                {% if cart_count > 0 %}
+                <span class="cart-badge">{{ cart_count }}</span>
+                {% endif %}
             </a>
         </div>
     </div>
@@ -60,7 +60,15 @@
     </div>
 
     <div id="item-list"></div>
-
+     <div class="modal-overlay" id="delete-modal">
+        <div class="modal-content">
+            <p class="modal-message" id="delete-modal-message"></p>
+            <div class="modal-actions">
+                <button class="modal-btn confirm" id="confirm-delete-btn">Confirm</button>
+                <button class="modal-btn cancel" id="cancel-delete-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     const items = {{ items|tojson }}; 
@@ -78,11 +86,11 @@
             <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
                 <div class="swipe-wrapper">
                     <div class="delete-action">
-                        <form method="POST" onsubmit="return confirmDelete()">
+                        <form method="POST" id="delete-form-${it.itemID}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
                             <input type="hidden" name="item_id" value="${it.itemID}">
                             <input type="hidden" name="action" value="delete">
-                            <button class="delete-btn">
+                            <button type="button" class="delete-btn" onclick="showDeleteModal(${it.itemID})">
                                 <i class="material-icons">delete</i>
                             </button>
                         </form>
@@ -173,7 +181,47 @@
 
     
     
-    function confirmDelete() { return confirm("Are you sure you want to delete this item?"); }
+    const deleteModal = document.getElementById('delete-modal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    let itemToDeleteId = null;
+
+    function showDeleteModal(itemID) {
+    itemToDeleteId = itemID;
+    const item = items.find(it => it.itemID === itemID); // ค้นหา item จาก ID
+    const modalMessage = document.getElementById('delete-modal-message');
+
+    if (item) {
+        modalMessage.innerHTML = `Are you sure you want to delete <strong>${item.itemName}</strong>?`;
+    } else {
+        modalMessage.textContent = 'Are you sure you want to delete this item?';
+    }
+
+    deleteModal.classList.add('active');
+}
+
+    function hideDeleteModal() {
+        itemToDeleteId = null;
+        deleteModal.classList.remove('active');
+    }
+    
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (itemToDeleteId) {
+            const form = document.getElementById(`delete-form-${itemToDeleteId}`);
+            if (form) {
+                form.submit();
+            }
+        }
+        hideDeleteModal();
+    });
+
+    cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+
+    deleteModal.addEventListener('click', (event) => {
+        if (event.target === deleteModal) {
+            hideDeleteModal();
+        }
+    });
     async function loadQrCode(itemID, summaryElement) {
         const detailsElement = summaryElement.parentElement;
         if (!detailsElement.open) {

@@ -129,6 +129,9 @@ body {
     overflow: hidden;
 }
 
+.alert-box { border-radius: 10px; margin: 10px; background-color: rgb(0, 155, 8); }
+.notification { border-radius: 0.25rem; margin-bottom: 1rem; padding: 1rem; position: relative; font-size: 1rem; line-height: 1.5; color: var(--text3--color); }
+
 
 .bot-container:hover{
     background-color: rgb(44, 43, 43);

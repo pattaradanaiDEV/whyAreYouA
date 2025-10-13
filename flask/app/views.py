@@ -298,10 +298,12 @@ def category():
 
     data_items = Item.query.order_by(Item.itemID).all()
     items = [i.to_dict() for i in data_items]
+    cart_count = CartItem.query.filter_by(UserID=current_user.UserID).count()
     return render_template(
         'category.html',
         categories=categories,
-        items=items
+        items=items,
+        cart_count=cart_count
     )
     
 @app.route('/notification')

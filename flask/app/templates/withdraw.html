@@ -30,7 +30,15 @@
     	</div>
         <div></div>
     </div>
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert-box">
+            <div class="notification" style="background-color:red;">
+                {{ messages[0] }}
+            </div>
+        </div>
+        {% endif %}
+    {% endwith %}
     <div class="center">
       <div class="mainbox">
         <div style="display:flex;gap:12px;align-items:center;">
