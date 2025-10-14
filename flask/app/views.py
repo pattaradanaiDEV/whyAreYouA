@@ -45,10 +45,7 @@ def check_user_available():
         'google',
         'google_auth',
         'waiting',
-        'static',
-        'notification',
-        'notification_delete',
-        'notification_mark_read'
+        'static'
     ]
 
     endpoint = request.endpoint
@@ -447,7 +444,9 @@ def cart():
                 cart_item.Quantity -= 1
             elif action == 'update_input' and quantity > 0:
                 if item and quantity > item.itemAmount:
+                    cart_item.Quantity = item.itemAmount
                     flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
+                    db.session.commit()
                     return redirect(url_for('cart'))
                 cart_item.Quantity = quantity
 
@@ -471,7 +470,9 @@ def cart():
                     continue
                 if c.Status == 'w':
                     if c.Quantity > item.itemAmount:
+                        c.Quantity = item.itemAmount
                         flash(f"ไม่สามารถเบิก {item.itemName} ได้ จำนวนเกินสต็อก", "danger")
+                        db.session.commit()
                         return redirect(url_for('cart'))
                     item.itemAmount -= c.Quantity
                     history = WithdrawHistory(user_id=current_user.UserID, item_id=item.itemID, quantity=c.Quantity)
