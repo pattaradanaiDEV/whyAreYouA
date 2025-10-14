@@ -31,7 +31,7 @@ import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
-from sqlalchemy import func
+from sqlalchemy import func , or_
 from datetime import datetime, timedelta, timezone
 from dateutil import tz
 
@@ -168,6 +168,7 @@ def homepage():
             (Notification.id == UserNotificationStatus.notification_id) &
             (UserNotificationStatus.user_id == current_user.UserID)
         ).filter(
+            or_(Notification.user_id == None, Notification.user_id == current_user.UserID),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
             (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
@@ -319,6 +320,7 @@ def notification():
             (UserNotificationStatus.user_id == user_id)
         )
         .filter(
+            #or_(Notification.user_id == None, Notification.user_id == user_id),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False) 
         )
@@ -512,6 +514,11 @@ def adminlist():
 
         if action == "promote":
             user.IsM_admin = True
+            # db.session.add(Notification(
+            #         user_id=user.UserID,
+            #         ntype="You got promoted to admin",
+            #         message=f"คุณได้เลื่อนขั้นเป็น Admin"
+            #     ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
             user.IsM_admin = False
@@ -547,6 +554,11 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}"
                 ))
+                # db.session.add(Notification(
+                #     user_id=user.UserID,
+                #     ntype="Access granted",
+                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                # ))
         
         elif action == "decline" and user_id:
             user = User.query.get(int(user_id))
@@ -565,6 +577,11 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)"
                 ))
+                # db.session.add(Notification(
+                #     user_id=user.UserID,
+                #     ntype="Access granted",
+                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                # ))
         
         db.session.commit()
         return redirect(url_for("pending_user"))

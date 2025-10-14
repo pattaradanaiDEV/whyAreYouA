@@ -46,7 +46,7 @@ svg {
 }
 
 .lightmode {
-  --base--color: rgba(221, 221, 221, 0.9); /* Adjusted for card background */
+  --base--color: rgba(199, 198, 198, 0.9); /* Adjusted for card background */
   --basebg--color: #eee;
   --border--color: gray;
   --hover--color: gray;
