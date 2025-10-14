@@ -46,7 +46,7 @@ svg {
 }
 
 .lightmode {
-  --base--color: rgba(221, 221, 221, 0.8); /* Adjusted for card background */
+  --base--color: rgba(221, 221, 221, 0.9); /* Adjusted for card background */
   --basebg--color: #eee;
   --border--color: gray;
   --hover--color: gray;
@@ -281,15 +281,12 @@ svg {
 
 .status-dot.green{
   background-color: #4caf50;
-  opacity: 0.7;
 }
 .status-dot.yellow{
   background-color: #ffc107;
-  opacity: 0.7;
 }
 .status-dot.red{
   background-color: #f44336;
-  opacity: 0.7;
 }
 
 .item-info{
@@ -364,6 +361,7 @@ svg {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   box-sizing: border-box;
+  z-index: 1001;
 }
 
 .nav-item {
