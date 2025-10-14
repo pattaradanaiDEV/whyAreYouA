@@ -121,7 +121,7 @@ body {
 
 .input-container i.material-icons {
     color: #999;
-    font-size: 4.5vw;
+    font-size: 4vw;
     margin-right: 10px;
 }
 
@@ -136,11 +136,12 @@ body {
 
 .profile-pic-upload {
     margin: 2vh auto 3vh auto;
+
 }
 
 .upload-circle {
-    width: 120px;
-    height: 120px;
+    width: 30vw;
+    height: 30vw;
     background-color: #F0F0F0;
     border-radius: 50%;
     display: flex;
@@ -152,7 +153,7 @@ body {
 }
 
 .upload-circle i.material-icons {
-    font-size: 2vw;
+    font-size: 23vw;
     color: #AAA;
 }
 
@@ -175,7 +176,14 @@ body {
     text-decoration: none;
 }
 
-
+.notification.is-danger {
+    background-color: #f14668;
+    color: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 3.5vw;
+}
 
 .wait-container {
     position: absolute;
