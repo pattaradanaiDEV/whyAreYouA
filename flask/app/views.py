@@ -247,7 +247,7 @@ def signup():
 
         db.session.add(Notification(
             user_id=new_user.UserID,
-            ntype="request",
+            ntype="Request",
             message=f"{new_user.Fname} {new_user.Lname} has requested access to the system."
         ))
         db.session.commit()
@@ -901,13 +901,13 @@ def google_auth():
                 Lname = userinfo.get('family_name', "")
                 new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
-                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
-
                 db.session.add(Notification(
                     user_id=new_user.UserID,
-                    ntype="request",
+                    ntype="Request",
                     message=f"{Fname} {Lname} ได้ขอเข้าใช้งานระบบ"
                 ))
+                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
+
     except Exception as ex:
         db.session.rollback()  # Rollback on failure
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")
