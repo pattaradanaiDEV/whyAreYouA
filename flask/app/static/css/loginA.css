@@ -175,14 +175,7 @@ body {
     text-decoration: none;
 }
 
-.notification.is-danger {
-    background-color: #f14668;
-    color: #fff;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 15px;
-    font-size: 3.5vw;
-}
+
 
 .wait-container {
     position: absolute;
