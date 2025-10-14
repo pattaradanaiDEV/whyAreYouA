@@ -479,7 +479,7 @@ def cart():
                     db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity}"
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity} ชิ้น"
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
@@ -626,7 +626,7 @@ def withdraw():
                 db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity} ชิ้น"
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
