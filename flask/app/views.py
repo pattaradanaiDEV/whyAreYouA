@@ -5,7 +5,7 @@ import base64
 import qrcode
 import re
 from flask import (jsonify, render_template, flash,
-                  request, url_for, flash, current_app, abort, session, redirect)
+                  request, url_for, flash, current_app, abort, session, redirect, send_from_directory)
 from functools import wraps
 from sqlalchemy.sql import text
 from app import app
@@ -45,7 +45,10 @@ def check_user_available():
         'google',
         'google_auth',
         'waiting',
-        'static'
+        'static',
+        'serve_sw',
+        'serve_manifest',
+        'serve_js_from_templates'
     ]
 
     endpoint = request.endpoint
@@ -117,6 +120,18 @@ def create_low_stock_notification_if_needed(item, actor_user_id=None):
                     ntype=ntype,
                     message=message
                 ))
+
+@app.route('/service-worker.js')
+def serve_sw():
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'service-worker.js')
+
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'manifest.json')
+
+@app.route('/js/<path:filename>')
+def serve_js_from_templates(filename):
+    return send_from_directory(os.path.join(current_app.root_path, 'templates/js'), filename)
 
 @app.route('/')
 def landing():
