@@ -58,6 +58,14 @@
 </html>
 
 <script>
+    function confirmAction() {
+        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
+            window.location.href = "logout";
+        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการออกจากระบบ?")) {
+            window.location.href = "logout";
+        }
+    }
+
     const translations = {
         en: {
             settings: "Settings",
@@ -79,16 +87,10 @@
         document.querySelector('#languages').textContent = (translations[lang].languages);
         document.querySelector('#logout-text').textContent = (translations[lang].logout);
     }
-
-    changeLanguage(localStorage.getItem('lang'));
-
-    function confirmAction() {
-        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
-            window.location.href = "logout";
-        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการล็อกเอ้าต์?")) {
-            window.location.href = "logout";
-        }
+    if (localStorage.getItem('lang') === null) {
+        localStorage.setItem('lang', 'en')
     }
+    changeLanguage(localStorage.getItem('lang'));
 
     function urlFor(link) {
         location.href = '/' + link;

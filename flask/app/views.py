@@ -553,6 +553,10 @@ def adminlist():
     
     return render_template("adminlist.html", users=users, pending_count=pending_user_count)
 
+@app.route("/admin_contact", methods=["GET", "POST"])
+@login_required
+def admin_contact():
+    return render_template("admin_contact.html")
 
 @app.route("/pending_admin", methods=["GET", "POST"])
 @madmin_required
