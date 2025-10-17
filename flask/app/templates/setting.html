@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="../static/css/setting.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Setting Page</title>
@@ -57,6 +58,14 @@
 </html>
 
 <script>
+    function confirmAction() {
+        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
+            window.location.href = "logout";
+        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการออกจากระบบ?")) {
+            window.location.href = "logout";
+        }
+    }
+
     const translations = {
         en: {
             settings: "Settings",
@@ -68,7 +77,7 @@
             settings: "ตั้งค่า",
             greeting: "สวัสดี",
             languages: "ภาษา",
-            logout: "ล็อกเอาต์"
+            logout: "ออกจากระบบ"
         }
     };
 
@@ -78,22 +87,11 @@
         document.querySelector('#languages').textContent = (translations[lang].languages);
         document.querySelector('#logout-text').textContent = (translations[lang].logout);
     }
-
+    if (localStorage.getItem('lang') === null) {
+        localStorage.setItem('lang', 'en')
+    }
     changeLanguage(localStorage.getItem('lang'));
 
-    function confirmAction() {
-        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
-            window.location.href = "logout";
-        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการล็อกเอ้าต์?")) {
-            window.location.href = "logout";
-        }
-    }
-
-    const logoutButton = document.querySelector('#logout')
-    logoutButton.addEventListener("click", (event) => {
-        // event.preventDefault();
-        
-    });
     function urlFor(link) {
         location.href = '/' + link;
     }

@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=contact_emergency" />
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='ico/stock_logo.png') }}">
-    <script type="text/javascript" src="../templates/js/darkmode.js" defer></script>
     <title>Home page</title>
 </head>
 <body class="lightmode en">
@@ -101,10 +99,15 @@
                             <div class="item-icon">{{ it.itemName[0] }}</div>
                         {% endif %}
                     </div>
+                    
                     <div class="item-info">
                         <span class="item-name">{{ it.itemName }}</span>
-                        <span class="item-details inStock">In stock: </span><span class="item-details">{{ it.itemAmount }}</span>
-                        <span class="item-details withdrawn">Withdrawn: </span><span class="item-details">{{ it.total }}</span>
+                        <span class="item-details">
+                            In stock: {{it.itemAmount }}
+                        </span>
+                        <span class="item-details">
+                            Withdrawn: {{it.total }}
+                        </span>
                         <div class="button-group">
                             <button class="quick-btn withdraw-btn withdraw" onclick="location.href='/withdraw?itemID={{ it.itemID }}'">Withdraw</button>
                             {% if current_user.IsM_admin %}
@@ -123,11 +126,15 @@
 
     <div class="bottom-nav">
         <a href="{{ url_for('category') }}" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-451q-18-11-29-28.5T80-680v-120q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v120q0 23-11 40.5T840-611v451q0 33-23.5 56.5T760-80H200Zm-40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                <path d="M200-80q-33 0-56.5-23.5T120-160v-451q-18-11-29-28.5T80-680v-120q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v120q0 23-11 40.5T840-611v451q0 33-23.5 56.5T760-80H200Zm-40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/>
+            </svg>
             <span class="action1" id="stock">Stock</span>
         </a>
         <a href="{{ url_for('qr_scanner') }}" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                <path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/>
+            </svg>
             <span class="action2" id="qrScan">QR Scan</span>
         </a>
 
@@ -140,9 +147,9 @@
                 </a>
                 <span class="action3" id="manageAdmin">Manage Admin</span>
             {% else %}
-                <a href="{{ url_for('adminlist')}}">
+                <a href="{{ url_for('admin_contact')}}">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                        <path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Z"/>
+                        <path d="M480-400q33 0 56.5-23.5T560-480q0-33-23.5-56.5T480-560q-33 0-56.5 23.5T400-480q0 33 23.5 56.5T480-400ZM320-240h320v-23q0-24-13-44t-36-30q-26-11-53.5-17t-57.5-6q-30 0-57.5 6T369-337q-23 10-36 30t-13 44v23ZM720-80H240q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80Zm0-80v-446L526-800H240v640h480Zm-480 0v-640 640Z"/>
                     </svg>
                 </a>
                 <span class="action3" id="contactAdmin">Admin Contact</span>
@@ -152,7 +159,7 @@
 
     <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("{{ url_for('static', filename='service-worker.js') }}")
+      navigator.serviceWorker.register("/service-worker.js")
         .then(reg => console.log("Service Worker registered", reg))
         .catch(err => console.error("SW registration failed", err));
         }
@@ -193,7 +200,7 @@
 
     const translations = {
         en: {
-            welcome: "Settings",
+            welcome: "Welcome",
             stats: "Statistics",
             hist: "History",
             addItem: "Add",
@@ -224,7 +231,7 @@
             stock: "คลัง",
             qrScan: "สแกน QR",
             manageAdmin: "จัดการแอดมิน",
-            contactAdmin: "ช่องทางติดต่อแอดมิน"
+            contactAdmin: "ติดต่อแอดมิน"
         }
     };
 
@@ -267,9 +274,9 @@
     changeLanguage(localStorage.getItem('lang'));
 
     {% if current_user.IsM_admin %}
-        document.querySelector('#manageAdmin').textContent = (translations[lang].manageAdmin);
+        document.querySelector('#manageAdmin').textContent = (translations[localStorage.getItem('lang')].manageAdmin);
     {% else %}
-        document.querySelector('#contactAdmin').textContent = (translations[lang].contactAdmin);
+        document.querySelector('#contactAdmin').textContent = (translations[localStorage.getItem('lang')].contactAdmin);
     {% endif %}
 
     function confirmAction() {

@@ -15,6 +15,7 @@
 .darkmode {
     --bg-color: #121212;
     --card-bg: #1e1e1e;
+    --title-color: #ffff;
     --text-color: #e0e0e0;
     --subtext-color: #aaa;
     --search-bg: #2c2c2c;
@@ -62,7 +63,7 @@ body {
 .user-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
 
 .swipe-wrapper { position: relative; overflow: hidden; border-radius: 12px; }
-.user-content { display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--card-bg); position: relative; z-index: 2; transition: transform 0.3s ease; }
+.user-content { display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--card-bg); position: relative; z-index: 2; transition: transform 0.3s ease; border-radius: 10px;}
 
 .profile-icon { width: 48px; height: 48px; border-radius: 50%; background-color: var(--search-bg); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--subtext-color); flex-shrink: 0; overflow: hidden; }
 .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
@@ -71,7 +72,7 @@ body {
 .user-name { font-weight: 600; color: var(--text-color); }
 .user-email { font-size: 0.85rem; color: var(--subtext-color); }
 
-.delete-action { position: absolute; top: 0; right: 0; bottom: 0; width: 90px; background-color: var(--danger-bg); display: flex; align-items: center; justify-content: center; z-index: 1; }
+.delete-action { position: absolute; top: 0; right: 0; bottom: 0; width: 100px; background-color: var(--danger-bg); display: flex; align-items: center; justify-content: center; z-index: 1; }
 .delete-btn { background: none; border: none; color: white; cursor: pointer; }
 
 .switch { position: relative; display: inline-block; width: 50px; height: 28px; }

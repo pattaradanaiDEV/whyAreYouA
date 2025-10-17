@@ -16,7 +16,9 @@
     </script>
     <div class="header">
         <div class="header-left">
-            <a href="{{ url_for('homepage') }}" class="back-btn"><i class="material-icons">arrow_back_ios</i></a>
+            <a href="{{ url_for('homepage') }}" class="back-btn">
+                <i class="material-icons">arrow_back_ios</i>
+            </a>
         </div>
         <h1 class="page-title">Admin List</h1>
         <div class="header-right">
@@ -30,11 +32,11 @@
     </div>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <div class="notification is-danger">
+        <div class="notification is-danger" style="margin: 10px; padding: 10px; background-color: #f44336; color: white; border-radius: 8px;">
             {{ messages[0] }}
         </div>
         {% endif %}
-        {% endwith %}
+    {% endwith %}
     <div class="main-content">
         <h2 class="section-title">Main admin management</h2>
         <p class="section-sub">Manage admin access and permissions</p>
@@ -80,12 +82,11 @@
                     
                     {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
                         <div class="delete-action">
-                            <form method="POST" action="{{ url_for('adminlist') }}" onsubmit="return confirm('Are you sure you want to delete {{user.Fname}} {{user.Lname}} This action cannot be undone.');">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <form method="POST" action="{{ url_for('adminlist') }}">  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">
                                 <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="delete-btn">
-                                    <i class="material-icons">delete_outline</i>
+                                <button type="submit" class="delete-btn" data-user-name="{{ user.Fname }} {{ user.Lname }}">
+                                    <i class="material-icons" style="font-size: 2rem; color:white;">delete</i>
                                 </button>
                             </form>
                         </div>
@@ -108,7 +109,6 @@
     
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Search Functionality ---
     const searchInput = document.getElementById('searchInput');
     const userItems = document.querySelectorAll('.user-item');
     searchInput.addEventListener('input', function() {
@@ -126,13 +126,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.admin-toggle').forEach(toggle => {
         toggle.addEventListener('click', function(e) {
-            e.preventDefault(); // Stop the default change behavior and form submission
+            e.preventDefault();
 
             const form = this.closest('form');
             const actionInput = form.querySelector('.action-input');
             const userName = this.dataset.userName;
+            const isCurrentlyChecked = this.checked;
 
-            if (this.checked) {
+            if (isCurrentlyChecked) {
                 modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะให้ ${userName} เป็น admin`;
                 actionInput.value = 'promote';
             } else {
@@ -140,26 +141,48 @@ document.addEventListener('DOMContentLoaded', function () {
                 actionInput.value = 'demote';
             }
             
-            modal.classList.add('active'); // Show the modal
+            // แสดง pop-up
+            modal.classList.add('active');
 
+            //  กำหนดการทำงานของปุ่มใน pop-up
             confirmBtn.onclick = () => {
-                form.submit(); // Submit the form
+                // ถ้ายืนยัน ก็ส่งฟอร์มได้เลย
+                form.submit();
             };
 
             cancelBtn.onclick = () => {
-                this.checked = !this.checked; // Revert the checkbox state visually
-                modal.classList.remove('active'); // Hide the modal
+                modal.classList.remove('active');
+            };
+        });
+    });
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const form = this.closest('form');
+            const userName = this.dataset.userName;
+            modalMessage.textContent = `แน่ใจแล้วหรือไม่ที่จะลบ ${userName} ออกจากระบบ`;
+
+            modal.classList.add('active');
+
+            confirmBtn.onclick = () => {
+                form.submit(); 
+            };
+
+            cancelBtn.onclick = () => {
+                modal.classList.remove('active'); 
             };
         });
     });
 
     document.querySelectorAll('.user-content').forEach(content => {
-        let startX = 0, dist = 0;
+        let startX = 0, dist = 0, isDragging = false;
         const form = content.querySelector('.toggle-form');
         
         if (!form) return; 
 
         content.addEventListener('touchstart', (e) => {
+            isDragging = false;
             startX = e.touches[0].clientX;
             content.style.transition = '';
             form.style.transition = '';
@@ -167,7 +190,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         content.addEventListener('touchmove', (e) => {
             dist = e.touches[0].clientX - startX;
-            if (dist < 0 && dist > -100) {
+            if (Math.abs(dist) > 10) {
+                isDragging = true;
+            }
+            if (isDragging && dist < 0 && dist > -100) {
+                e.preventDefault();
                 content.style.transform = `translateX(${dist}px)`;
                 form.style.opacity = 1 - (Math.abs(dist) / 90);
             }
@@ -176,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
         content.addEventListener('touchend', () => {
             content.style.transition = 'transform 0.3s ease';
             form.style.transition = 'opacity 0.3s ease';
-            if (dist < -50) {
+            if (isDragging && dist < -50) {
                 content.style.transform = 'translateX(-90px)';
                 form.style.opacity = 0;
             } else {
@@ -184,8 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 form.style.opacity = 1;
             }
             dist = 0;
+            isDragging = false;
         });
-
     });
 });
 </script>

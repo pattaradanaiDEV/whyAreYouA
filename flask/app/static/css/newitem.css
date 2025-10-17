@@ -227,3 +227,16 @@ body {
 #printQrBtn {
     width: 150px;
 }
+
+.pman-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.pman-img img {
+  width: 150px;
+  height: 220px;
+}

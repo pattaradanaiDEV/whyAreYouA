@@ -5,7 +5,7 @@ import base64
 import qrcode
 import re
 from flask import (jsonify, render_template, flash,
-                  request, url_for, flash, current_app, abort, session, redirect)
+                  request, url_for, flash, current_app, abort, session, redirect, send_from_directory)
 from functools import wraps
 from sqlalchemy.sql import text
 from app import app
@@ -31,7 +31,7 @@ import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
-from sqlalchemy import func
+from sqlalchemy import func , or_
 from datetime import datetime, timedelta, timezone
 from dateutil import tz
 
@@ -46,9 +46,9 @@ def check_user_available():
         'google_auth',
         'waiting',
         'static',
-        'notification',
-        'notification_delete',
-        'notification_mark_read'
+        'serve_sw',
+        'serve_manifest',
+        'serve_js_from_templates'
     ]
 
     endpoint = request.endpoint
@@ -121,6 +121,18 @@ def create_low_stock_notification_if_needed(item, actor_user_id=None):
                     message=message
                 ))
 
+@app.route('/service-worker.js')
+def serve_sw():
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'service-worker.js')
+
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'manifest.json')
+
+@app.route('/js/<path:filename>')
+def serve_js_from_templates(filename):
+    return send_from_directory(os.path.join(current_app.root_path, 'templates/js'), filename)
+
 @app.route('/')
 def landing():
     if not current_user.is_authenticated:
@@ -171,6 +183,7 @@ def homepage():
             (Notification.id == UserNotificationStatus.notification_id) &
             (UserNotificationStatus.user_id == current_user.UserID)
         ).filter(
+            or_(Notification.user_id == None, Notification.user_id == current_user.UserID),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
             (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
@@ -249,7 +262,7 @@ def signup():
 
         db.session.add(Notification(
             user_id=new_user.UserID,
-            ntype="request",
+            ntype="Request",
             message=f"{new_user.Fname} {new_user.Lname} has requested access to the system."
         ))
         db.session.commit()
@@ -298,10 +311,12 @@ def category():
 
     data_items = Item.query.order_by(Item.itemID).all()
     items = [i.to_dict() for i in data_items]
+    cart_count = CartItem.query.filter_by(UserID=current_user.UserID).count()
     return render_template(
         'category.html',
         categories=categories,
-        items=items
+        items=items,
+        cart_count=cart_count
     )
     
 @app.route('/notification')
@@ -320,6 +335,7 @@ def notification():
             (UserNotificationStatus.user_id == user_id)
         )
         .filter(
+            #or_(Notification.user_id == None, Notification.user_id == user_id),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False) 
         )
@@ -445,7 +461,9 @@ def cart():
                 cart_item.Quantity -= 1
             elif action == 'update_input' and quantity > 0:
                 if item and quantity > item.itemAmount:
+                    cart_item.Quantity = item.itemAmount
                     flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
+                    db.session.commit()
                     return redirect(url_for('cart'))
                 cart_item.Quantity = quantity
 
@@ -469,7 +487,9 @@ def cart():
                     continue
                 if c.Status == 'w':
                     if c.Quantity > item.itemAmount:
+                        c.Quantity = item.itemAmount
                         flash(f"ไม่สามารถเบิก {item.itemName} ได้ จำนวนเกินสต็อก", "danger")
+                        db.session.commit()
                         return redirect(url_for('cart'))
                     item.itemAmount -= c.Quantity
                     history = WithdrawHistory(user_id=current_user.UserID, item_id=item.itemID, quantity=c.Quantity)
@@ -477,7 +497,7 @@ def cart():
                     db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity}"
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity} ชิ้น"
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
@@ -509,6 +529,11 @@ def adminlist():
 
         if action == "promote":
             user.IsM_admin = True
+            # db.session.add(Notification(
+            #         user_id=user.UserID,
+            #         ntype="You got promoted to admin",
+            #         message=f"คุณได้เลื่อนขั้นเป็น Admin"
+            #     ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
             user.IsM_admin = False
@@ -528,6 +553,10 @@ def adminlist():
     
     return render_template("adminlist.html", users=users, pending_count=pending_user_count)
 
+@app.route("/admin_contact", methods=["GET", "POST"])
+@login_required
+def admin_contact():
+    return render_template("admin_contact.html")
 
 @app.route("/pending_admin", methods=["GET", "POST"])
 @madmin_required
@@ -544,6 +573,11 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}"
                 ))
+                # db.session.add(Notification(
+                #     user_id=user.UserID,
+                #     ntype="Access granted",
+                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                # ))
         
         elif action == "decline" and user_id:
             user = User.query.get(int(user_id))
@@ -562,6 +596,11 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)"
                 ))
+                # db.session.add(Notification(
+                #     user_id=user.UserID,
+                #     ntype="Access granted",
+                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                # ))
         
         db.session.commit()
         return redirect(url_for("pending_user"))
@@ -624,7 +663,7 @@ def withdraw():
                 db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
+                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity} ชิ้น"
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
@@ -881,13 +920,13 @@ def google_auth():
                 Lname = userinfo.get('family_name', "")
                 new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
-                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
-
                 db.session.add(Notification(
                     user_id=new_user.UserID,
-                    ntype="request",
+                    ntype="Request",
                     message=f"{Fname} {Lname} ได้ขอเข้าใช้งานระบบ"
                 ))
+                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
+
     except Exception as ex:
         db.session.rollback()  # Rollback on failure
         app.logger.error(f"ERROR adding new user with email {email}: {ex}")

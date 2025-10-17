@@ -46,7 +46,7 @@ svg {
 }
 
 .lightmode {
-  --base--color: rgba(221, 221, 221, 0.8); /* Adjusted for card background */
+  --base--color: rgba(199, 198, 198, 0.9); /* Adjusted for card background */
   --basebg--color: #eee;
   --border--color: gray;
   --hover--color: gray;
@@ -281,14 +281,20 @@ svg {
 
 .status-dot.green{
   background-color: #4caf50;
+<<<<<<< HEAD
   
+=======
+>>>>>>> refs/remotes/origin/main
 }
 .status-dot.yellow{
   background-color: #ffc107;
 }
 .status-dot.red{
   background-color: #f44336;
+<<<<<<< HEAD
   
+=======
+>>>>>>> refs/remotes/origin/main
 }
 
 .item-info{
@@ -311,6 +317,7 @@ svg {
   font-size: 0.9rem;
   color: var(--text2--color);
   opacity: 0.8;
+  
 }
 
 .button-group {
@@ -362,6 +369,7 @@ svg {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   box-sizing: border-box;
+  z-index: 1001;
 }
 
 .nav-item {

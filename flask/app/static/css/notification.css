@@ -115,7 +115,7 @@ body {
     top: 0;
     right: 0;
     bottom: 0;
-    width: 100px;
+    width: 110px;
     background-color: var(--delete-bg);
     display: flex;
     align-items: center;

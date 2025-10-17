@@ -13,6 +13,7 @@
 .darkmode {
     --bg-color: #121212;
     --card-bg: #1e1e1e;
+    --title-color: #ffff;
     --text-color: #e0e0e0;
     --subtext-color: #aaa;
     --search-bg: #2c2c2c;
@@ -67,7 +68,7 @@ body {
 
 .action-buttons { display: flex; gap: 12px; width: 100%; }
 .btn { flex: 1; border: none; padding: 10px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-.btn-accept { background-color: var(--accept-color); color: white; }
+.btn-accept { background: var(--accept-color); color: rgb(255, 255, 255); }
 .btn-decline { background-color: var(--card-bg); color: var(--subtext-color); border: 1px solid var(--decline-border-color); }
 .btn:hover { opacity: 0.8; }
 

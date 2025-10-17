@@ -24,7 +24,7 @@
         </a>
         <h2>New item</h2>
     </div>
-    <div class="center ">
+    <div class="center">
       <div class="mainbox">
         <form method="post" action="{{ url_for('newitem') }}" enctype="multipart/form-data">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
