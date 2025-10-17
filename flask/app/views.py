@@ -810,6 +810,10 @@ def setting():
 def languages():
     return render_template('languages.html')
 
+@app.route('/appearance')
+def appearance():
+    return render_template('appearance.html')
+
 @app.route('/item/<int:itemID>/withdraw')
 def withdraw_byQR(itemID):
     item = Item.query.get_or_404(itemID)

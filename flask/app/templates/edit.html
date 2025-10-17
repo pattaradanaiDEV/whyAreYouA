@@ -10,12 +10,16 @@
 </head>
 <body>
     <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
+      document.addEventListener('DOMContentLoaded', () => {
+        const mode = localStorage.getItem('darkmode');
+        if (mode === 'dark') {
           document.body.classList.add('darkmode');
+          document.body.classList.remove('lightmode');
         } else {
+          document.body.classList.add('lightmode');
           document.body.classList.remove('darkmode');
         }
+    });
     </script>
     <div class="top-bar">
       <div class="back">

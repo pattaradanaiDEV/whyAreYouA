@@ -11,13 +11,17 @@
 </head>
 <body>
     <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mode = localStorage.getItem('darkmode');
+          if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+          } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+          }
+        });
+        </script>
     <div class="header">
         <div class="header-left">
             <a href="{{ url_for('homepage') }}" class="back-btn">

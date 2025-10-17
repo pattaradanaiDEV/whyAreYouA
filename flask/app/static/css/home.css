@@ -200,6 +200,10 @@ svg {
   min-width: 60px;
 }
 
+.circle-button{
+  background-color: var(--basebg--color);
+}
+
 .circle-button:hover {
   background-color: #E5E7EB;
 }
@@ -270,10 +274,10 @@ svg {
 
 .status-dot{
   position: absolute;
-  bottom: 35px;
+  bottom: 15px;
   left: 100px;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   z-index: 2;
   border: 2px solid white;
@@ -281,20 +285,14 @@ svg {
 
 .status-dot.green{
   background-color: #4caf50;
-<<<<<<< HEAD
   
-=======
->>>>>>> refs/remotes/origin/main
 }
 .status-dot.yellow{
   background-color: #ffc107;
 }
 .status-dot.red{
   background-color: #f44336;
-<<<<<<< HEAD
   
-=======
->>>>>>> refs/remotes/origin/main
 }
 
 .item-info{

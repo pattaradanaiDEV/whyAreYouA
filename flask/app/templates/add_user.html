@@ -12,13 +12,17 @@
 
 <body class="th">
     <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
-    </script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mode = localStorage.getItem('darkmode');
+          if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+          } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+          }
+        });
+        </script>
     <script src="../templates/js/language.js"></script>
     <div class="mainbox">
         <div class="reply-icon">
