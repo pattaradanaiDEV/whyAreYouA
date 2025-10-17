@@ -183,7 +183,6 @@ def homepage():
             (Notification.id == UserNotificationStatus.notification_id) &
             (UserNotificationStatus.user_id == current_user.UserID)
         ).filter(
-            or_(Notification.user_id == None, Notification.user_id == current_user.UserID),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
             (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
