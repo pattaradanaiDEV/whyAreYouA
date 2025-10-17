@@ -888,6 +888,35 @@ def export():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+@app.route('/export/stock')
+def exportStock():
+    data = Item.query.all()
+    data_list = [i.to_dict() for i in data]
+    list_data = []
+    for i in data_list:
+        print(i)
+        Item_data = {
+            "Name":i["itemName"],
+            "Amount":i["itemAmount"],
+            "Min":i["itemMin"],
+            "Description":i["itemDesc"],
+            "Category":i["category"]["cateName"]
+
+        }
+        list_data.append(Item_data)
+    df = pd.DataFrame(list_data)
+    output = BytesIO()
+    sheet_name = f"Stock_{datetime.now().strftime('%Y_%m_%d')}"
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+    output.seek(0)
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name= sheet_name + ".xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
 @app.route('/google')
 def google():
     oauth.register(
