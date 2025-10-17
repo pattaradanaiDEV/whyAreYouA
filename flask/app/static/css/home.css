@@ -270,7 +270,7 @@ svg {
 
 .status-dot{
   position: absolute;
-  bottom: 15px;
+  bottom: 35px;
   left: 100px;
   width: 20px;
   height: 20px;
@@ -281,15 +281,14 @@ svg {
 
 .status-dot.green{
   background-color: #4caf50;
-  opacity: 0.7;
+  
 }
 .status-dot.yellow{
   background-color: #ffc107;
-  opacity: 0.7;
 }
 .status-dot.red{
   background-color: #f44336;
-  opacity: 0.7;
+  
 }
 
 .item-info{
