@@ -1,3 +1,7 @@
+* {
+  transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease;
+}
+
 :root{
     --bg--color: #FFF;
     --base--color: #EEEEEE;
@@ -29,6 +33,7 @@ body{
     background: var(--bg--color);
     margin: 0;
     padding: 0;
+    transition: background 0.5s ease, color 0.5s ease;
 }
 
 .top-bar{

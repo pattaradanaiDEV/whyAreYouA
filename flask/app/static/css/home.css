@@ -11,7 +11,7 @@
   width: 50px;
 }
 
-.circle-button-darkmode {
+/* .circle-button-darkmode {
   background-color: #444;
   transition: background 0.5s ease, color 0.5s ease;
 }
@@ -19,7 +19,7 @@
 .circle-button-lightmode {
   background-color: #ddd;
   transition: background 0.5s ease, color 0.5s ease;
-}
+} */
 
 body {
   background: var(--basebg--color);
@@ -58,7 +58,7 @@ svg {
   --light-btn-bg: #ccc;
   --light-btn-text: #333;
 
-  transition: background 0.5s ease, color 0.5s ease;
+  /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
 .darkmode {
@@ -74,7 +74,7 @@ svg {
   --light-btn-bg: #555;
   --light-btn-text: #ddd;
 
-  transition: background 0.5s ease, color 0.5s ease;
+  /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
 .top-bar {
