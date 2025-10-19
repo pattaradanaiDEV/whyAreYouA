@@ -183,7 +183,6 @@ def homepage():
             (Notification.id == UserNotificationStatus.notification_id) &
             (UserNotificationStatus.user_id == current_user.UserID)
         ).filter(
-            or_(Notification.user_id == None, Notification.user_id == current_user.UserID),
             Notification.expire_at > now,
             (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
             (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
@@ -812,6 +811,10 @@ def setting():
 def languages():
     return render_template('languages.html')
 
+@app.route('/appearance')
+def appearance():
+    return render_template('appearance.html')
+
 @app.route('/item/<int:itemID>/withdraw')
 def withdraw_byQR(itemID):
     item = Item.query.get_or_404(itemID)
@@ -876,6 +879,35 @@ def export():
     df = pd.DataFrame(list_data)
     output = BytesIO()
     sheet_name = f"WithdrawHistory_{datetime.now().strftime('%Y_%m_%d')}"
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+    output.seek(0)
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name= sheet_name + ".xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+@app.route('/export/stock')
+def exportStock():
+    data = Item.query.all()
+    data_list = [i.to_dict() for i in data]
+    list_data = []
+    for i in data_list:
+        print(i)
+        Item_data = {
+            "Name":i["itemName"],
+            "Amount":i["itemAmount"],
+            "Min":i["itemMin"],
+            "Description":i["itemDesc"],
+            "Category":i["category"]["cateName"]
+
+        }
+        list_data.append(Item_data)
+    df = pd.DataFrame(list_data)
+    output = BytesIO()
+    sheet_name = f"Stock_{datetime.now().strftime('%Y_%m_%d')}"
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
     output.seek(0)

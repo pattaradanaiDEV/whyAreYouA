@@ -10,14 +10,18 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=download" />
     <title>History Page</title>
 </head>
-<body class="lightmode"> 
+<body class=""> 
     <script>
-        const darkmode = localStorage.getItem('darkmode');
-        if(darkmode === 'active') {
-          document.body.classList.add('darkmode');
-        } else {
-          document.body.classList.remove('darkmode');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+          const mode = localStorage.getItem('darkmode');
+          if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+          } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+          }
+        });
     </script>
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}">

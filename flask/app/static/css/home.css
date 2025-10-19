@@ -11,7 +11,7 @@
   width: 50px;
 }
 
-.circle-button-darkmode {
+/* .circle-button-darkmode {
   background-color: #444;
   transition: background 0.5s ease, color 0.5s ease;
 }
@@ -19,7 +19,7 @@
 .circle-button-lightmode {
   background-color: #ddd;
   transition: background 0.5s ease, color 0.5s ease;
-}
+} */
 
 body {
   background: var(--basebg--color);
@@ -58,7 +58,7 @@ svg {
   --light-btn-bg: #ccc;
   --light-btn-text: #333;
 
-  transition: background 0.5s ease, color 0.5s ease;
+  /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
 .darkmode {
@@ -74,7 +74,7 @@ svg {
   --light-btn-bg: #555;
   --light-btn-text: #ddd;
 
-  transition: background 0.5s ease, color 0.5s ease;
+  /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
 .top-bar {
@@ -200,6 +200,10 @@ svg {
   min-width: 60px;
 }
 
+.circle-button{
+  background-color: var(--basebg--color);
+}
+
 .circle-button:hover {
   background-color: #E5E7EB;
 }
@@ -272,8 +276,8 @@ svg {
   position: absolute;
   bottom: 15px;
   left: 100px;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   z-index: 2;
   border: 2px solid white;
@@ -281,12 +285,14 @@ svg {
 
 .status-dot.green{
   background-color: #4caf50;
+  
 }
 .status-dot.yellow{
   background-color: #ffc107;
 }
 .status-dot.red{
   background-color: #f44336;
+  
 }
 
 .item-info{
