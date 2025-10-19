@@ -44,7 +44,7 @@ body {
 
 .request-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .request-title { font-size: 1.1rem; font-weight: 600; color: var(--text-color); }
-.request-count { background-color: var(--title-color); color: white; font-size: 0.8rem; font-weight: bold; border-radius: 6px; padding: 2px 8px; }
+.request-count { background-color: var(--title-color); color: var(--bg-color); font-size: 0.8rem; font-weight: bold; border-radius: 6px; padding: 2px 8px; }
 
 .search-bar { display: flex; align-items: center; background-color: var(--search-bg); border-radius: 12px; padding: 0 12px; margin-bottom: 24px; }
 .search-input { flex: 1; border: none; background: transparent; padding: 12px 8px; font-size: 1rem; color: var(--text-color); outline: none; }

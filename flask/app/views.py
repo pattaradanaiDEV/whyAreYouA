@@ -389,9 +389,11 @@ def notification_delete(noti_id):
 def statistic():
     return render_template('statistic.html')
 
-@app.route('/history')
+@app.route('/history') # withdraw_history
 def history():
-    return render_template('history.html')
+    
+    history = db.session.query(WithdrawHistory).all()
+    return render_template('history.html', history = history)
 
 @app.route('/newitem', methods=["GET", "POST"])
 @madmin_required
