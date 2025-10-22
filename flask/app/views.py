@@ -31,7 +31,7 @@ import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
-from sqlalchemy import func , or_
+from sqlalchemy import func , or_ , and_
 from datetime import datetime, timedelta, timezone
 from dateutil import tz
 
@@ -180,12 +180,24 @@ def homepage():
         now = datetime.now(timezone.utc)
         query = db.session.query(func.count(Notification.id)).outerjoin(
             UserNotificationStatus,
-            (Notification.id == UserNotificationStatus.notification_id) &
-            (UserNotificationStatus.user_id == current_user.UserID)
+            and_(
+                Notification.id == UserNotificationStatus.notification_id,
+                UserNotificationStatus.user_id == current_user.UserID
+            )
         ).filter(
-            Notification.expire_at > now,
-            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False),
-            (UserNotificationStatus.is_read == None) | (UserNotificationStatus.is_read == False)
+            (Notification.expire_at > now),
+            or_(
+                Notification.recipient_id == None,
+                Notification.recipient_id == current_user.UserID
+            ),
+            or_(
+                UserNotificationStatus.is_deleted == None, 
+                UserNotificationStatus.is_deleted == False
+            ),
+            or_(
+                UserNotificationStatus.is_read == None, 
+                UserNotificationStatus.is_read == False
+            )
         )
         noti_count = query.scalar()
 
@@ -330,13 +342,21 @@ def notification():
         )
         .outerjoin(
             UserNotificationStatus,
-            (Notification.id == UserNotificationStatus.notification_id) &
-            (UserNotificationStatus.user_id == user_id)
+            and_(
+                Notification.id == UserNotificationStatus.notification_id,
+                UserNotificationStatus.user_id == user_id
+            )
         )
         .filter(
-            #or_(Notification.user_id == None, Notification.user_id == user_id),
             Notification.expire_at > now,
-            (UserNotificationStatus.is_deleted == None) | (UserNotificationStatus.is_deleted == False) 
+            or_(
+                Notification.recipient_id == None,
+                Notification.recipient_id == current_user.UserID
+            ),
+            or_(
+                UserNotificationStatus.is_deleted == None, 
+                UserNotificationStatus.is_deleted == False
+            )
         )
         .order_by(Notification.created_at.desc())
         .all()
@@ -530,11 +550,12 @@ def adminlist():
 
         if action == "promote":
             user.IsM_admin = True
-            # db.session.add(Notification(
-            #         user_id=user.UserID,
-            #         ntype="You got promoted to admin",
-            #         message=f"คุณได้เลื่อนขั้นเป็น Admin"
-            #     ))
+            db.session.add(Notification(
+                    user_id=user.UserID,
+                    ntype="You got promoted to admin",
+                    recipient_id=user.UserID,
+                    message=f"คุณได้เลื่อนขั้นเป็น Admin"
+                ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
             user.IsM_admin = False
@@ -574,11 +595,12 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}"
                 ))
-                # db.session.add(Notification(
-                #     user_id=user.UserID,
-                #     ntype="Access granted",
-                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
-                # ))
+                db.session.add(Notification(
+                    user_id=current_user.UserID,
+                    recipient_id=user.UserID,
+                    ntype="Access granted",
+                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                ))
         
         elif action == "decline" and user_id:
             user = User.query.get(int(user_id))
@@ -597,11 +619,12 @@ def pending_user():
                     ntype="Grant",
                     message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)"
                 ))
-                # db.session.add(Notification(
-                #     user_id=user.UserID,
-                #     ntype="Access granted",
-                #     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
-                # ))
+                db.session.add(Notification(
+                    user_id=current_user.UserID,
+                    recipient_id=user.UserID,
+                    ntype="Access granted",
+                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                ))
         
         db.session.commit()
         return redirect(url_for("pending_user"))
@@ -869,11 +892,16 @@ def export():
         to_zone = tz.tzlocal()
         local_time = str(utc_time.astimezone(to_zone))[0:19] # slice to clear offset (+07:00)
         #local_time = str(utc_time.astimezone(get_localzone()))
+        user_name =User.query.get(int(i["UserID"])).Fname+" "+User.query.get(int(i["UserID"])).Lname
         history = {
-            "Withdraw date" : local_time,
+            "Withdraw date" : local_time.split(" ")[0],
+            "Withdraw time" : local_time.split(" ")[1],
             "Item Name" : i["items"]["itemName"],
             "Category" : Item.query.get(i["items"]["itemID"]).category.cateName,
-            "Quantity" : i["Quantity"]
+            "Quantity" : i["Quantity"],
+            "User ID" : i["UserID"],
+            "User name" : user_name,
+            "User email" : User.query.get(int(i["UserID"])).email
         }
         list_data.append(history)
     df = pd.DataFrame(list_data)
