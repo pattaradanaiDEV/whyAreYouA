@@ -10,7 +10,7 @@ from functools import wraps
 from sqlalchemy.sql import text
 from app import app
 from app import db
-from sqlalchemy.orm import outerjoin
+from sqlalchemy.orm import outerjoin , joinedload
 from app.models.user_notification_status import UserNotificationStatus
 from app.models.cart import CartItem
 from app.models.category import Category
@@ -31,7 +31,7 @@ import secrets
 import string
 from sqlalchemy.orm.attributes import flag_modified
 from wtforms.validators import Email
-from sqlalchemy import func , or_ , and_
+from sqlalchemy import func , or_ , and_ 
 from datetime import datetime, timedelta, timezone
 from dateutil import tz
 
@@ -197,6 +197,10 @@ def homepage():
             or_(
                 UserNotificationStatus.is_read == None, 
                 UserNotificationStatus.is_read == False
+            ),
+            or_(
+                current_user.IsM_admin == True,
+                Notification.ntype.notin_(["Grant", "Request"])
             )
         )
         noti_count = query.scalar()
@@ -356,6 +360,10 @@ def notification():
             or_(
                 UserNotificationStatus.is_deleted == None, 
                 UserNotificationStatus.is_deleted == False
+            ),
+            or_(
+                current_user.IsM_admin == True,
+                Notification.ntype.notin_(["Grant", "Request"])
             )
         )
         .order_by(Notification.created_at.desc())
@@ -551,14 +559,20 @@ def adminlist():
         if action == "promote":
             user.IsM_admin = True
             db.session.add(Notification(
-                    user_id=user.UserID,
-                    ntype="You got promoted to admin",
+                    user_id=current_user.UserID,
+                    ntype="😎Promoted to admin",
                     recipient_id=user.UserID,
                     message=f"คุณได้เลื่อนขั้นเป็น Admin"
                 ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
             user.IsM_admin = False
+            db.session.add(Notification(
+                    user_id=current_user.UserID,
+                    ntype="😓Demoted from admin",
+                    recipient_id=user.UserID,
+                    message=f"คุณถูกถอนสิทธิ Admin ออก"
+                ))
             flash(f"Demoted {user.Fname} from main admin.", "info")
         elif action == "delete":
             if user.UserID not in [1, 2] and user.UserID != current_user.UserID:
@@ -598,7 +612,7 @@ def pending_user():
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
-                    ntype="Access granted",
+                    ntype="🫡Access granted",
                     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
                 ))
         
@@ -622,7 +636,7 @@ def pending_user():
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
-                    ntype="Access granted",
+                    ntype="🫡Access granted",
                     message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
                 ))
         
@@ -807,10 +821,6 @@ def handle_scan():
 @app.route('/scanresult')
 @login_required
 def scanresult():
-    """
-    แสดงหน้ารายละเอียดสินค้าสำหรับ Admin หลังจากสแกน QR
-    UI ตามรูป image_057800.png
-    """
     if not current_user.IsM_admin:
         flash("You don't have permission to access this page.", "danger")
         return redirect(url_for('homepage'))
@@ -838,24 +848,6 @@ def languages():
 def appearance():
     return render_template('appearance.html')
 
-@app.route('/item/<int:itemID>/withdraw')
-def withdraw_byQR(itemID):
-    item = Item.query.get_or_404(itemID)
-    if item.itemAmount > 0 :
-        item.itemAmount -= 1
-        history = WithdrawHistory(user_id=None, item_id=itemID, quantity=1)
-        db.session.add(history)
-        db.session.add(Notification(
-                        user_id=current_user.UserID,
-                        ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity}"
-                    ))
-        create_low_stock_notification_if_needed(item, None)
-        db.session.commit()
-        return f"เบิก {item.itemName} สำเร็จ"
-    else:
-        return f"{item.itemName} หมดแล้ว"
-
 @app.route('/delete/item/<int:itemID>', methods=['POST'])
 @madmin_required
 def delete_item_post(itemID):
@@ -882,26 +874,37 @@ def delete_item():
 
 @app.route('/export/withdraw_history')
 def export():
-    data = WithdrawHistory.query.all()
-    data_list = [i.to_dict() for i in data]
+    data = (
+        db.session.query(WithdrawHistory)
+        .options(
+            joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
+            joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+        )
+        .order_by(WithdrawHistory.DateTime.desc()) # (แนะนำ) เรียงลำดับข้อมูล
+        .all()
+    )
     list_data = []
-    for i in data_list:
-        utc_time = datetime.strptime(i["DateTime"], "%Y-%m-%d %H:%M:%S")
-        from_zone = tz.tzutc()
-        utc_time = utc_time.replace(tzinfo=from_zone)
-        to_zone = tz.tzlocal()
-        local_time = str(utc_time.astimezone(to_zone))[0:19] # slice to clear offset (+07:00)
-        #local_time = str(utc_time.astimezone(get_localzone()))
-        user_name =User.query.get(int(i["UserID"])).Fname+" "+User.query.get(int(i["UserID"])).Lname
+    to_zone = tz.tzlocal()
+    for wh in data:
+        
+        if wh.DateTime:
+            local_dt = wh.DateTime.astimezone(to_zone)
+            local_date = local_dt.strftime('%Y-%m-%d')
+            local_time = local_dt.strftime('%H:%M:%S')
+        user_name = f"{wh.user.Fname} {wh.user.Lname}"
+        user_email = wh.user.email
+        item_name = wh.items.itemName
+        category_name = wh.items.category.cateName if wh.items and wh.items.category else "N/A"
+
         history = {
-            "Withdraw date" : local_time.split(" ")[0],
-            "Withdraw time" : local_time.split(" ")[1],
-            "Item Name" : i["items"]["itemName"],
-            "Category" : Item.query.get(i["items"]["itemID"]).category.cateName,
-            "Quantity" : i["Quantity"],
-            "User ID" : i["UserID"],
+            "Withdraw date" : local_date,
+            "Withdraw time" : local_time,
+            "Item Name" : item_name,
+            "Category" : category_name,
+            "Quantity" : wh.Quantity,
+            "User ID" : wh.UserID if wh.UserID else "N/A",
             "User name" : user_name,
-            "User email" : User.query.get(int(i["UserID"])).email
+            "User email" : user_email
         }
         list_data.append(history)
     df = pd.DataFrame(list_data)
