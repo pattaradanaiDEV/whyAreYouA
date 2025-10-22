@@ -26,7 +26,7 @@
         <a href="{{ url_for('homepage') }}" class="back-btn">
             <span class="material-icons">arrow_back</span>
         </a>
-        <h2>New item</h2>
+        <h2 id="title">New Item</h2>
     </div>
     <div class="center">
       <div class="mainbox">
@@ -36,14 +36,14 @@
           <div class="upload-box">
             <label for="img-file" class="upload-label">
                 <img src="../static/ico/default_image.png" id="preview-img">
-                <span>Add Photo</span>
+                <span id="addPhoto">Add Photo</span>
             </label>
             <input type="file" name="file" accept="image/*" id="img-file" hidden required>
           </div>
           <div class="input-area">
-            <label class="form-label">Item Name</label>
+            <label class="form-label" id="itemName">Item Name</label>
             <input type="text" class="input-box" name="getname" placeholder="Enter item name" required>
-            <label class="form-label">Category</label>
+            <label class="form-label" id="category">Category</label>
             <div class="dropdown">
               <input class="input-box" type="text" id="searchBox" placeholder="Select category"
               onkeyup="filterFunction()" onclick="toggleList()" name="getcate">
@@ -55,23 +55,23 @@
             </div>
             <div class="row-2">
               <div class="input-box-row2-left">
-                <label class="form-label">Item Amount</label>
+                <label class="form-label" id="itemAmount">Item Amount</label>
                 <div class="center">
                   <input type="number" class="input-box-row2" name="getamount" value="1" min="1" required>
                 </div>
               </div>
               <div class="input-box-row2-right">
-                <label class="form-label">Item Minimum</label>
+                <label class="form-label" id="itemMin">Item Minimum</label>
                 <div class="center">
                   <input type="number" class="input-box-row2" name="getmin" value="1" min="1" required>
                 </div>
               </div>
             </div>
 
-            <label class="form-label">Item Description</label>
+            <label class="form-label" id="desc">Item Description</label>
             <textarea class="input-box" rows="3" name="getdes" placeholder="Enter item description"></textarea>
           </div>
-          <button class="add-btn" name="submit" value="confirm">Add Item</button>
+          <button class="add-btn" name="submit" value="confirm" id="cnf">Add Item</button>
         </form>
       </div>
     </div>
@@ -109,6 +109,42 @@
         document.getElementById("dropdownList").style.display = "none";
       }
     }
+
+    const translations = {
+      en: {
+        title: "New Item",
+        addPhoto: 'Add Photo',
+        itemName: 'Item Name',
+        category: 'Category',
+        itemAmount: 'Item Amount',
+        itemMin: 'Item Minimum',
+        desc: 'Description',
+        cnf: 'Add Item'
+      },
+      th: {
+        title: "แก้ไข",
+        addPhoto: 'เพิ่มรูปภาพ',
+        itemName: 'ชื่อของ',
+        category: 'ประเภท',
+        itemAmount: 'จำนวนของ',
+        itemMin: 'จำนวนของขั้นต่ำ',
+        desc: 'คำอธิบายรายละเอียด',
+        cnf: 'เพิ่มของ'
+      }
+    };
+
+    function changeLanguage(lang) {
+      document.querySelector('#title').textContent = (translations[lang].title);
+      document.querySelector('#addPhoto').textContent = (translations[lang].addPhoto);
+      document.querySelector('#itemName').textContent = (translations[lang].itemName);
+      document.querySelector('#category').textContent = (translations[lang].category);
+      document.querySelector('#itemAmount').textContent = (translations[lang].itemAmount);
+      document.querySelector('#itemMin').textContent = (translations[lang].itemMin);
+      document.querySelector('#desc').textContent = (translations[lang].desc);
+      document.querySelector('#cnf').textContent = (translations[lang].cnf);
+    }
+      
+    changeLanguage(localStorage.getItem('lang'));
   </script>
 </body>
 </html>

@@ -18,6 +18,15 @@
             --delete-bg: #e53935;
             --font-main: 'Inter', sans-serif; /* ใช้ Font Inter ที่ทันสมัยกว่า */
         }
+        .darkmode {
+            --bg-color: #333;
+            --text-color: #f5f5f5;
+            --title-color: #ddd;
+            --card-bg: #555;
+            --timestamp-color: #888;
+            --delete-bg: #e53935;
+            --font-main: 'Inter', sans-serif; /* ใช้ Font Inter ที่ทันสมัยกว่า */
+        }
         html, body {
             margin: 0;
             padding: 0;
@@ -25,7 +34,7 @@
             width: 100%;
             overflow: hidden;
             font-family: 'Inter', sans-serif;
-            background-color: #F3F4F6;
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -115,12 +124,12 @@
         }
     </style>
 </head>
-<body>
+<body class="lightmode">
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}" class="back-arrow">
             <i class="material-icons">arrow_back_ios</i>
         </a>
-        <h1 class="page-title">Scan Result</h1>
+        <h1 class="page-title" id="title">Scan Result</h1>
     </div>
     <div class="container">
         {% if item.itemPicture %}
@@ -131,8 +140,41 @@
 
         <div class="item-name">{{ item.itemName }}</div>
         
-        <a href="{{ url_for('withdraw', itemID=item.itemID) }}" class="action-button withdraw-btn">Withdraw</a>
-        <a href="{{ url_for('edit', itemID=item.itemID) }}" class="action-button edit-btn">Edit</a>
+        <a href="{{ url_for('withdraw', itemID=item.itemID) }}" class="action-button withdraw-btn" id="withdrw">Withdraw</a>
+        <a href="{{ url_for('edit', itemID=item.itemID) }}" class="action-button edit-btn" id="edt">Edit</a>
     </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mode = localStorage.getItem('darkmode');
+        if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+        } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+        }
+    });
+
+    const translations = {
+        en: {
+            title: "Scan Result",
+            edt: 'Edit',
+            withdrw: 'Withdraw'
+        },
+        th: {
+            title: "ผลลัพธ์การสแกน",
+            edt: 'แก้ไข',
+            withdrw: 'เบิก'
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        document.querySelector('#withdrw').textContent = (translations[lang].withdrw);
+        document.querySelector('#edt').textContent = (translations[lang].edt);
+    }
+    
+    changeLanguage(localStorage.getItem('lang'));
+</script>
 </html>

@@ -31,7 +31,7 @@
             </a>
     	</div>
     	<div class="category">
-        	<span>Withdraw</span>
+        	<span id="title">Withdraw</span>
     	</div>
         <div></div>
     </div>
@@ -56,19 +56,19 @@
             {% endif %}
             <div>
                 <h3 class="text">{{ item.itemName }}</h3>
-                <p class="text">In Stock: {{ item.itemAmount }}</p>
+                <p class="text"><span id="inStock">In Stock:</span> {{ item.itemAmount }}</p>
             </div>
         </div>
 
         <form method="POST" style="margin-top:12px;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <label class="form-label">Quantity</label>
+            <label class="form-label" id="quantity">Quantity</label>
             <input type="number" name="getQuantity" min="1" max="{{ item.itemAmount }}" value="1" class="input-box" required>
 
             <div style="display:flex;gap:8px;margin-top:12px;">
-                <button type="submit" name="action" value="confirm" class="add-btn">Confirm</button>
-                <button type="submit" name="action" value="add-to-cart" class="add-btn">Add to Cart</button>
-                <button type="button" onclick="gobackto()" class="add-btn" style="background:#ccc;color:#000;">Cancel</button>
+                <button type="submit" name="action" value="confirm" class="add-btn" id="cnf">Confirm</button>
+                <button type="submit" name="action" value="add-to-cart" class="add-btn" id="atc">Add to Cart</button>
+                <button type="button" onclick="gobackto()" class="add-btn" style="background:#ccc;color:#000;" id="cnc">Cancel</button>
             </div>
         </form>
       </div>
@@ -76,6 +76,36 @@
 
 <script>
     function gobackto(){ window.location.href ='/category' }
+    
+    const translations = {
+      en: {
+        title: "Withdraw",
+        inStock: 'In Stock:',
+        quantity: 'Quantity',
+        cnf: 'Confirm',
+        atc: 'Add to Cart',
+        cnc: 'Cancel',
+      },
+      th: {
+        title: "เบิก",
+        inStock: 'ในคลัง:',
+        quantity: 'จำนวน',
+        cnf: 'ยืนยัน',
+        atc: 'เพิ่มลงตะกร้า',
+        cnc: 'ยกเลิก',
+      }
+    };
+
+    function changeLanguage(lang) {
+      document.querySelector('#title').textContent = (translations[lang].title);
+      document.querySelector('#inStock').textContent = (translations[lang].inStock);
+      document.querySelector('#quantity').textContent = (translations[lang].quantity);
+      document.querySelector('#cnf').textContent = (translations[lang].cnf);
+      document.querySelector('#atc').textContent = (translations[lang].atc);
+      document.querySelector('#cnc').textContent = (translations[lang].cnc);
+    }
+      
+    changeLanguage(localStorage.getItem('lang'));
 </script>
 </body>
 </html>

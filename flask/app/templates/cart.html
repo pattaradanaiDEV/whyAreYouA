@@ -21,13 +21,13 @@
             document.body.classList.remove('darkmode');
           }
         });
-        </script>
+    </script>
 
     <div class="top-bar">
         <a href="{{ url_for('category') }}">
             <span class="material-icons">arrow_back_ios</span>
         </a>
-        <span class="title">Cart</span>
+        <span class="title" id="title_">Cart</span>
     </div>
 
     <div class="container">
@@ -70,11 +70,11 @@
 
                 <div class="item-info">
                     <div class="item-name">{{ c.item.itemName }}</div>
-                    <div class="item-stock">In stock : {{ c.item.itemAmount }}</div>
+                    <div class="item-stock"><span class="inStock">In stock</span><span>: {{ c.item.itemAmount }}</span></div>
                     {% if c.Status == 'w' %}
-                    <div class="status withdraw">Withdraw</div>
+                    <div class="status withdraw withdrw">Withdraw</div>
                     {% else %}
-                    <div class="status edit">Edit</div>
+                    <div class="status edit edt">Edit</div>
                     {% endif %}
                 </div>
 
@@ -105,12 +105,12 @@
         {% endfor %}
 
         {% if not cart_items %}
-        <p class="text-center mt-5">No items in cart</p>
+        <p class="text-center mt-5" id="noItem">No items in cart.</p>
         {% else %}
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="action" value="confirm_cart">
-            <button class="confirm-btn">Confirm Cart</button>
+            <button class="confirm-btn" id="confirmCart">Confirm Cart</button>
         </form>
         {% endif %}
     </div>
@@ -125,6 +125,7 @@
             </div>
         </div>
     </div>
+</body>
 
 <script>
     let startX = 0;
@@ -199,11 +200,15 @@
     const modalMessage = document.getElementById('delete-modal-message');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-    let cartIdToDelete = null;
 
     function showDeleteModal(cartID, itemName) {
         cartIdToDelete = cartID;
-        modalMessage.innerHTML = `Are you sure you want to delete <strong>${itemName}</strong>?`;
+        if (localStorage.getItem('lang') == 'en') {
+            RUSure = `Are you sure you want to delete`
+        } else {
+            RUSure = `คุณแน่ใจหรือไม่ที่จะลบ`
+        }
+        modalMessage.innerHTML = `${RUSure} <strong>${itemName}</strong>?`;
         deleteModal.classList.add('active');
     }
 
@@ -228,6 +233,54 @@
             hideDeleteModal();
         }
     });
+
+    const translations = {
+        en: {
+            title: "Cart",
+            inStock: "In stock",
+            withdrw: "Withdraw",
+            edt: 'Edit',
+            noItem: 'No items in cart.',
+            confirmCart: 'Confirm Cart',
+            delMes: 'Are you sure?',
+            delBtn: 'Delete',
+            cncBtn: 'Cancel'
+        },
+        th: {
+            title: "ตะกร้า",
+            inStock: "ยอดของในคลัง",
+            withdrw: "เบิก",
+            edt: 'แก้ไข',
+            noItem: 'ยังไม่มีของในตะกร้า ณ ขณะนี้',
+            confirmCart: 'ยืนยันตะกร้า',
+            delMes: 'คุณแน่ใจหรือไม่?',
+            delBtn: 'ลบ',
+            cncBtn: 'ยกเลิก'
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#title_').textContent = (translations[lang].title);
+        document.querySelectorAll('.inStock').forEach(e => {
+            e.textContent = (translations[lang].inStock);
+        });
+        document.querySelectorAll('.withdrw').forEach(e => {
+            e.textContent = (translations[lang].withdrw);
+        });
+        document.querySelectorAll('.edt').forEach(e => {
+            e.textContent = (translations[lang].edt);
+        });
+    }
+    
+    changeLanguage(localStorage.getItem('lang'));
+
+    {% if not cart_items %}
+        document.querySelector('#noItem').textContent = (translations[localStorage.getItem('lang')].noItem);
+    {% else %}
+        document.querySelector('#confirmCart').textContent = (translations[localStorage.getItem('lang')].confirmCart);
+        document.querySelector('#delete-modal-message').textContent = (translations[localStorage.getItem('lang')].delMes);
+        document.querySelector('#confirm-delete-btn').textContent = (translations[localStorage.getItem('lang')].delBtn);
+        document.querySelector('#cancel-delete-btn').textContent = (translations[localStorage.getItem('lang')].cncBtn);
+    {% endif %}
 </script>
-</body>
 </html>

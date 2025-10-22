@@ -115,10 +115,20 @@
                     <div class="item-info">
                         <span class="item-name">{{ it.itemName }}</span>
                         <span class="item-details">
-                            In stock: {{it.itemAmount }}
+                            <span class="inStock">
+                                In stock:
+                            </span>
+                            <span>
+                                {{ it.itemAmount }}
+                            </span>
                         </span>
                         <span class="item-details">
-                            Withdrawn: {{it.total }}
+                            <span class="withdrawn">
+                                Withdrawn
+                            </span>
+                            <span>
+                                {{ it.total }}
+                            </span>
                         </span>
                         <div class="button-group">
                             <button class="quick-btn withdraw-btn withdraw" onclick="location.href='/withdraw?itemID={{ it.itemID }}'">Withdraw</button>
@@ -131,7 +141,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <p class="text-center text" id="noData">No data yet</p>
+            <p class="text-center text" id="noData">No data yet.</p>
         {% endif %}
     </div>
 
@@ -222,7 +232,7 @@
             withdrawn: "Withdrawn: ",
             withdraw: "Withdraw",
             edit: "Edit",
-            noData: "No data yet",
+            noData: "No data yet.",
             stock: "Stock",
             qrScan: "QR Scan",
             manageAdmin: "Manage Admin",
@@ -249,7 +259,6 @@
 
     function changeLanguage(lang) {
         document.querySelector('#welcome').textContent = (translations[lang].welcome);
-        document.querySelector('#stats').textContent = (translations[lang].stats);
         document.querySelector('#hist').textContent = (translations[lang].hist);
         document.querySelector('#addItem').textContent = (translations[lang].addItem);
         document.querySelector('#settings').textContent = (translations[lang].settings);
@@ -272,15 +281,11 @@
             e.textContent = (translations[lang].edit);
         });
     }
-    
-    function changeLanguageNoData(lang) {
-        document.querySelector('#noData').textContent = (translations[lang].noData);
-    }
 
     {% if top_items %}
         changeLanguageHaveData(localStorage.getItem('lang'))
     {% else %}
-        changeLanguageNoData(localStorage.getItem('lang'))
+        document.querySelector('#noData').textContent = (translations[lang].noData);
     {% endif %}
     
     changeLanguage(localStorage.getItem('lang'));
@@ -290,12 +295,4 @@
     {% else %}
         document.querySelector('#contactAdmin').textContent = (translations[localStorage.getItem('lang')].contactAdmin);
     {% endif %}
-
-    function confirmAction() {
-        if (localStorage.getItem('lang') === 'en' && window.confirm("Are you sure you want to Logout?")) {
-            window.location.href = "logout";
-        } else if (localStorage.getItem('lang') === 'th' && window.confirm("แน่ใจหรือไม่ที่จะทำการล็อกเอ้าต์?")) {
-            window.location.href = "logout";
-        }
-    }
 </script>

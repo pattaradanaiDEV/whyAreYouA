@@ -28,7 +28,7 @@
                 <i class="material-icons">arrow_back_ios</i>
             </a>
         </div>
-        <h1 class="page-title">Category</h1>
+        <h1 class="page-title" id="title">Category</h1>
         <div class="cart">
             <a href="{{ url_for('cart')}}" class="cart-link">
                 <i class="material-icons">shopping_cart</i>
@@ -49,7 +49,7 @@
     {% endwith %}
     <div class="search-bar">
         <span class="material-icons">search</span>
-        <input type="text" class="search-input" placeholder="Search">
+        <input type="text" class="search-input" placeholder="Search" id="search">
     </div>
 
     <div class="show_category">
@@ -85,46 +85,59 @@
             let ch = it.itemName ? it.itemName.substring(0,1) : '?';
             pictureHtml = `<div class="item-icon">${ch}</div>`;
         }
-        
-        return `
-            <div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
-                <div class="swipe-wrapper">
-                    <div class="delete-action">
-                        <form method="POST" id="delete-form-${it.itemID}">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
-                            <input type="hidden" name="item_id" value="${it.itemID}">
-                            <input type="hidden" name="action" value="delete">
-                            <button type="button" class="delete-btn" onclick="showDeleteModal(${it.itemID})">
-                                <i class="material-icons" style="font-size: 2rem; color:white;">delete</i>
-                            </button>
-                        </form>
-                    </div>
+        desc = ""
+        if (it.itemDesc) {
+            desc = it.itemDesc
+        } else {
+            if (localStorage.getItem('lang') == 'en') {
+                desc = 'No description available.'
+            } else {
+                desc = 'ยังไม่มีรายละเอียดคำอธิบาย'
+            }
+        }
+        stock_text = translations[localStorage.getItem('lang')].stock || 'Stock'
+        description = translations[localStorage.getItem('lang')].description
+        edit = translations[localStorage.getItem('lang')].edit
+        withdrw = translations[localStorage.getItem('lang')].withdrw
 
-                    <div class="item-content" id="content-${it.itemID}"
-                        ontouchstart="startSwipe(event, ${it.itemID})"
-                        ontouchmove="moveSwipe(event, ${it.itemID})"
-                        ontouchend="endSwipe(event, ${it.itemID})">
-                        
-                        <div class="item-left">${pictureHtml}</div>
-                        <div class="item-info">
-                            <div class="item-name">${it.itemName}</div>
-                            <div class="item-category">${it.category.cateName}</div>
-                            <div class="item-stock">Stock: ${it.itemAmount}</div>
-                        </div>
-                        <div class="item-actions">
-                            ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">Edit</button>` : ""}
-                            <button class="btn withdraw" onclick="withdraw(${it.itemID})">Withdraw</button>
-                        </div>
+        return `<div class="item-card" data-id="${it.itemID}" id="item-${it.itemID}">
+            <div class="swipe-wrapper">
+                <div class="delete-action">
+                    <form method="POST" id="delete-form-${it.itemID}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                        <input type="hidden" name="item_id" value="${it.itemID}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="button" class="delete-btn" onclick="showDeleteModal(${it.itemID})">
+                            <i class="material-icons" style="font-size: 2rem; color:white;">delete</i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="item-content" id="content-${it.itemID}"
+                    ontouchstart="startSwipe(event, ${it.itemID})"
+                    ontouchmove="moveSwipe(event, ${it.itemID})"
+                    ontouchend="endSwipe(event, ${it.itemID})">
+                    
+                    <div class="item-left">${pictureHtml}</div>
+                    <div class="item-info">
+                        <div class="item-name">${it.itemName}</div>
+                        <div class="item-category">${it.category.cateName}</div>
+                        <div class="item-stock">${stock_text}: ${it.itemAmount}</div>
+                    </div>
+                    <div class="item-actions">
+                        ${it.is_admin ? `<button class="btn edit" onclick="gotoEdit(${it.itemID})">${edit}</button>` : ""}
+                        <button class="btn withdraw" onclick="withdraw(${it.itemID})">${withdrw}</button>
                     </div>
                 </div>
-                <details class="detail">
-                    <summary onclick="loadQrCode(${it.itemID}, this)">Detail</summary>
-                    <div class="description-content">
-                        ${it.itemDesc || 'No description available.'}
-                        <div id="qr-placeholder-${it.itemID}"></div>
-                    </div>
-                </details>
-            </div>`;
+            </div>
+            <details class="detail">
+                <summary onclick="loadQrCode(${it.itemID}, this)">${description}</summary>
+                <div class="description-content">
+                    ${desc}
+                    <div id="qr-placeholder-${it.itemID}"></div>
+                </div>
+            </details>
+        </div>`;
     }
 
     let startX = 0;
@@ -299,10 +312,18 @@
     }
     function renderItems(data) {
         $("#item-list").empty();
-        data.forEach(it => {
-            it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
-            $("#item-list").append(getDisplayHTML(it));
-        });
+        if (!data.length) {
+            if (localStorage.getItem('lang') == 'en') {
+                itemShow = '<div class="text">No item to be shown yet.</div>'
+            } else {
+                itemShow = '<div class="text">ยังไม่มีรายการของให้แสดง ณ ขณะนี้</div>'
+            }
+            $("#item-list").append(itemShow)
+        } else {
+            data.forEach(it => {
+                it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
+                $("#item-list").append(getDisplayHTML(it));
+        })};
     }
     function gotoEdit(id){ window.location.href = `/edit?itemID=${id}`; }
     function withdraw(itemID) { window.location.href = `/withdraw?itemID=${itemID}`; }
@@ -319,6 +340,32 @@
     }
     document.querySelector('.search-bar input').addEventListener('input', (event) => searchCategory(event.target.value.trim()));
     window.onload = () => filterCategory("all");
+
+    const translations = {
+        en: {
+            title: "Stock",
+            search: "Search",
+            stock: "Stock",
+            description: "Description",
+            edit: 'Edit',
+            withdrw: 'Withdraw'
+        },
+        th: {
+            title: "คลัง",
+            search: "ค้นหา",
+            stock: "ของคงเหลือ",
+            description: "คำอธิบายรายละเอียด",
+            edit: 'แก้ไข',
+            withdrw: 'เบิก'
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        document.querySelector('#search').placeholder = (translations[lang].search);
+    }
+    
+    changeLanguage(localStorage.getItem('lang'));
 </script>
 </body>
 </html>

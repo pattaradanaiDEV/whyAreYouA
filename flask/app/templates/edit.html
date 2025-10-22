@@ -28,7 +28,7 @@
             </a>
       </div>
       <div class="category">
-          <span>Edit</span>
+          <span id="title">Edit</span>
       </div>
         <div></div>
     </div>
@@ -55,15 +55,15 @@
                 {% else %}
                     <img src="../static/ico/default_image.png" id="preview-img" style="width:80px;height:80px;border-radius:8px;">
                 {% endif %}
-                <span>Change Photo</span>
+                <span id="changePhoto">Change Photo</span>
             </label>
             <input type="file" name="file" accept="image/*" id="img-file" hidden>
           </div>
 
-          <label class="form-label">Item Name</label>
+          <label class="form-label" id="itemName">Item Name</label>
           <input type="text" class="input-box" name="getname" value="{{ item.itemName }}" required>
 
-          <label class="form-label">Category</label>
+          <label class="form-label" id="category">Category</label>
           <div class="dropdown">
               <input class="input-box" type="text" id="searchBox" value="{{ item.category.cateName }}"
               onkeyup="filterFunction()" onclick="toggleList()" name="getcate">
@@ -76,28 +76,28 @@
 
           <div class="row-2">
             <div class="input-box-row2-left">
-              <label class="form-label">Item Amount</label>
+              <label class="form-label" id="itemAmount">Item Amount</label>
               <div class="center">
                 <input type="number" class="input-box-row2" name="getamount" value="{{ item.itemAmount }}" min="{{ item.itemAmount }}" placeholder="Fill stock" required>
               </div>
             </div>
             <div class="input-box-row2-right">
-              <label class="form-label">Item Minimum</label>
+              <label class="form-label" id="itemMin">Item Minimum</label>
               <div class="center">
                 <input type="number" class="input-box-row2" name="getmin" value="{{ item.itemMin or 0 }}" min="0" required>
               </div>
             </div>
           </div>
 
-          <label class="form-label">Description</label>
+          <label class="form-label" id="desc">Description</label>
           <div class="center">
             <input type="text" class="input-box" name="getdes" value="{{ item.itemDesc }}">
           </div>
 
           <div style="display:flex;gap:8px;">
-            <button class="add-btn" name="action" value="confirm">Confirm</button>
-            <button class="add-btn" name="action" value="add-to-cart">Add to Cart</button>
-            <button class="add-btn" name="action" value="cancel" type="submit">Cancel</button>
+            <button class="add-btn" name="action" value="confirm" id="cnf">Confirm</button>
+            <button class="add-btn" name="action" value="add-to-cart" id="atc">Add to Cart</button>
+            <button class="add-btn" name="action" value="cancel" type="submit" id="cnc">Cancel</button>
           </div>
         </form>
 
@@ -192,5 +192,50 @@
           printWindow.close();
       };
   });
+
+  const translations = {
+    en: {
+      title: "Edit",
+      changePhoto: 'Change Photo',
+      itemName: 'Item Name',
+      category: 'Category',
+      itemAmount: 'Item Amount',
+      itemMin: 'Item Minimum',
+      desc: 'Description',
+      cnf: 'Edit',
+      atc: 'Add to Cart',
+      cnc: 'Cancel',
+      printQR: 'Print QR'
+    },
+    th: {
+      title: "แก้ไข",
+      changePhoto: 'เปลี่ยนรูปภาพ',
+      itemName: 'ชื่อของ',
+      category: 'ประเภท',
+      itemAmount: 'จำนวนของ',
+      itemMin: 'จำนวนของขั้นต่ำ',
+      desc: 'คำอธิบายรายละเอียด',
+      cnf: 'ยืนยัน',
+      atc: 'เพิ่มลงตะกร้า',
+      cnc: 'ยกเลิก',
+      printQR: 'พิมพ์ QR'
+    }
+  };
+
+  function changeLanguage(lang) {
+    document.querySelector('#title').textContent = (translations[lang].title);
+    document.querySelector('#changePhoto').textContent = (translations[lang].changePhoto);
+    document.querySelector('#itemName').textContent = (translations[lang].itemName);
+    document.querySelector('#category').textContent = (translations[lang].category);
+    document.querySelector('#itemAmount').textContent = (translations[lang].itemAmount);
+    document.querySelector('#itemMin').textContent = (translations[lang].itemMin);
+    document.querySelector('#desc').textContent = (translations[lang].desc);
+    document.querySelector('#cnf').textContent = (translations[lang].cnf);
+    document.querySelector('#atc').textContent = (translations[lang].atc);
+    document.querySelector('#cnc').textContent = (translations[lang].cnc);
+    document.querySelector('#printQrBtn').textContent = (translations[lang].printQR);
+  }
+    
+  changeLanguage(localStorage.getItem('lang'));
 </script>
 </body>
