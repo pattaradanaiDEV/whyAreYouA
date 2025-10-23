@@ -488,14 +488,19 @@ def cart():
 
             item = Item.query.get(cart_item.ItemID)
             if action == 'increase':
-                if item and cart_item.Quantity + 1 > item.itemAmount:
+                if item and (cart_item.Quantity + 1 > item.itemAmount) and cart_item.Status != "e":
                     flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
                     return redirect(url_for('cart'))
                 cart_item.Quantity += 1
+                
             elif action == 'decrease' and cart_item.Quantity > 1:
+                if cart_item.Status == "e" and cart_item.Quantity - 1 < item.itemAmount:
+                    flash(f"จำเป็นต้องเป็นจำนวนที่มากกว่าหรือเท่ากับเท่านั้น")
+                    return redirect(url_for('cart'))
                 cart_item.Quantity -= 1
+                
             elif action == 'update_input' and quantity > 0:
-                if item and quantity > item.itemAmount:
+                if item and (quantity > item.itemAmount) and cart_item.Status != "e":
                     cart_item.Quantity = item.itemAmount
                     flash(f"จำนวนเกินสต็อกของ {item.itemName}", "danger")
                     db.session.commit()
@@ -1035,11 +1040,22 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/cate_edit')
+@app.route('/cate_edit' ,methods=["GET", "POST"])
 @madmin_required
 def cate_edit():
-    cate = Category.query.all()
+    cate = Category.query.order_by(Category.cateID).all()
     items = Item.query.all()
+    if request.method == "POST":
+        action = request.form.get('action')
+        cate_id = request.form.get('cate_id')
+        if action == "delete":
+            R_item = Item.query.filter_by(cateID=cate_id)
+            for i in R_item:
+                i.cateID = 1
+            R_category = Category.query.filter_by(cateID=cate_id).first()
+            db.session.delete(R_category)
+            db.session.commit()
+            return redirect(url_for('cate_edit'))
 
     return render_template("edit_cate.html", cate=cate, items=items)
 

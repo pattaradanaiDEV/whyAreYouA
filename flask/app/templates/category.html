@@ -84,7 +84,7 @@
     </div>
 
     <div id="item-list"></div>
-     <div class="modal-overlay" id="delete-modal">
+    <div class="modal-overlay" id="delete-modal">
         <div class="modal-content">
             <p class="modal-message" id="delete-modal-message"></p>
             <div class="modal-actions">
@@ -224,18 +224,18 @@
     let itemToDeleteId = null;
 
     function showDeleteModal(itemID) {
-    itemToDeleteId = itemID;
-    const item = items.find(it => it.itemID === itemID); // ค้นหา item จาก ID
-    const modalMessage = document.getElementById('delete-modal-message');
+        itemToDeleteId = itemID;
+        const item = items.find(it => it.itemID === itemID); // ค้นหา item จาก ID
+        const modalMessage = document.getElementById('delete-modal-message');
 
-    if (item) {
-        modalMessage.innerHTML = `Are you sure you want to delete <strong>${item.itemName}</strong>?`;
-    } else {
-        modalMessage.textContent = 'Are you sure you want to delete this item?';
+        if (item) {
+            modalMessage.innerHTML = `Are you sure you want to delete <strong>${item.itemName}</strong>?`;
+        } else {
+            modalMessage.textContent = 'Are you sure you want to delete this item?';
+        }
+
+        deleteModal.classList.add('active');
     }
-
-    deleteModal.classList.add('active');
-}
 
     function hideDeleteModal() {
         itemToDeleteId = null;
