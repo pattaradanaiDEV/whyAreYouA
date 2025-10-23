@@ -92,7 +92,29 @@
     <div class="topfive">
         <span id="topFive">Top 5 Disbursemented Items</span>
     </div>
-
+    <form method="POST">
+        <div class="show_select_delta">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+            {% for delta in [7,30,60,180] %}
+                    <button class="delta-item" onclick="form.submit" name="getdelta" value="{{delta}}">
+                        {% if delta < 30 %}
+                            {{ delta }} day
+                        {% else %}
+                            {{ delta//30 }} month
+                        {% endif %}
+                    </button> 
+            {% endfor %}
+        </div>
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-box">
+        <div class="message">
+            {{ messages[0] }}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
     <div class="topused-container">
         {% if top_items %}
             {% for it in top_items %}
@@ -223,7 +245,6 @@
     const translations = {
         en: {
             welcome: "Welcome",
-            stats: "Statistics",
             hist: "History",
             addItem: "Add",
             settings: "Settings",
