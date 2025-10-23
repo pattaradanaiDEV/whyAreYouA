@@ -952,7 +952,6 @@ def exportStock():
             .order_by(Item.itemID) 
             .all()
         )
-    data_list = [i.to_dict() for i in data]
     list_data = []
     for i in data:
         Item_data = {
