@@ -73,14 +73,14 @@
                             <div class="user-email">{{ user.email }}</div>
                         </div>
                         
-                        {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
+                        {% if not user.is_sadmin and current_user.UserID != user.UserID and current_user.is_sadmin %}
                             <form method="post" action="{{ url_for('adminlist') }}" class="toggle-form">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">
                                 <label class="switch">
                                     <input type="checkbox" class="admin-toggle"
                                            data-user-name="{{ user.Fname }} {{ user.Lname }}"
-                                           {% if user.IsM_admin %}checked{% endif %}>
+                                           {% if user.is_admin %}checked{% endif %}>
                                     <span class="slider"></span>
                                 </label>
                                 <input type="hidden" class="action-input" name="action" value="">
@@ -88,7 +88,7 @@
                         {% endif %}
                     </div>
                     
-                    {% if user.UserID not in [1, 2] and current_user.UserID != user.UserID and current_user.UserID in [1,2]%}
+                    {% if not user.is_sadmin and current_user.UserID != user.UserID and current_user.is_sadmin %}
                         <div class="delete-action">
                             <form method="POST" action="{{ url_for('adminlist') }}">  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="user_id" value="{{ user.UserID }}">

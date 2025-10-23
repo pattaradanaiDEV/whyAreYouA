@@ -69,7 +69,7 @@ def check_user_available():
 def madmin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.IsM_admin:
+        if not (current_user.is_admin or current_user.is_sadmin):
             pman = User.query.get(2)
             return render_template('forbidden.html', pman = pman)  # Forbidden
         return f(*args, **kwargs)
@@ -199,7 +199,7 @@ def homepage():
                 UserNotificationStatus.is_read == False
             ),
             or_(
-                current_user.IsM_admin == True,
+                current_user.is_admin == True,
                 Notification.ntype.notin_(["Grant", "Request"])
             )
         )
@@ -363,7 +363,7 @@ def notification():
                 UserNotificationStatus.is_deleted == False
             ),
             or_(
-                current_user.IsM_admin == True,
+                current_user.is_admin == True,
                 Notification.ntype.notin_(["Grant", "Request"])
             )
         )
@@ -556,7 +556,7 @@ def adminlist():
             return redirect(url_for('adminlist'))
 
         if action == "promote":
-            user.IsM_admin = True
+            user.is_admin = True
             db.session.add(Notification(
                     user_id=current_user.UserID,
                     ntype="😎Promoted to admin",
@@ -565,7 +565,7 @@ def adminlist():
                 ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
-            user.IsM_admin = False
+            user.is_admin = False
             db.session.add(Notification(
                     user_id=current_user.UserID,
                     ntype="😓Demoted from admin",
@@ -810,7 +810,7 @@ def handle_scan():
 
     item_id = match.group(1)
     
-    if current_user.IsM_admin:
+    if (current_user.is_admin or current_user.is_sadmin):
         redirect_url = url_for('scanresult', itemID=item_id)
     else:
         redirect_url = url_for('withdraw', itemID=item_id)
@@ -820,7 +820,7 @@ def handle_scan():
 @app.route('/scanresult')
 @login_required
 def scanresult():
-    if not current_user.IsM_admin:
+    if not (current_user.is_admin or current_user.is_sadmin):
         flash("You don't have permission to access this page.", "danger")
         return redirect(url_for('homepage'))
         
@@ -873,15 +873,27 @@ def delete_item():
 
 @app.route('/export/withdraw_history')
 def export():
-    data = (
-        db.session.query(WithdrawHistory)
-        .options(
-            joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
-            joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+    if (current_user.is_admin) :
+        data = (
+            db.session.query(WithdrawHistory)
+            .options(
+                joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
+                joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+            )
+            .order_by(WithdrawHistory.DateTime.desc()) 
+            .all()
         )
-        .order_by(WithdrawHistory.DateTime.desc()) # (แนะนำ) เรียงลำดับข้อมูล
-        .all()
-    )
+    else:
+        data = (
+            db.session.query(WithdrawHistory)
+            .options(
+                joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
+                joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+            )
+            .order_by(WithdrawHistory.DateTime.desc()) 
+            .filter(WithdrawHistory.UserID == current_user.UserID)
+            .all()
+        )
     list_data = []
     to_zone = tz.tzlocal()
     for wh in data:

@@ -154,7 +154,7 @@
     let isDragging = false; 
 
     function startSwipe(e, id) {
-        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        if (!{{ 1 if (current_user.is_admin or current_user.is_sadmin) else 0 }}) { return; }
         
         isDragging = false; 
 
@@ -167,7 +167,7 @@
     }
 
     function moveSwipe(e, id) {
-        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        if (!{{ 1 if (current_user.is_admin or current_user.is_sadmin) else 0 }}) { return; }
         
         const content = document.getElementById(`content-${id}`);
         currentX = e.touches[0].clientX;
@@ -183,7 +183,7 @@
     }
 
     function endSwipe(e, id) {
-        if (!{{ 1 if current_user.IsM_admin else 0 }}) { return; }
+        if (!{{ 1 if (current_user.is_admin or current_user.is_sadmin) else 0 }}) { return; }
         
         const content = document.getElementById(`content-${id}`);
         content.style.transition = 'transform 0.3s ease'; 
@@ -330,7 +330,7 @@
             $("#item-list").append(itemShow)
         } else {
             data.forEach(it => {
-                it.is_admin = {{ 1 if current_user.IsM_admin else 0 }};
+                it.is_admin = {{ 1 if (current_user.is_admin or current_user.is_sadmin) else 0 }};
                 $("#item-list").append(getDisplayHTML(it));
         })};
     }

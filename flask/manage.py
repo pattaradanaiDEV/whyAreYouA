@@ -43,9 +43,11 @@ def add_user():
     for i in user :
         db.session.add(User(Fname=i[0],Lname=i[1],phoneNum=i[2],email=i[3],profile_pic=gen_avatar_url(i[3], i[0]+i[1]),password=generate_password_hash(i[4])))
     db.session.commit()
-    User.query.get_or_404(1).IsM_admin=True
+    User.query.get_or_404(1).is_sadmin=True
+    User.query.get_or_404(1).is_admin=True
     User.query.get_or_404(1).availiable=True
-    User.query.get_or_404(2).IsM_admin=True
+    User.query.get_or_404(2).is_sadmin=True
+    User.query.get_or_404(2).is_admin=True
     User.query.get_or_404(2).availiable=True
     db.session.commit()
 
