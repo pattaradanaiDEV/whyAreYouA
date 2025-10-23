@@ -872,15 +872,27 @@ def delete_item():
 
 @app.route('/export/withdraw_history')
 def export():
-    data = (
-        db.session.query(WithdrawHistory)
-        .options(
-            joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
-            joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+    if (current_user.is_admin) :
+        data = (
+            db.session.query(WithdrawHistory)
+            .options(
+                joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
+                joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+            )
+            .order_by(WithdrawHistory.DateTime.desc()) 
+            .all()
         )
-        .order_by(WithdrawHistory.DateTime.desc()) # (แนะนำ) เรียงลำดับข้อมูล
-        .all()
-    )
+    else:
+        data = (
+            db.session.query(WithdrawHistory)
+            .options(
+                joinedload(WithdrawHistory.user),  # โหลด User ที่เกี่ยวข้อง
+                joinedload(WithdrawHistory.items).joinedload(Item.category) # โหลด Item และ Category ของ Item
+            )
+            .order_by(WithdrawHistory.DateTime.desc()) 
+            .filter(WithdrawHistory.UserID == current_user.UserID)
+            .all()
+        )
     list_data = []
     to_zone = tz.tzlocal()
     for wh in data:
