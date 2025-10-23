@@ -761,10 +761,12 @@ def edit():
             new_amount = int(request.form.get("getamount", item.itemAmount))
             new_min = int(request.form.get("getmin", item.itemMin if item.itemMin is not None else 0))
             new_cate = request.form.get("getcate")
+            new_desc = request.form.get("getdes")
             # update
             item.itemName = new_name
             item.itemAmount = new_amount
             item.itemMin = new_min
+            item.itemDesc = new_desc
             item.itemPicture = filename
             # category assignment: try to resolve cateName to id
             if new_cate:
@@ -774,7 +776,13 @@ def edit():
                 else:
                     # create category
                     new_cat = Category(cateName=new_cate)
+                    
                     db.session.add(new_cat)
+                    db.session.add(Notification(
+                        user_id=current_user.UserID,
+                        ntype="➕Fill Stock",
+                        message=f"{new_name} ถูกเติม stock แล้ว!!!"
+                    ))
                     db.session.commit()
                     item.cateID = new_cat.cateID
             db.session.commit()
@@ -899,7 +907,7 @@ def export():
             .order_by(WithdrawHistory.DateTime.desc()) 
             .filter(WithdrawHistory.UserID == current_user.UserID)
             .all()
-        )
+    )
     list_data = []
     to_zone = tz.tzlocal()
     for wh in data:
@@ -939,17 +947,21 @@ def export():
 
 @app.route('/export/stock')
 def exportStock():
-    data = Item.query.all()
-    data_list = [i.to_dict() for i in data]
+    data = (
+            db.session.query(Item)
+            .order_by(Item.itemID) 
+            .all()
+        )
     list_data = []
-    for i in data_list:
-        print(i)
+    for i in data:
         Item_data = {
-            "Name":i["itemName"],
-            "Amount":i["itemAmount"],
-            "Min":i["itemMin"],
-            "Description":i["itemDesc"],
-            "Category":i["category"]["cateName"]
+            "Item ID":i.itemID,
+            "ItemName":i.itemName,
+            "ItemAmount":i.itemAmount,
+            "ItemMinimun":i.itemMin,
+            "Description":i.itemDesc,
+            "Category ID":i.category.cateID,
+            "Category name":i.category.cateName
 
         }
         list_data.append(Item_data)
