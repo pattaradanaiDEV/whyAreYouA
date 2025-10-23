@@ -25,7 +25,7 @@
     </script>
     <div class="header">
         <a href="{{ url_for('adminlist') }}" class="back-btn"><i class="material-icons">arrow_back_ios</i></a>
-        <h1 class="page-title">Pending user</h1>
+        <h1 class="page-title" id="title">Pending user</h1>
     </div>
     {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -37,7 +37,7 @@
 
     <div class="main-content">
         <div class="request-header">
-            <h2 class="request-title">User request</h2>
+            <h2 class="request-title" id="subtitle">User request</h2>
             <span class="request-count">{{ pending_count }}</span>
         </div>
         
@@ -68,8 +68,8 @@
                     <form method="post" action="{{ url_for('pending_user') }}" class="action-buttons">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="user_id" value="{{ user.UserID }}">
-                        <button type="submit" name="action" value="accept" class="btn btn-accept">Accept</button>
-                        <button type="submit" name="action" value="decline" class="btn btn-decline">Decline</button>
+                        <button type="submit" name="action" value="accept" class="btn btn-accept cnf">Accept</button>
+                        <button type="submit" name="action" value="decline" class="btn btn-decline cnc">Decline</button>
                     </form>
                 </li>
                 {% endfor %}
@@ -102,45 +102,77 @@
     </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // --- Search Functionality ---
-    const searchInput = document.getElementById('searchInput');
-    const pendingCards = document.querySelectorAll('.pending-card');
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        pendingCards.forEach(card => {
-            const name = card.dataset.name;
-            if (name.includes(query)) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Search Functionality ---
+        const searchInput = document.getElementById('searchInput');
+        const pendingCards = document.querySelectorAll('.pending-card');
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            pendingCards.forEach(card => {
+                const name = card.dataset.name;
+                if (name.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
+
+        // --- MODIFIED: Accept All with Modal ---
+        const acceptAllForm = document.getElementById('acceptAllForm');
+        if (acceptAllForm) {
+            acceptAllForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Stop form submission
+
+                const modal = document.getElementById("confirmModal");
+                const confirmBtn = document.getElementById("modalConfirm");
+                const cancelBtn = document.getElementById("modalCancel");
+                modal.classList.add('active'); // Show modal
+
+                confirmBtn.onclick = () => {
+                    acceptAllForm.submit(); // Submit on confirm
+                };
+                cancelBtn.onclick = () => {
+                    modal.classList.remove('active'); // Hide on cancel
+                };
+            });
+        }
     });
+    const translations = {
+        en: {
+            title: "Pending User",
+            subtitle: "User request",
+            search: "Search by name",
+            acp: "Accept",
+            dcn: "Decline",
+            cnf: "Confirm",
+            cnc: "Cancel",
+            modalMessage: "Are you sure to accept every users?"
+        },
+        th: {
+            title: "ผู้ใช้ที่รออนุมัติ",
+            subtitle: "คำขอจากผู้ใช้",
+            search: "ค้นหาจากชื่อ",
+            acp: "ตอบรับ",
+            dcn: "ปฏิเสธ",
+            cnf: "ยืนยัน",
+            cnc: "ยกเลิก",
+            modalMessage: "หากคุณกดปุ่มยืนยัน จะทำการรับผู้ใช้ทุกคนที่ร้องขอเข้าสู่ระบบ"
+        }
+    };
 
-    // --- MODIFIED: Accept All with Modal ---
-    const acceptAllForm = document.getElementById('acceptAllForm');
-    if (acceptAllForm) {
-        acceptAllForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop form submission
-
-            const modal = document.getElementById("confirmModal");
-            const modalMessage = document.getElementById("modalMessage");
-            const confirmBtn = document.getElementById("modalConfirm");
-            const cancelBtn = document.getElementById("modalCancel");
-
-            modalMessage.textContent = "หากคุณกดปุ่มนี้จะเป็นการรับทุกคนเข้าสู่ระบบ";
-            modal.classList.add('active'); // Show modal
-
-            confirmBtn.onclick = () => {
-                acceptAllForm.submit(); // Submit on confirm
-            };
-            cancelBtn.onclick = () => {
-                modal.classList.remove('active'); // Hide on cancel
-            };
-        });
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        document.querySelector('#subtitle').textContent = (translations[lang].subtitle);
+        document.querySelector('#searchInput').placeholder = (translations[lang].search);
+        document.querySelectorAll('.cnf').forEach(e => {e.textContent = (translations[lang].acp);})
+        document.querySelectorAll('.cnc').forEach(e => {e.textContent = (translations[lang].dcn);})
+        document.querySelector('#modalMessage').textContent = (translations[lang].modalMessage);
+        document.querySelector('#modalConfirm').textContent = (translations[lang].cnf);
+        document.querySelector('#modalCancel').textContent = (translations[lang].cnc);
     }
-});
+    
+    changeLanguage(localStorage.getItem('lang'));
 </script>
 </body>
 </html>

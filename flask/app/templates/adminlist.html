@@ -28,7 +28,7 @@
                 <i class="material-icons">arrow_back_ios</i>
             </a>
         </div>
-        <h1 class="page-title">Admin List</h1>
+        <h1 class="page-title" id="title">Admin List</h1>
         <div class="header-right">
             <a href="{{ url_for('pending_user')}}" class="pending-link">
                 <i class="material-icons">person_add_alt_1</i>
@@ -46,8 +46,8 @@
         {% endif %}
     {% endwith %}
     <div class="main-content">
-        <h2 class="section-title">Main admin management</h2>
-        <p class="section-sub">Manage admin access and permissions</p>
+        <h2 class="section-title" id="subtitle">Main admin management</h2>
+        <p class="section-sub" id="desc">Manage admin access and permissions</p>
         
         <div class="search-bar">
             <i class="material-icons" style="color: var(--subtext-color);">search</i>
@@ -116,113 +116,154 @@
     </div>
     
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
-    const userItems = document.querySelectorAll('.user-item');
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        userItems.forEach(item => {
-            const name = item.dataset.name;
-            item.style.display = name.includes(query) ? 'block' : 'none';
-        });
-    });
-
-    const modal = document.getElementById("confirmModal");
-    const modalMessage = document.getElementById("modalMessage");
-    const confirmBtn = document.getElementById("modalConfirm");
-    const cancelBtn = document.getElementById("modalCancel");
-
-    document.querySelectorAll('.admin-toggle').forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const form = this.closest('form');
-            const actionInput = form.querySelector('.action-input');
-            const userName = this.dataset.userName;
-            const isCurrentlyChecked = this.checked;
-
-            if (isCurrentlyChecked) {
-                modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะให้ ${userName} เป็น admin`;
-                actionInput.value = 'promote';
-            } else {
-                modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะยกเลิกสิทธิ์ admin ของ ${userName}`;
-                actionInput.value = 'demote';
-            }
-            
-            // แสดง pop-up
-            modal.classList.add('active');
-
-            //  กำหนดการทำงานของปุ่มใน pop-up
-            confirmBtn.onclick = () => {
-                // ถ้ายืนยัน ก็ส่งฟอร์มได้เลย
-                form.submit();
-            };
-
-            cancelBtn.onclick = () => {
-                modal.classList.remove('active');
-            };
-        });
-    });
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const form = this.closest('form');
-            const userName = this.dataset.userName;
-            modalMessage.textContent = `แน่ใจแล้วหรือไม่ที่จะลบ ${userName} ออกจากระบบ`;
-
-            modal.classList.add('active');
-
-            confirmBtn.onclick = () => {
-                form.submit(); 
-            };
-
-            cancelBtn.onclick = () => {
-                modal.classList.remove('active'); 
-            };
-        });
-    });
-
-    document.querySelectorAll('.user-content').forEach(content => {
-        let startX = 0, dist = 0, isDragging = false;
-        const form = content.querySelector('.toggle-form');
-        
-        if (!form) return; 
-
-        content.addEventListener('touchstart', (e) => {
-            isDragging = false;
-            startX = e.touches[0].clientX;
-            content.style.transition = '';
-            form.style.transition = '';
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const userItems = document.querySelectorAll('.user-item');
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            userItems.forEach(item => {
+                const name = item.dataset.name;
+                item.style.display = name.includes(query) ? 'block' : 'none';
+            });
         });
 
-        content.addEventListener('touchmove', (e) => {
-            dist = e.touches[0].clientX - startX;
-            if (Math.abs(dist) > 10) {
-                isDragging = true;
-            }
-            if (isDragging && dist < 0 && dist > -100) {
+        const modal = document.getElementById("confirmModal");
+        const modalMessage = document.getElementById("modalMessage");
+        const confirmBtn = document.getElementById("modalConfirm");
+        const cancelBtn = document.getElementById("modalCancel");
+
+        document.querySelectorAll('.admin-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
                 e.preventDefault();
-                content.style.transform = `translateX(${dist}px)`;
-                form.style.opacity = 1 - (Math.abs(dist) / 90);
-            }
+
+                const form = this.closest('form');
+                const actionInput = form.querySelector('.action-input');
+                const userName = this.dataset.userName;
+                const isCurrentlyChecked = this.checked;
+
+                if (isCurrentlyChecked) {
+                    if (localStorage.getItem('lang') == 'th') {
+                        modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะให้ ${userName} เป็น admin`;
+                    } else {
+                        modalMessage.textContent = `Are you sure to promote "${userName}" as an admin?`;
+                    }
+                    actionInput.value = 'promote';
+                } else {
+                    if (localStorage.getItem('lang') == 'th') {
+                        modalMessage.textContent = `คุณแน่ใจแล้วหรือไม่ที่จะยกเลิกสิทธิ์ admin ของ ${userName}`;
+                    } else {
+                        modalMessage.textContent = `Are you sure to demote "${userName}" from an admin?`;
+                    }
+                    actionInput.value = 'demote';
+                }
+                
+                // แสดง pop-up
+                modal.classList.add('active');
+
+                //  กำหนดการทำงานของปุ่มใน pop-up
+                confirmBtn.onclick = () => {
+                    // ถ้ายืนยัน ก็ส่งฟอร์มได้เลย
+                    form.submit();
+                };
+
+                cancelBtn.onclick = () => {
+                    modal.classList.remove('active');
+                };
+            });
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const form = this.closest('form');
+                const userName = this.dataset.userName;
+                if (localStorage.getItem('lang') == 'th') {
+                    modalMessage.textContent = `แน่ใจแล้วหรือไม่ที่จะลบ ${userName} ออกจากระบบ`;
+                } else {
+                    modalMessage.textContent = `Are you sure to remove "${userName}" from the system?`;
+                }
+
+                modal.classList.add('active');
+
+                confirmBtn.onclick = () => {
+                    form.submit(); 
+                };
+
+                cancelBtn.onclick = () => {
+                    modal.classList.remove('active'); 
+                };
+            });
         });
 
-        content.addEventListener('touchend', () => {
-            content.style.transition = 'transform 0.3s ease';
-            form.style.transition = 'opacity 0.3s ease';
-            if (isDragging && dist < -50) {
-                content.style.transform = 'translateX(-90px)';
-                form.style.opacity = 0;
-            } else {
-                content.style.transform = 'translateX(0px)';
-                form.style.opacity = 1;
-            }
-            dist = 0;
-            isDragging = false;
+        document.querySelectorAll('.user-content').forEach(content => {
+            let startX = 0, dist = 0, isDragging = false;
+            const form = content.querySelector('.toggle-form');
+            
+            if (!form) return; 
+
+            content.addEventListener('touchstart', (e) => {
+                isDragging = false;
+                startX = e.touches[0].clientX;
+                content.style.transition = '';
+                form.style.transition = '';
+            });
+
+            content.addEventListener('touchmove', (e) => {
+                dist = e.touches[0].clientX - startX;
+                if (Math.abs(dist) > 10) {
+                    isDragging = true;
+                }
+                if (isDragging && dist < 0 && dist > -100) {
+                    e.preventDefault();
+                    content.style.transform = `translateX(${dist}px)`;
+                    form.style.opacity = 1 - (Math.abs(dist) / 90);
+                }
+            });
+
+            content.addEventListener('touchend', () => {
+                content.style.transition = 'transform 0.3s ease';
+                form.style.transition = 'opacity 0.3s ease';
+                if (isDragging && dist < -50) {
+                    content.style.transform = 'translateX(-90px)';
+                    form.style.opacity = 0;
+                } else {
+                    content.style.transform = 'translateX(0px)';
+                    form.style.opacity = 1;
+                }
+                dist = 0;
+                isDragging = false;
+            });
         });
     });
-});
+    const translations = {
+        en: {
+            title: "Admin List",
+            subtitle: "Main admin management",
+            desc: "Manage admin access and permission",
+            search: "Search by name",
+            cnf: "Confirm",
+            cnc: "Cancel"
+        },
+        th: {
+            title: "รายชื่อแอดมิน",
+            subtitle: "การจัดการแอดมินหลัก",
+            desc: "จัดการสิทธิ์และการเข้าถึงของแอดมิน",
+            search: "ค้นหาจากชื่อ",
+            cnf: "ยืนยัน",
+            cnc: "ยกเลิก"
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        document.querySelector('#subtitle').textContent = (translations[lang].subtitle);
+        document.querySelector('#desc').textContent = (translations[lang].desc);
+        document.querySelector('#searchInput').placeholder = (translations[lang].search);
+        document.querySelector('#modalConfirm').textContent = (translations[lang].cnf);
+        document.querySelector('#modalCancel').textContent = (translations[lang].cnc);
+    }
+    
+    changeLanguage(localStorage.getItem('lang'));
 </script>
 </body>
 </html>

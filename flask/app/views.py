@@ -110,11 +110,11 @@ def cleanup_expired_notifications():
 
 def create_low_stock_notification_if_needed(item, actor_user_id=None):
     if item.itemAmount < (item.itemMin if item.itemMin is not None else 0):
-        message = f"Item low stock: {item.itemName} (มีจำนวนเหลือแค่ {item.itemAmount} ชิ้น แล้ว)"
-        ntype = "⚠️Low_Stock"
+        message = f"{item.itemName} เหลือน้อยแล้ว(มีจำนวนเหลือเพียง {item.itemAmount} ชิ้น)/{item.itemName} is currently low on stock(There is/are only {item.itemAmount} {item.itemName} left)"
+        ntype = "Low_Stock"
         if item.itemAmount == 0 :
-            message = f"Item low stock: {item.itemName} (เหลือ 0 ชิ้น แล้ว)"
-            ntype="⚠️Item Running Out"
+            message = f"{item.itemName} หมดแล้ว(ไม่มี {item.itemAmount} เหลือแล้ว)/{item.itemName} is currently out of stock(There is no {item.itemName} left)"
+            ntype="Item_Running_Out"
         db.session.add(Notification(
                     user_id=actor_user_id,
                     ntype=ntype,
@@ -284,7 +284,7 @@ def signup():
         db.session.add(Notification(
             user_id=new_user.UserID,
             ntype="Request",
-            message=f"{new_user.Fname} {new_user.Lname} has requested access to the system."
+            message=f'{new_user.Fname} {new_user.Lname} ได้ร้องขอสิทธิ์การเข้าถึง/"{new_user.Fname} {new_user.Lname}" has requested access to the system'
         ))
         db.session.commit()
 
@@ -537,7 +537,7 @@ def cart():
                     db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity} ชิ้น"
+                        message=f'{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity} ชิ้น/"{current_user.Fname} {current_user.Lname}" has withdrawn {c.Quantity} {item.itemName}(s)'
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
@@ -570,18 +570,18 @@ def adminlist():
             user.is_admin = True
             db.session.add(Notification(
                     user_id=current_user.UserID,
-                    ntype="😎Promoted to admin",
+                    ntype="Promoted",
                     recipient_id=user.UserID,
-                    message=f"คุณได้เลื่อนขั้นเป็น Admin"
+                    message=f"คุณได้รับมอบสิทธิ์เป็นแอดมิน/You have been promoted as an admin"
                 ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
             user.is_admin = False
             db.session.add(Notification(
                     user_id=current_user.UserID,
-                    ntype="😓Demoted from admin",
+                    ntype="Demoted",
                     recipient_id=user.UserID,
-                    message=f"คุณถูกถอนสิทธิ Admin ออก"
+                    message=f"คุณถูกถอนสิทธิ์จากการเป็นแอดมิน/You have been demoted from being an admin"
                 ))
             flash(f"Demoted {user.Fname} from main admin.", "info")
         elif action == "delete":
@@ -617,13 +617,13 @@ def pending_user():
                 user.availiable = True
                 db.session.add(Notification(
                     ntype="Grant",
-                    message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}"
+                    message=f'คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}/"{current_user.Fname}" grants access for "{user.Fname}"'
                 ))
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
-                    ntype="🫡Access granted",
-                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                    ntype="Access_Granted",
+                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ/You have been granted the access"
                 ))
         
         elif action == "decline" and user_id:
@@ -641,13 +641,13 @@ def pending_user():
                 user.availiable = True
                 db.session.add(Notification(
                     ntype="Grant",
-                    message=f"คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)"
+                    message=f'คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)/"{current_user.Fname}" grants access for "{user.Fname}" (Granted all)'
                 ))
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
-                    ntype="🫡Access granted",
-                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ"
+                    ntype="Access_Granted",
+                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ/You have been granted the access (Granted all)"
                 ))
         
         db.session.commit()
@@ -711,7 +711,7 @@ def withdraw():
                 db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f"{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity} ชิ้น"
+                        message=f'{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity} ชิ้น/"{current_user.Fname} {current_user.Lname}" has withdrawn {quantity} {item.itemName}(s)'
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
@@ -766,12 +766,10 @@ def edit():
             new_amount = int(request.form.get("getamount", item.itemAmount))
             new_min = int(request.form.get("getmin", item.itemMin if item.itemMin is not None else 0))
             new_cate = request.form.get("getcate")
-            new_desc = request.form.get("getdes")
             # update
             item.itemName = new_name
             item.itemAmount = new_amount
             item.itemMin = new_min
-            item.itemDesc = new_desc
             item.itemPicture = filename
             # category assignment: try to resolve cateName to id
             if new_cate:
@@ -781,13 +779,7 @@ def edit():
                 else:
                     # create category
                     new_cat = Category(cateName=new_cate)
-                    
                     db.session.add(new_cat)
-                    db.session.add(Notification(
-                        user_id=current_user.UserID,
-                        ntype="➕Fill Stock",
-                        message=f"{new_name} ถูกเติม stock แล้ว!!!"
-                    ))
                     db.session.commit()
                     item.cateID = new_cat.cateID
             db.session.commit()
@@ -912,7 +904,7 @@ def export():
             .order_by(WithdrawHistory.DateTime.desc()) 
             .filter(WithdrawHistory.UserID == current_user.UserID)
             .all()
-    )
+        )
     list_data = []
     to_zone = tz.tzlocal()
     for wh in data:
@@ -952,21 +944,17 @@ def export():
 
 @app.route('/export/stock')
 def exportStock():
-    data = (
-            db.session.query(Item)
-            .order_by(Item.itemID) 
-            .all()
-        )
+    data = Item.query.all()
+    data_list = [i.to_dict() for i in data]
     list_data = []
-    for i in data:
+    for i in data_list:
+        print(i)
         Item_data = {
-            "Item ID":i.itemID,
-            "ItemName":i.itemName,
-            "ItemAmount":i.itemAmount,
-            "ItemMinimun":i.itemMin,
-            "Description":i.itemDesc,
-            "Category ID":i.category.cateID,
-            "Category name":i.category.cateName
+            "Name":i["itemName"],
+            "Amount":i["itemAmount"],
+            "Min":i["itemMin"],
+            "Description":i["itemDesc"],
+            "Category":i["category"]["cateName"]
 
         }
         list_data.append(Item_data)
@@ -1022,7 +1010,7 @@ def google_auth():
                 db.session.add(Notification(
                     user_id=new_user.UserID,
                     ntype="Request",
-                    message=f"{Fname} {Lname} ได้ขอเข้าใช้งานระบบ"
+                    message=f'{Fname} {Lname} ได้ขอเข้าใช้งานระบบ/"{Fname} {Lname}" requested for access'
                 ))
                 db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
 
