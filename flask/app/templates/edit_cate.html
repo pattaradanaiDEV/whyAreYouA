@@ -24,16 +24,13 @@
           }
         });
     </script>
-    <div class="top-bar">
-    	<div class="back">
-        	<a href="{{ url_for('category') }}">
-                <span class="material-icons">arrow_back_ios_new</span> 
+    <div class="header">
+        <div class="header-left">
+            <a href="{{ url_for('category') }}" class="back-btn">
+                <i class="material-icons">arrow_back_ios</i>
             </a>
-    	</div>
-    	<div class="category">
-        	<span id="title">Category Edit</span>
-    	</div>
-        <div></div>
+        </div>
+        <h1 class="page-title" id="title">Category</h1>
     </div>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
