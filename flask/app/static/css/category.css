@@ -27,7 +27,10 @@
   --dark-btn-bg: #555;
   --dark-btn-text: #fff;
 }
-
+svg {
+  color: var(--text--color);
+  fill: var(--text--color);
+}
 body {
   background-color: var(--basebg--color);
   background-repeat: no-repeat;
