@@ -416,9 +416,8 @@ def notification_delete(noti_id):
 def statistic():
     return render_template('statistic.html')
 
-@app.route('/history') # withdraw_history
+@app.route('/history') 
 def history():
-    
     history = db.session.query(WithdrawHistory).all()
     return render_template('history.html', history = history)
 
@@ -531,7 +530,6 @@ def cart():
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
                 elif c.Status == 'e':
-                    # items returned from edit (increase stock)
                     item.itemAmount += c.Quantity
 
                 db.session.delete(c)
@@ -1006,32 +1004,32 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/test_DB')
-def test_DB():
-    forshow = []
-    db_category = Category.query.all()
-    db_item = Item.query.order_by(Item.itemID).all()
-    db_user = User.query.order_by(User.UserID).all()
-    db_cart = CartItem.query.all()
-    db_WDhis = WithdrawHistory.query.all()
-    db_noti = Notification.query.all()
-    db_noti_status = UserNotificationStatus.query.all()
+# @app.route('/test_DB')
+# def test_DB():
+#     forshow = []
+#     db_category = Category.query.all()
+#     db_item = Item.query.order_by(Item.itemID).all()
+#     db_user = User.query.order_by(User.UserID).all()
+#     db_cart = CartItem.query.all()
+#     db_WDhis = WithdrawHistory.query.all()
+#     db_noti = Notification.query.all()
+#     db_noti_status = UserNotificationStatus.query.all()
 
-    category = list(map(lambda x: x.to_dict(), db_category))
-    item = list(map(lambda x:x.to_dict(), db_item))
-    users = list(map(lambda x:x.to_dict(), db_user))
-    cart = list(map(lambda x:x.to_dict(), db_cart))
-    WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
-    noti = list(map(lambda x:x.to_dict(),db_noti))
-    noti_status = list(map(lambda x:x.to_dict(), db_noti_status))
+#     category = list(map(lambda x: x.to_dict(), db_category))
+#     item = list(map(lambda x:x.to_dict(), db_item))
+#     users = list(map(lambda x:x.to_dict(), db_user))
+#     cart = list(map(lambda x:x.to_dict(), db_cart))
+#     WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
+#     noti = list(map(lambda x:x.to_dict(),db_noti))
+#     noti_status = list(map(lambda x:x.to_dict(), db_noti_status))
 
-    forshow=[
-        {"Category DB": category},
-        {"item DB": item},
-        {"User DB": users},
-        {"Cart": cart},
-        {"Withdraw-History": WDhis},
-        {"notification": noti},
-        {"notification_status": noti_status} # New entry here
-    ]
-    return jsonify(forshow)
+#     forshow=[
+#         {"Category DB": category},
+#         {"item DB": item},
+#         {"User DB": users},
+#         {"Cart": cart},
+#         {"Withdraw-History": WDhis},
+#         {"notification": noti},
+#         {"notification_status": noti_status} # New entry here
+#     ]
+#     return jsonify(forshow)
