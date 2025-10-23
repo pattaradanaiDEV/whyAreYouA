@@ -55,7 +55,7 @@ svg {
   --noti-num--color: white;
   --dark-btn-bg: #333;
   --dark-btn-text: #fff;
-  --light-btn-bg: #ccc;
+  --light-btn-bg: #ddd;
   --buttonbg--color: rgb(68, 68, 68);
   --light-btn-text: #333;
   --delta-text: #fff;
@@ -92,7 +92,13 @@ svg {
   margin-right: 1rem;
   border-radius: 30px; 
   background: var(--buttonbg--color); 
-  border:none;}
+  border:none;
+}
+
+.delta-item:hover {
+  background: var(--dark-btn-bg);
+  cursor: pointer;
+}
 
 .top-bar {
   display: flex;
@@ -226,7 +232,7 @@ svg {
 }
 
 .circle-button:hover {
-  background-color: #E5E7EB;
+  background-color: var(--dark-btn-text);
 }
 
 .topfive{

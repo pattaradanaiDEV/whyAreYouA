@@ -85,6 +85,9 @@ body {
   background-color: var(--buttonbg--color);
   margin: 20px auto;
 }
+.search-bar-full {
+  width: 90%;
+}
 .search-bar span { color: black; }
 .search-input { flex: 1; border: none; font-size: 1rem; outline: none; background-color: transparent; padding-left: 10px; }
 .search-input::placeholder { color: #000; }

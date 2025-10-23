@@ -98,14 +98,14 @@
             {% for delta in [7,30,90,180] %}
                 <button class="delta-item" onclick="form.submit" name="getdelta" value="{{delta}}">
                     {% if delta < 30 %}
-                        {{ delta }}
+                        <span>{{ delta }}</span>
                         {% if delta == 1 %}
                             <span class="dayRange">day</span>
                         {% else %}
                             <span class="daysRange">days</span>
                         {% endif %}
                     {% else %}
-                        {{ delta//30 }}
+                        <span>{{ delta//30 }}</span>
                         {% if delta == 30 %}
                             <span class="monthRange">month</span>
                         {% else %}

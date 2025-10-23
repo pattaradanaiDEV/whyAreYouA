@@ -17,7 +17,7 @@
     --border--color: #000;
     --box--color: #121212;
     --box2--color: #004d40;
-    --boxhover--color: #6993f5;
+    --boxhover--color: #173c93;
 }
 
 body{
@@ -91,9 +91,6 @@ body{
 }
 
 .item{
-    display: flex;
-    align-items: center;
-    /* flex-direction: column; */
     background: var(--box--color);
     padding: 20px;
     margin-top: 25px;
@@ -104,13 +101,9 @@ body{
     flex-direction: column;
 }
 
-.item :first-child{
-    margin-right: 12px;
-}
 
 .item-text {
-    display: flex;       
-    flex-direction: column; 
+    display: flex;
     align-items: flex-start; 
     color: var(--text--color);
 }
@@ -161,4 +154,8 @@ body{
 .detail span{
     display: block;
     color: var(--text--color);
+}
+
+.card {
+    width: 100%;
 }
