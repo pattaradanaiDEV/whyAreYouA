@@ -42,7 +42,7 @@
           </div>
           <div class="input-area">
             <label class="form-label" id="itemName">Item Name</label>
-            <input type="text" class="input-box" name="getname" placeholder="Enter item name" required>
+            <input type="text" class="input-box" name="getname" id="itemNamePlchd" placeholder="Enter item name" required>
             <label class="form-label" id="category">Category</label>
             <div class="dropdown">
               <input class="input-box" type="text" id="searchBox" placeholder="Select category"
@@ -69,7 +69,7 @@
             </div>
 
             <label class="form-label" id="desc">Item Description</label>
-            <textarea class="input-box" rows="3" name="getdes" placeholder="Enter item description"></textarea>
+            <textarea class="input-box" rows="3" name="getdes" id="descPlchd" placeholder="Enter item description"></textarea>
           </div>
           <button class="add-btn" name="submit" value="confirm" id="cnf">Add Item</button>
         </form>
@@ -119,17 +119,23 @@
         itemAmount: 'Item Amount',
         itemMin: 'Item Minimum',
         desc: 'Description',
-        cnf: 'Add Item'
+        cnf: 'Add Item',
+        itemNamePlchd: 'Enter item name...',
+        searchBox: 'Select category or enter new one...',
+        descPlchd: 'Description...'
       },
       th: {
-        title: "แก้ไข",
+        title: "เพิ่มของ",
         addPhoto: 'เพิ่มรูปภาพ',
         itemName: 'ชื่อของ',
         category: 'ประเภท',
         itemAmount: 'จำนวนของ',
         itemMin: 'จำนวนของขั้นต่ำ',
         desc: 'คำอธิบายรายละเอียด',
-        cnf: 'เพิ่มของ'
+        cnf: 'เพิ่มของ',
+        itemNamePlchd: 'ใส่ชื่อของที่นี่',
+        searchBox: 'เลือกประเภทหรือใส่ประเภทใหม่ที่นี่',
+        descPlchd: 'ใส่คำอธิบายรายละเอียดที่นี่'
       }
     };
 
@@ -142,6 +148,9 @@
       document.querySelector('#itemMin').textContent = (translations[lang].itemMin);
       document.querySelector('#desc').textContent = (translations[lang].desc);
       document.querySelector('#cnf').textContent = (translations[lang].cnf);
+      document.querySelector('#itemNamePlchd').placeholder = (translations[lang].itemNamePlchd);
+      document.querySelector('#searchBox').placeholder = (translations[lang].searchBox);
+      document.querySelector('#descPlchd').placeholder = (translations[lang].descPlchd);
     }
       
     changeLanguage(localStorage.getItem('lang'));
