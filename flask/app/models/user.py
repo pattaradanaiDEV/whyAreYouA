@@ -10,7 +10,8 @@ class User(db.Model, UserMixin, SerializerMixin):
     Fname = db.Column(db.String(24))
     Lname = db.Column(db.String(24))
     Username = db.Column(db.String(24))
-    IsM_admin = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_sadmin = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(50), nullable= True)
     phoneNum = db.Column(db.String(10), nullable = True)
     availiable = db.Column(db.Boolean,default=False)
@@ -24,7 +25,8 @@ class User(db.Model, UserMixin, SerializerMixin):
     serialize_only = ("UserID",
                     "Fname",
                     "Lname",
-                    "IsM_admin",
+                    "is_admin",
+                    "is_sadmin",
                     "availiable",
                     "email",
                     "phoneNum",
@@ -43,8 +45,8 @@ class User(db.Model, UserMixin, SerializerMixin):
         self.profile_pic=profile_pic
         self.password = password
     
-    def update(self,IsM_admin,availiable, cart):
-        self.IsM_admin=IsM_admin
+    def update(self,is_admin,availiable, cart):
+        self.is_admin=is_admin
         self.availiable=availiable
         self.cart = cart
     

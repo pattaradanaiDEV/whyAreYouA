@@ -37,7 +37,7 @@
     
     {% if history %}
         {% for set in history %}
-            {% if not current_user.IsM_admin %}
+            {% if not (current_user.is_admin or current_user.is_sadmin) %}
                 {% if current_user.UserID == set.UserID %}
                     <div class="item-text" data-id="{{ set.itemID }}">
                         <div class="card-content">
