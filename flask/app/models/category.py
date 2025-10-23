@@ -7,7 +7,7 @@ class Category(db.Model,SerializerMixin):
     items = db.relationship("Item", back_populates="category")
     serialize_only = (
         "cateID",
-        "cateName",
+        "cateName"
     )
     def __init__(self,cateName):
         self.cateName = cateName
