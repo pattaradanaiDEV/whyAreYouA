@@ -70,6 +70,9 @@ body {
   justify-items: center;
   margin-right: 5%;
 }
+.edit-cate .back-btn{
+  color : var(--text3--color) ; 
+}
 
 .search-bar {
   width: 80%;
