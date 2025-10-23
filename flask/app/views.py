@@ -145,23 +145,28 @@ def waiting():
         return redirect(url_for('homepage'))
     return render_template('waiting.html')
 
-@app.route('/homepage')
+@app.route('/homepage' , methods=['GET', 'POST'])
 def homepage():
     cleanup_expired_notifications()
-
-    six_months_ago = datetime.utcnow() - timedelta(days=180)
+    delta = datetime.utcnow() - timedelta(days=180)
+    if request.method == 'POST': 
+        select_delta = int(request.form.get("getdelta"))
+        if(select_delta < 30):
+            flash(f"Change time show to {select_delta} day")
+        else:
+            flash(f"Change time show to {select_delta//30} month")
+        delta = datetime.utcnow() - timedelta(days=select_delta)
     top_items_q = (
         db.session.query(
             WithdrawHistory.itemID,
             func.sum(WithdrawHistory.Quantity).label("total_quantity")
         )
-        .filter(WithdrawHistory.DateTime >= six_months_ago)
+        .filter(WithdrawHistory.DateTime >= delta)
         .group_by(WithdrawHistory.itemID)
         .order_by(func.sum(WithdrawHistory.Quantity).desc())
         .limit(5)
         .all()
     )
-    
     top_items = []
     for item_id, total_quantity in top_items_q:
         item = Item.query.get(item_id)
@@ -464,6 +469,7 @@ def stockmenu():
 def cart():
     cart_items = (
         CartItem.query
+        .order_by(CartItem.CartID)
         .filter(CartItem.UserID == current_user.UserID)
         .filter(CartItem.Status.in_(['w', 'e']))
         .all()

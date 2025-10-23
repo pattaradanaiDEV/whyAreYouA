@@ -56,8 +56,9 @@ svg {
   --dark-btn-bg: #333;
   --dark-btn-text: #fff;
   --light-btn-bg: #ccc;
+  --buttonbg--color: rgb(68, 68, 68);
   --light-btn-text: #333;
-
+  --delta-text: #fff;
   /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
@@ -66,6 +67,7 @@ svg {
   --basebg--color: #212121;
   --border--color: gray;
   --hover--color: gray;
+  --buttonbg--color: #aaa;
   --text--color: #fff; /* Changed for dark mode text */
   --text2--color: #ccc;
   --noti-num--color: white;
@@ -73,9 +75,25 @@ svg {
   --dark-btn-text: #fff;
   --light-btn-bg: #555;
   --light-btn-text: #ddd;
+  --delta-text: #444;
 
   /* transition: background 0.5s ease, color 0.5s ease; */
 }
+
+.show_select_delta{
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+}
+
+.delta-item { 
+  color:var(--delta-text) ; 
+  flex: 0 0 auto; 
+  padding: 8px 16px;
+  margin-right: 1rem;
+  border-radius: 30px; 
+  background: var(--buttonbg--color); 
+  border:none;}
 
 .top-bar {
   display: flex;
@@ -162,6 +180,10 @@ svg {
 .notification:hover {
   transform: scale(1.1);
 }
+
+
+.alert-box { border-radius: 10px; margin: 10px; background-color: rgb(0, 155, 8); }
+.message { border-radius: 0.25rem; margin-bottom: 1rem; padding: 1rem; position: relative; font-size: 1rem; line-height: 1.5; color: var(--text3--color); }
 
 .notification-badge {
   background: red;
