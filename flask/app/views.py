@@ -445,10 +445,10 @@ def newitem():
             categories = [c.to_dict() for c in data_category]
             catename_list = [cname['cateName'].lower() for cname in categories]
             item = Item(ItemName=request.form.get("getname"),
-                        ItemAmount=int(request.form.get("getamount", 0)),
-                        ItemPicture=filename,
-                        itemMin=int(request.form.get("getmin", 0)),
-                        itemDesc=str(request.form.get("getdes", 0)))
+                ItemAmount=int(request.form.get("getamount", 0)),
+                ItemPicture=filename,
+                itemMin=int(request.form.get("getmin", 0)),
+                itemDesc=str(request.form.get("getdes", 0)))
             db.session.add(item)
 
             if catename.lower() not in catename_list :
