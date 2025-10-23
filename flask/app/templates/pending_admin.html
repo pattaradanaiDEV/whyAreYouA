@@ -143,17 +143,21 @@
             title: "Pending User",
             subtitle: "User request",
             search: "Search by name",
-            cnf: "Accept",
-            cnc: "Decline",
+            acp: "Accept",
+            dcn: "Decline",
+            cnf: "Confirm",
+            cnc: "Cancel",
             modalMessage: "Are you sure to accept every users?"
         },
         th: {
             title: "ผู้ใช้ที่รออนุมัติ",
             subtitle: "คำขอจากผู้ใช้",
             search: "ค้นหาจากชื่อ",
-            cnf: "ตอบรับ",
-            cnc: "ปฏิเสธ",
-            modalMessage: "หากคุณกดปุ่มนี้จะเป็นการรับทุกคนเข้าสู่ระบบ"
+            acp: "ตอบรับ",
+            dcn: "ปฏิเสธ",
+            cnf: "ยืนยัน",
+            cnc: "ยกเลิก",
+            modalMessage: "หากคุณกดปุ่มยืนยัน จะทำการรับผู้ใช้ทุกคนที่ร้องขอเข้าสู่ระบบ"
         }
     };
 
@@ -161,8 +165,8 @@
         document.querySelector('#title').textContent = (translations[lang].title);
         document.querySelector('#subtitle').textContent = (translations[lang].subtitle);
         document.querySelector('#searchInput').placeholder = (translations[lang].search);
-        document.querySelectorAll('.cnf').forEach(e => {e.textContent = (translations[lang].cnf);})
-        document.querySelectorAll('.cnc').forEach(e => {e.textContent = (translations[lang].cnc);})
+        document.querySelectorAll('.cnf').forEach(e => {e.textContent = (translations[lang].acp);})
+        document.querySelectorAll('.cnc').forEach(e => {e.textContent = (translations[lang].dcn);})
         document.querySelector('#modalMessage').textContent = (translations[lang].modalMessage);
         document.querySelector('#modalConfirm').textContent = (translations[lang].cnf);
         document.querySelector('#modalCancel').textContent = (translations[lang].cnc);

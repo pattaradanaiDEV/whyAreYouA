@@ -229,9 +229,17 @@
     const modalMessage = document.getElementById('delete-modal-message');
 
     if (item) {
-        modalMessage.innerHTML = `Are you sure you want to delete <strong>${item.itemName}</strong>?`;
+        if (localStorage.getItem('lang') == 'en') {
+            modalMessage.innerHTML = `Are you sure you want to delete <strong>${item.itemName}</strong>?`;
+        } else {
+            modalMessage.innerHTML = `คุณแน่ใจหรือไม่ที่จะลบ <strong>${item.itemName}</strong>?`;
+        }
     } else {
-        modalMessage.textContent = 'Are you sure you want to delete this item?';
+        if (localStorage.getItem('lang') == 'en') {
+            modalMessage.textContent = 'Are you sure you want to delete this item?';
+        } else {
+            modalMessage.textContent = 'คุณแน่ใจหรือไม่ที่จะทำการลบของชิ้นนี้?';
+        }
     }
 
     deleteModal.classList.add('active');
@@ -364,7 +372,9 @@
             stock: "Stock",
             description: "Description",
             edit: 'Edit',
-            withdrw: 'Withdraw'
+            withdrw: 'Withdraw',
+            cnf: 'Confirm',
+            cnc: 'Cancel'
         },
         th: {
             title: "คลัง",
@@ -372,13 +382,17 @@
             stock: "ของคงเหลือ",
             description: "คำอธิบายรายละเอียด",
             edit: 'แก้ไข',
-            withdrw: 'เบิก'
+            withdrw: 'เบิก',
+            cnf: 'ยืนยัน',
+            cnc: 'ยกเลิก'
         }
     };
 
     function changeLanguage(lang) {
         document.querySelector('#title').textContent = (translations[lang].title);
         document.querySelector('#search').placeholder = (translations[lang].search);
+        document.querySelector('#confirm-delete-btn').textContent = (translations[lang].title);
+        document.querySelector('#cancel-delete-btn').placeholder = (translations[lang].search);
     }
     
     changeLanguage(localStorage.getItem('lang'));
