@@ -134,7 +134,6 @@ def serve_js_from_templates(filename):
     return send_from_directory(os.path.join(current_app.root_path, 'templates/js'), filename)
 
 @app.route('/')
-@app.route('/whyAreYouA/')
 def landing():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
