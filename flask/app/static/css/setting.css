@@ -96,12 +96,13 @@ body{
 }
 
 .action-btn{
-    gap: 5px;
+    gap: 16px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 16px;
-    margin-bottom: 10px;
+    padding-top: 32px;
+    padding-bottom: 32px;
     border-bottom: 1px solid var(--border--color);
     cursor: pointer;
 }

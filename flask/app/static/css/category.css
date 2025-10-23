@@ -57,8 +57,10 @@ body {
 .material-icons { font-size: 2rem; color: var(-color); }
 .top-bar { display: flex; justify-content: space-between; margin-top: 10px; border-bottom: 2px solid var(--border--color); padding: 10px; }
 .top-bar span { color:var(--text2--color); }
-.back, .category, .cart { display: flex; flex-direction: column; align-items: center; }
-
+.back, .category, .cart { display: flex; flex-direction: row; align-items: center; }
+.export-btn {
+  margin-right: 2rem;
+}
 .sub-top-bar {
   justify-items: start;
   display: flex;
@@ -162,7 +164,7 @@ body {
 }
 
 .cart-link { position: relative; text-decoration: none; color: var(--subtext-color); }
-.cart-badge { position: absolute; top: -8px; right: -12px; background-color: var(--danger-bg); color: white; font-size: 0.7rem; font-weight: bold; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.cart-badge { position: absolute; top: 4px; right: 8px; background-color: var(--danger-bg); color: white; font-size: 0.7rem; font-weight: bold; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
 
 .header-right { display: flex; align-items: center; gap: 16px; }
 .item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }

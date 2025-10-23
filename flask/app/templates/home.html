@@ -96,23 +96,23 @@
         <div class="show_select_delta">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
             {% for delta in [7,30,90,180] %}
-                    <button class="delta-item" onclick="form.submit" name="getdelta" value="{{delta}}">
-                        {% if delta < 30 %}
-                            {{ delta }}
-                            {% if delta == 1 %}
-                                <span class="dayRange">day</span>
-                            {% else %}
-                                <span class="daysRange">days</span>
-                            {% endif %}
+                <button class="delta-item" onclick="form.submit" name="getdelta" value="{{delta}}">
+                    {% if delta < 30 %}
+                        {{ delta }}
+                        {% if delta == 1 %}
+                            <span class="dayRange">day</span>
                         {% else %}
-                            {{ delta//30 }}
-                            {% if delta == 30 %}
-                                <span class="monthRange">month</span>
-                            {% else %}
-                                <span class="monthsRange">months</span>
-                            {% endif %}
+                            <span class="daysRange">days</span>
                         {% endif %}
-                    </button> 
+                    {% else %}
+                        {{ delta//30 }}
+                        {% if delta == 30 %}
+                            <span class="monthRange">month</span>
+                        {% else %}
+                            <span class="monthsRange">months</span>
+                        {% endif %}
+                    {% endif %}
+                </button> 
             {% endfor %}
         </div>
     </form>
