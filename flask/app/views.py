@@ -948,7 +948,7 @@ def export():
 @app.route('/export/stock')
 def exportStock():
     data = (
-            db.session.query(Item_data)
+            db.session.query(Item)
             .order_by(Item.itemID) 
             .all()
         )
@@ -957,6 +957,7 @@ def exportStock():
         Item_data = {
             "Item ID":i.itemID,
             "ItemName":i.itemName,
+            "ItemAmount":i.itemAmount,
             "ItemMinimun":i.itemMin,
             "Description":i.itemDesc,
             "Category ID":i.category.cateID,
