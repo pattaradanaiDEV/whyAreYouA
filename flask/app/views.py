@@ -211,6 +211,7 @@ def homepage():
         noti_count = query.scalar()
 
     return render_template('home.html', top_items=top_items, noti_count=noti_count)
+
 @app.route('/signin')
 def redirect_to_login():
     return redirect(url_for('login'))
@@ -1021,6 +1022,14 @@ def google_auth():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/cate_edit')
+@madmin_required
+def cate_edit():
+    cate = Category.query.all()
+    items = Item.query.all()
+
+    return render_template("edit_cate.html", cate=cate, items=items)
 
 # @app.route('/test_DB')
 # def test_DB():

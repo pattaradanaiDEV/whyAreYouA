@@ -56,7 +56,27 @@ body {
 .top-bar span { color:var(--text2--color); }
 .back, .category, .cart { display: flex; flex-direction: column; align-items: center; }
 
-.search-bar { width: 90%; display: flex; align-items: center; padding: 10px; border-radius: 30px; background-color: var(--buttonbg--color); margin: 20px auto; }
+.sub-top-bar {
+  justify-items: start;
+  display: flex;
+}
+
+.edit-cate {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  margin-right: 5%;
+}
+
+.search-bar {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 30px;
+  background-color: var(--buttonbg--color);
+  margin: 20px auto;
+}
 .search-bar span { color: black; }
 .search-input { flex: 1; border: none; font-size: 1rem; outline: none; background-color: transparent; padding-left: 10px; }
 .search-input::placeholder { color: #000; }

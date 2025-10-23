@@ -306,7 +306,7 @@
     {% if top_items %}
         changeLanguageHaveData(localStorage.getItem('lang'))
     {% else %}
-        document.querySelector('#noData').textContent = (translations[lang].noData);
+        document.querySelector('#noData').textContent = (translations[localStorage.getItem('lang')].noData);
     {% endif %}
     
     changeLanguage(localStorage.getItem('lang'));

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Withdraw Item</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/newitem.css">
+    <link rel="stylesheet" href="../static/css/category.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mode = localStorage.getItem('darkmode');
+          if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+          } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+          }
+        });
+    </script>
+    <div class="top-bar">
+    	<div class="back">
+        	<a href="{{ url_for('category') }}">
+                <span class="material-icons">arrow_back_ios_new</span> 
+            </a>
+    	</div>
+    	<div class="category">
+        	<span id="title">Category Edit</span>
+    	</div>
+        <div></div>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert-box">
+            <div class="notification" style="background-color:red;">
+                {{ messages[0] }}
+            </div>
+        </div>
+        {% endif %}
+    {% endwith %}
+    {% for c in cate %}
+        <div id="item-list">
+            <div class="item-card">
+                <div class="item-content">
+                    <div class="item-info">
+                        <div class="item-name">{{c.cateName}}</div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn delete-action delBtn">delete</button>
+                    </div>
+                </div>
+                {% set details = namespace(b=false) %}
+                {% for i in items %}
+                    {% if i.category.cateName == c.cateName or c.cateName == 'Free cate' %}
+                        {% set details.b = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if details.b %}
+                <div class="item-content">
+                    <details class="detail">
+                        <summary class="items">Items</summary>
+                        {% for i in items %}
+                            {% if i.category.cateName == c.cateName or c.cateName == 'Free cate' %}
+                            <div class="item-category">{{ i.itemName }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </details>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+<script>
+    function gobackto(){ window.location.href ='/category' }
+    
+    const translations = {
+      en: {
+        title: "Category Edit",
+        items: 'Items',
+        delBtn: 'Delete',
+      },
+      th: {
+        title: "แก้ไขประเภทของ",
+        items: 'รายการของ',
+        delBtn: 'ลบ',
+      }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        document.querySelectorAll('.items').forEach(e => {
+            e.textContent = (translations[lang].items);
+        });
+        document.querySelectorAll('.delBtn').forEach(e => {
+            e.textContent = (translations[lang].delBtn);
+        });
+    }
+      
+    changeLanguage(localStorage.getItem('lang'));
+</script>
+</body>
+</html>
