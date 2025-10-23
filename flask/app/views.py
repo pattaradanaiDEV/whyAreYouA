@@ -944,17 +944,21 @@ def export():
 
 @app.route('/export/stock')
 def exportStock():
-    data = Item.query.all()
-    data_list = [i.to_dict() for i in data]
+    data = (
+            db.session.query(Item)
+            .order_by(Item.itemID) 
+            .all()
+        )
     list_data = []
-    for i in data_list:
-        print(i)
+    for i in data:
         Item_data = {
-            "Name":i["itemName"],
-            "Amount":i["itemAmount"],
-            "Min":i["itemMin"],
-            "Description":i["itemDesc"],
-            "Category":i["category"]["cateName"]
+            "Item ID":i.itemID,
+            "ItemName":i.itemName,
+            "ItemAmount":i.itemAmount,
+            "ItemMinimun":i.itemMin,
+            "Description":i.itemDesc,
+            "Category ID":i.category.cateID,
+            "Category name":i.category.cateName
 
         }
         list_data.append(Item_data)
