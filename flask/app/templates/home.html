@@ -93,7 +93,7 @@
         <span id="topFive">Top 5 Disbursemented Items</span>
     </div>
     <form method="POST">
-        <div class="show_select_delta">
+        <div class="show_select_delta center">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
             {% for delta in [7,30,60,180] %}
                     <button class="delta-item" onclick="form.submit" name="getdelta" value="{{delta}}">

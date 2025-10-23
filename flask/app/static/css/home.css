@@ -81,14 +81,13 @@ svg {
 }
 
 .show_select_delta{
-  align-items: center;
+  display: flex;
   justify-content: center;
   margin-left: 1rem;
 }
 
 .delta-item { 
   color:var(--delta-text) ; 
-  flex: 0 0 auto; 
   padding: 8px 16px;
   margin-right: 1rem;
   border-radius: 30px; 
