@@ -24,12 +24,50 @@
             document.body.classList.remove('darkmode');
           }
         });
+        const translations = {
+            en: {
+                title: "Notification",
+                subtitle: "User request",
+                search: "Search by name",
+                cnf: "Accept",
+                cnc: "Decline",
+                modalMessage: "Are you sure to accept every users?",
+                Low_Stock: "⚠️Low Stock",
+                Item_Running_Out: "⚠️Item Running Out",
+                Grant: "Grant",
+                Request: "Request",
+                Withdraw: "Withdraw",
+                Promoted: "😎Promoted to admin",
+                Demoted: "😓Demoted from admin",
+                Access_Granted: "🫡Access granted",
+                noNotif: "No notifications yet.",
+                time: "at"
+            },
+            th: {
+                title: "ข้อความแจ้งเตือน",
+                subtitle: "คำขอจากผู้ใช้",
+                search: "ค้นหาจากชื่อ",
+                cnf: "ตอบรับ",
+                cnc: "ปฏิเสธ",
+                modalMessage: "หากคุณกดปุ่มนี้จะเป็นการรับทุกคนเข้าสู่ระบบ",
+                Low_Stock: "⚠️ของในคลังเหลือน้อย",
+                Item_Running_Out: "⚠️ของในคลังหมดแล้ว",
+                Grant: "รายการมอบสิทธิ์",
+                Request: "รายการร้องขอ",
+                Withdraw: "รายการเบิก",
+                Promoted: "😎ได้รับการอนุมัติสิทธิ์ในการเป็นแอดมิน",
+                Demoted: "😓ถูกถอนสิทธิ์จากการเป็นแอดมิน",
+                Access_Granted: "🫡สิทธิ์การเข้าสู่ระบบได้รับการอนุมัติแล้ว",
+                noNotif: "ยังไม่มีข้อความแจ้งเตือน ณ ขณะนี้",
+                time: "ณ เวลา"
+            }
+        };
     </script>
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}" class="back-arrow">
             <i class="material-icons">arrow_back_ios</i>
         </a>
-        <h1 class="page-title">Notification</h1>
+        <h1 class="page-title" id="title">Notification</h1>
     </div>
 
     <div class="notification-list">
@@ -39,7 +77,10 @@
                     <div class="notification-item-container" data-id="{{ notif.id }}">
                         <div class="notification-content">
                             <div class="notification-header">
-                                <span class="notification-type">{{ notif.ntype }}</span>
+                                <span class="notification-type" id="id{{ notif.id }}">{{ notif.ntype }}</span>
+                                <script>
+                                    document.querySelector('#id{{ notif.id }}').textContent = translations[localStorage.getItem('lang')].{{ notif.ntype }};
+                                </script>
                                 {% if not notif.is_read %}
                                 <button class="mark-read-btn" title="Mark as read">
                                     <i class="material-icons">mark_chat_read</i>
@@ -47,7 +88,9 @@
                                 {% endif %}
                             </div>
                             <p class="notification-message">{{ notif.message }}</p>
-                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0].split("-")[2]}}-{{notif.created_at.split(" ")[0].split("-")[1]}}-{{notif.created_at.split(" ")[0].split("-")[0]}}  เวลา {{ notif.created_at.split(" ")[1] }}</span>
+                            <span class="notification-timestamp">{{ notif.created_at.split(" ")[0].split("-")[2]}}-{{notif.created_at.split(" ")[0].split("-")[1]}}-{{notif.created_at.split(" ")[0].split("-")[0]}} </span>
+                            <span class="notification-timestamp time">at</span>
+                            <span class="notification-timestamp"> {{ notif.created_at.split(" ")[1] }}</span>
                         </div>
                     </div>
                     <div class="delete-action">
@@ -58,47 +101,70 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p class="no-notifications">No new notifications.</p>
+            <p class="no-notifications" id="noNotif">No notifications yet.</p>
         {% endif %}
     </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    const notificationItems = document.querySelectorAll('.notification-item-container');
+        const notificationItems = document.querySelectorAll('.notification-item-container');
 
-    notificationItems.forEach(item => {
-        let startX = 0;
-        let dist = 0;
+        notificationItems.forEach(item => {
+            let startX = 0;
+            let dist = 0;
 
-        item.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            item.style.transition = '';
-        });
+            item.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                item.style.transition = '';
+            });
 
-        item.addEventListener('touchmove', (e) => {
-            dist = e.touches[0].clientX - startX;
-            if (dist < 0 && dist > -100) {
-                item.style.transform = `translateX(${dist}px)`;
+            item.addEventListener('touchmove', (e) => {
+                dist = e.touches[0].clientX - startX;
+                if (dist < 0 && dist > -100) {
+                    item.style.transform = `translateX(${dist}px)`;
+                }
+            });
+
+            item.addEventListener('touchend', () => {
+                item.style.transition = 'transform 0.3s ease';
+                if (dist < -50) {
+                    item.style.transform = 'translateX(-100px)';
+                } else {
+                    item.style.transform = 'translateX(0px)';
+                }
+                dist = 0;
+            });
+
+            const markReadBtn = item.querySelector('.mark-read-btn');
+            if (markReadBtn) {
+                markReadBtn.addEventListener('click', () => {
+                    const notifId = item.dataset.id;
+                    fetch(`/notification/mark_read/${notifId}`, { 
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok) {
+                            markReadBtn.parentElement.parentElement.parentElement.classList.add('read');
+                            markReadBtn.remove();
+                        }
+                    });
+                });
             }
         });
 
-        item.addEventListener('touchend', () => {
-            item.style.transition = 'transform 0.3s ease';
-            if (dist < -50) {
-                item.style.transform = 'translateX(-100px)';
-            } else {
-                item.style.transform = 'translateX(0px)';
-            }
-            dist = 0;
-        });
-
-        const markReadBtn = item.querySelector('.mark-read-btn');
-        if (markReadBtn) {
-            markReadBtn.addEventListener('click', () => {
-                const notifId = item.dataset.id;
-                fetch(`/notification/mark_read/${notifId}`, { 
+        const deleteActions = document.querySelectorAll('.delete-action');
+        deleteActions.forEach(action => {
+            action.addEventListener('click', (e) => {
+                const wrapper = e.currentTarget.closest('.notification-wrapper');
+                const notifId = wrapper.querySelector('.notification-item-container').dataset.id;
+                
+                fetch(`/notification/delete/${notifId}`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken
@@ -107,38 +173,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        markReadBtn.parentElement.parentElement.parentElement.classList.add('read');
-                        markReadBtn.remove();
+                        wrapper.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        wrapper.style.opacity = '0';
+                        wrapper.style.transform = 'scale(0.8)';
+                        setTimeout(() => wrapper.remove(), 500);
                     }
                 });
             });
-        }
-    });
-
-    const deleteActions = document.querySelectorAll('.delete-action');
-    deleteActions.forEach(action => {
-        action.addEventListener('click', (e) => {
-            const wrapper = e.currentTarget.closest('.notification-wrapper');
-            const notifId = wrapper.querySelector('.notification-item-container').dataset.id;
-            
-            fetch(`/notification/delete/${notifId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    wrapper.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    wrapper.style.opacity = '0';
-                    wrapper.style.transform = 'scale(0.8)';
-                    setTimeout(() => wrapper.remove(), 500);
-                }
-            });
         });
     });
-});
+    
+    function changeLanguage(lang) {
+        document.querySelector('#title').textContent = (translations[lang].title);
+        {% if notifications %}
+            document.querySelectorAll('.time').forEach(e => {e.textContent = (translations[lang].time);})
+        {% else %}
+            document.querySelector('#noNotif').textContent = (translations[lang].noNotif);
+        {% endif %}
+    }
+    
+    changeLanguage(localStorage.getItem('lang'));
 </script>
 
 </body>
