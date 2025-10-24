@@ -10,12 +10,6 @@ from app.models.notification import Notification
 
 cli = FlaskGroup(app)
 
-@cli.command("add_history")
-def add_history():
-    history = WithdrawHistory(user_id=1, item_id=1, quantity=2)
-    db.session.add(history)
-    db.session.commit()
-
 @cli.command("create_db")
 def create_db():
     db.reflect()
@@ -36,8 +30,8 @@ def gen_avatar_url(email, username):
 
 @cli.command("add_user")
 def add_user():
-    user = [["Developer","Account","0001000000","DEVACC@cscmu","dev361"],
-            ["Pongpop","Pongsuk","0000099900","PEEMAN@gmail.com","PPP@cmu!"],
+    user = [["Developer","Account","0001000000","devacc@cscmu","dev361"],
+            ["Pongpop","Pongsuk","053-943412","pongpop.po@cmu.ac.th","aXby@123"],
             ["Santi","Saelee","0000000000","theflash@hotmail.com","TunderEXP001"],
             ["Rui","Jie","0000010000","rahat@gmail.com","MaiMeeRaHatWoi"]]
     for i in user :
@@ -115,21 +109,6 @@ def seed_db():
     item = Item(ItemName="Tape Measure", ItemAmount=30, ItemPicture="Tape_Measure.jpg", itemMin=15, itemDesc="Measuring tape.")
     item.cateID = 6
     db.session.add(item)
-    db.session.commit()
-
-@cli.command("delete_item")
-def delete_item():
-    R_item = Item.query.filter_by(cateID=2)
-    for i in R_item:
-        i["cateID"] = 1
-    R_category = Category.query.filter_by(cateID=2).first()
-    db.session.delete(R_category)
-    db.session.commit()
-
-@cli.command("delete_noti")
-def delete_noti():
-    noti = Notification.query.filter_by(id=2).first()
-    db.session.delete(noti)
     db.session.commit()
 
 if __name__ == "__main__":

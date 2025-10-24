@@ -357,7 +357,7 @@ def signup():
             Fname=fname,
             Lname=lname,
             phoneNum=phone,
-            email=email,
+            email=email.lower(),
             password=hashed_password,
             profile_pic=profile_pic_identifier
         )
@@ -381,7 +381,7 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email.lower()).first()
         if not user:
             flash("User not found. Please try again or sign up.")
             return redirect(url_for('login'))
@@ -1086,11 +1086,11 @@ def google_auth():
     Fname = userinfo.get('given_name', "")
     try:
         with db.session.begin():
-            user = User.query.filter_by(email=email).with_for_update().first()
+            user = User.query.filter_by(email=email.lower()).with_for_update().first()
             if not user:
                 password = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for i in range(12))
                 Lname = userinfo.get('family_name', "")
-                new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password=password)
+                new_user = User(Fname=Fname, Lname=Lname, email=email.lower(), profile_pic=picture, password=password)
                 db.session.add(new_user)
                 db.session.add(Notification(
                     user_id=new_user.UserID,
