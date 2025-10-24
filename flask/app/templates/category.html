@@ -116,7 +116,15 @@
             </div>
         </div>
     </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><script>
+
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const CSRF_TOKEN = "{{ csrf_token() }}";
+</script>
+<script>
     const items = {{ items|tojson }}; 
 
     const translations = {
@@ -344,14 +352,61 @@
         qrToPrintName = null;
     }
 
-    confirmPrintBtn.addEventListener('click', () => {
+    confirmPrintBtn.addEventListener('click', async () => {
         const size = qrSizeSelect.value;
         const quantity = parseInt(qrQuantityInput.value, 10) || 1;
         
-        if (qrToPrintSrc && qrToPrintName) {
-            printQrForCard(qrToPrintSrc, qrToPrintName, size, quantity);
+        if(!qrToPrintName || !qrToPrintSrc) {
+            console.error('Missing QR data');
+            return;
         }
-        hideQrPrintModal();
+        
+        confirmPrintBtn.textContent = 'Generating . . .' ; 
+        confirmPrintBtn.disabled = true ; 
+        try {
+            const response = await fetch('/print_pdf',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': CSRF_TOKEN
+                },
+                body:JSON.stringify({
+                    qr_image_src : qrToPrintSrc,
+                    item_name : qrToPrintName,
+                    quantity : quantity,
+                    size : size
+                })
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error (${response.status}): ${errorText || response.statusText}`)
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none' ;
+            a.href = url ; 
+
+            const disposition = response.headers.get('content-disposition');
+            let filename = `${qrToPrintName.replace(/ /g,'_')}_${size}.pdf`
+            a.download = filename ;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove()
+        } catch (error) {
+            alert('Failed to print pdf file , please try again.');
+        } finally {
+            if(localStorage.getItem('lang') == 'en'){
+                confirmPrintBtn.textContent = 'Confirm';
+            } else {
+                confirmPrintBtn.textContent = 'ยืนยัน';
+            }
+            confirmPrintBtn.disabled = false ;
+            hideQrPrintModal();
+        };
+
     });
 
     cancelPrintBtn.addEventListener('click', hideQrPrintModal);
@@ -395,86 +450,6 @@
         }
     }
     
-    
-    function printQrForCard(qrImageSrc, itemName, size, total_quantity) {
-        const SIZES = {
-            'L': 10,
-            'M': 8,
-            'S': 5,
-            'XS': 3,
-            'XXS': 2
-        };
-        const qrWidth = SIZES[size]; 
-        const gutterCm = 0.5; 
-        function createQrHtml(src, name) {
-            return `
-                <div class="qr-item">
-                    <h5>${name}</h5>
-                    <img src="${src}" alt="${name}">
-                </div>
-            `;
-        }
-
-        let allQRCodes = '';
-        for (let i = 0; i < total_quantity; i++) {
-            allQRCodes += createQrHtml(qrImageSrc, itemName);
-        }
-
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print QR Sheet for ${itemName}</title>
-                    <style>
-                        @page { 
-                            size: A4; 
-                            margin: 1.5cm; /* ขอบกระดาษ A4 */
-                        }
-                        body { 
-                            margin: 0; 
-                            padding: 0; 
-                            font-family: sans-serif;
-                            display: flex;
-                            flex-wrap: wrap; 
-                            justify-content: flex-start; 
-                            align-content: flex-start;
-                        }
-                        .qr-item {
-                            width: ${qrWidth}cm; 
-                            margin-right: ${gutterCm}cm;
-                            margin-bottom: ${gutterCm}cm;
-                            page-break-inside: avoid; 
-                            text-align: center;
-                            box-sizing: border-box; 
-                        }
-                        h5 { 
-                            font-size: 8pt; 
-                            margin: 0 0 2mm 0; 
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-                        img { 
-                            width: 100%; 
-                            height: auto; 
-                            image-rendering: pixelated; 
-                            image-rendering: crisp-edges; 
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${allQRCodes}
-                    <script>
-                        window.onload = () => {
-                            window.print();
-                        };
-                    <\/script>
-                </body>
-            </html>
-        `); 
-        printWindow.document.close();
-        printWindow.onafterprint = () => printWindow.close();
-    }
 
     function renderItems(data) {
         $("#item-list").empty();
@@ -533,5 +508,3 @@
         changeLanguage(localStorage.getItem('lang') || 'th');
     };
 </script>
-</body>
-</html>

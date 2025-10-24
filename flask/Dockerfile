@@ -18,8 +18,17 @@ ENV TZ=Asia/Bangkok
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # update the system and add git
-RUN apk update
-RUN apk --no-cache add git gcc libc-dev libffi-dev
+RUN apk update && apk --no-cache add \
+    git \
+    gcc \
+    libc-dev \
+    libffi-dev \
+    pango-dev \
+    cairo-dev \
+    gdk-pixbuf-dev \
+    glib-dev \
+    fontconfig \
+    ttf-dejavu
 
 
 # install dependencies

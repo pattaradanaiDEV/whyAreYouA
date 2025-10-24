@@ -5,7 +5,8 @@ import base64
 import qrcode
 import re
 from flask import (jsonify, render_template, flash,
-                  request, url_for, flash, current_app, abort, session, redirect, send_from_directory)
+                  request, url_for, flash, current_app, abort, session, redirect, send_from_directory,make_response)
+from weasyprint import HTML,CSS
 from functools import wraps
 from sqlalchemy.sql import text
 from app import app
@@ -98,6 +99,88 @@ def get_qr_code(item_id):
     except Exception as e:
         current_app.logger.error(f"Error generating QR for item {item_id}: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/print_pdf',methods=['POST'])
+def print_pdf():
+    try:
+        data = request.get_json()
+        if not data:
+            return 'Bad Request: No JSON data', 400
+        qr_image_src = data.get('qr_image_src')
+        item_name = data.get('item_name', 'Unnamed_Item') # ใส่ค่า default เผื่อไว้
+        quantity = int(data.get('quantity',1))
+        size = data.get('size','M')
+        if not qr_image_src :
+            return 'Bad Request: Missing QR code data' , 400
+        SIZES = {
+            "L":10,
+            "M":8,
+            "S":5,
+            "XS":3,
+            "XXS":2
+        }
+        qr_width_cm = SIZES.get(size,8)
+        gutterCm = 0.5
+        item_html = f"""
+            <div class="qr-item">
+                <h5>{item_name}</h5>
+                <img src="{qr_image_src}" alt="{qr_image_src}">
+            </div>
+        """
+        all_qrcode_html = item_html * quantity 
+        full_html = f"<html><body>{all_qrcode_html}</body></html>"
+        css_string = f"""
+            <style>
+                @page {{
+                    size: A4; 
+                    margin: 1.5cm; 
+                }}
+                body {{
+                    margin: 0; 
+                    padding: 0; 
+                    font-family: sans-serif;
+                    display: flex;
+                    flex-wrap: wrap; 
+                    justify-content: flex-start; 
+                    align-content: flex-start;
+                }}
+                    
+                
+                .qr-item {{
+                    width: {qr_width_cm}cm; 
+                    margin-right: {gutterCm}cm;
+                    margin-bottom: {gutterCm}cm;
+                    page-break-inside: avoid; 
+                    text-align: center;
+                    box-sizing: border-box;
+                }}
+                h5 {{ 
+                    font-size: 8pt; 
+                    margin: 0 0 2mm 0; 
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }}
+                img {{ 
+                    width: 100%; 
+                    height: auto; 
+                    image-rendering: pixelated; 
+                    image-rendering: crisp-edges; 
+                }}
+            </style>
+        """
+        html = HTML(string=full_html)
+        css = CSS(string=css_string)
+        pdf_bytes = html.write_pdf(stylesheets=[css])
+        safe_filename = f"{item_name}_printQRcode"
+        response = make_response(pdf_bytes)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename="{safe_filename}_{size}.pdf"'        
+        return response
+    except Exception as e:
+        print(f"Error generating PDF: {e}")
+        return 'Internal Server Error' , 500
+    
     
 def cleanup_expired_notifications():
     """Remove expired notifications from DB"""
@@ -760,7 +843,7 @@ def edit():
             flash("เพิ่มเข้าตะกร้าเรียบร้อย", "success")
             return redirect(url_for('category'))
 
-        elif action == "confirm":
+        else:
             # update database fields
             new_name = request.form.get("getname", item.itemName)
             new_amount = int(request.form.get("getamount", item.itemAmount))
@@ -786,8 +869,6 @@ def edit():
             flash("อัปเดตข้อมูลเรียบร้อย", "success")
             return redirect(url_for('category'))
 
-        elif action == "cancel":
-            return redirect(url_for('category'))
 
     # GET
     # prepare categories for dropdown

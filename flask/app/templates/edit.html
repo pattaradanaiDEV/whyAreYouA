@@ -95,7 +95,7 @@
           <div style="display:flex;gap:8px;">
             <button class="add-btn" name="action" value="confirm" id="cnf">Confirm</button>
             <button class="add-btn" name="action" value="add-to-cart" id="atc">Add to Cart</button>
-            <button class="add-btn" name="action" value="cancel" type="submit" id="cnc">Cancel</button>
+            <button class="add-btn" name="action" value="cancel" type="submit" id="cnc" onclick="gobackto()" >Cancel</button>
           </div>
         </form>
 
@@ -129,6 +129,9 @@
         </div>
     </div>
 <script>
+    const CSRF_TOKEN = "{{ csrf_token() }}";
+</script>
+<script>
   const imgFile = document.getElementById('preview-img');
   const inputBox = document.getElementById('img-file');
   inputBox && inputBox.addEventListener('change', function () {
@@ -136,6 +139,7 @@
     reader.onload = () => imgFile.src = reader.result;
     reader.readAsDataURL(this.files[0]);
   });
+  function gobackto(){ window.location.href ='/category' }
   function toggleList() {
     document.getElementById("dropdownList").style.display = "block";
   }
@@ -203,7 +207,7 @@
     }
   };
 
-  function printQrForCard(qrImageSrc, itemName, size = 'XXS', total_quantity = 5) {
+  /*function printQrForCard(qrImageSrc, itemName, size = 'XXS', total_quantity = 5) {
       const SIZES = {
           'L': 10, 'M': 8, 'S': 5, 'XS': 3, 'XXS': 2
       };
@@ -262,7 +266,7 @@
       `); 
       printWindow.document.close();
       printWindow.onafterprint = () => printWindow.close();
-  }
+  }*/
 
   function changeLanguage(lang) {
     if (!translations[lang]) lang = 'en'; // Fallback
@@ -313,15 +317,64 @@
       qrToPrintName = null;
   }
 
-  confirmPrintBtn.addEventListener('click', () => {
-      const size = qrSizeSelect.value;
-      const quantity = parseInt(qrQuantityInput.value, 10) || 1;
-      
-      if (qrToPrintSrc && qrToPrintName) {
-          printQrForCard(qrToPrintSrc, qrToPrintName, size, quantity);
-      }
-      hideQrPrintModal();
-  });
+   confirmPrintBtn.addEventListener('click', async () => {
+        const size = qrSizeSelect.value;
+        const quantity = parseInt(qrQuantityInput.value, 10) || 1;
+        
+        if(!qrToPrintName || !qrToPrintSrc) {
+            console.error('Missing QR data');
+            return;
+        }
+        
+        confirmPrintBtn.textContent = 'Generating . . .' ; 
+        confirmPrintBtn.disabled = true ; 
+        try {
+            const response = await fetch('/print_pdf',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': CSRF_TOKEN
+                },
+                body:JSON.stringify({
+                    qr_image_src : qrToPrintSrc,
+                    item_name : qrToPrintName,
+                    quantity : quantity,
+                    size : size
+                })
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error (${response.status}): ${errorText || response.statusText}`)
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none' ;
+            a.href = url ; 
+
+            const disposition = response.headers.get('content-disposition');
+            let filename = `${qrToPrintName.replace(/ /g,'_')}_${size}.pdf`
+            a.download = filename ;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove()
+        } catch (error) {
+            alert('Failed to print pdf file , please try again.');
+        } finally {
+            if(localStorage.getItem('lang') == 'en'){
+                confirmPrintBtn.textContent = 'Confirm';
+            } else {
+                confirmPrintBtn.textContent = 'ยืนยัน';
+            }
+            confirmPrintBtn.disabled = false ;
+            hideQrPrintModal();
+        };
+
+    });
+
+
 
   cancelPrintBtn.addEventListener('click', hideQrPrintModal);
 
