@@ -29,7 +29,7 @@
         <div class="profile-wrapper">
             <div class="profile-circle" id="profile_stuff">
                 {% if 'https://' in current_user.profile_pic %}
-                    <img src="{{ current_user.profile_pic }}"  class="profile-img">
+                    <img src="{{ current_user.profile_pic }}">
                 {% elif current_user.profile_pic %}
                     <img src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" alt="Profile Picture">
                 {% else %}
