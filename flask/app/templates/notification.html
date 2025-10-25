@@ -112,19 +112,15 @@
                                 {% endif %}
                             </div>
                             <p class="notification-message" id="id{{ notif.message.split(',')[0] }}{{ notif.id }}">{{ notif.message.split(",")[0] }}</p>
-                            
+                    
+                            <script>
+                                document.querySelector('#id{{ notif.message.split(",")[0] }}{{ notif.id }}')
+                                .textContent = translations[localStorage.getItem('lang')].{{ notif.message }};
+                            </script>
                             {% for i in items %}
                                 {% if notif.id == i.id %}
                                     {% set m = notif.message.split(",") %}
                                     {% if m[0] == "m_low" %}
-                                    <script>
-                                        document.querySelector(
-                                            '#id{{ m[0] }}{{ notif.id }}'
-                                        ).textContent =
-                                        "{{ i.itemName|safe }}"
-                                        + translations[localStorage.getItem('lang')]
-                                        .{{ m[0] }};
-                                    </script>
                                     {% endif %}
                                     {% if m[0] == "m_runout" %}
                                     <script>
