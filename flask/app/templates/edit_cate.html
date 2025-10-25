@@ -44,6 +44,7 @@
         <div id="item-list">
             <div class="item-card">
                 <div class="swipe-wrapper">
+                    {% if c.cateID != 1 %}
                     <div class="delete-action">
                         <form method="POST" id="delete-form-{{c.cateID}}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
@@ -54,6 +55,7 @@
                             </button>
                         </form>
                     </div>
+                    {% endif %}
                     <div class="item-content" id="content-{{c.cateID}}"
                         {% if c.cateID != 1 %}
                         ontouchstart="startSwipe(event, {{c.cateID}})"

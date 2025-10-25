@@ -93,9 +93,68 @@
             </div>
         </div>
     </div>
+    <div class="modal-overlay" id="qr-print-modal">
+        <div class="modal-content">
+            <h3 id="qr-modal-title">Print Options</h3>
+            <div class="form-group">
+                <label for="qr-size" id="qr-label-size">Size:</label>
+                <select id="qr-size" class="modal-select">
+                    <option value="L">L (10cm x 10cm)</option>
+                    <option value="M" selected>M (8cm x 8cm)</option>
+                    <option value="S">S (5cm x 5cm)</option>
+                    <option value="XS">XS (3cm x 3cm)</option>
+                    <option value="XXS">XXS (2cm x 2cm)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="qr-quantity" id="qr-label-quantity">Quantity:</label>
+                <input type="number" id="qr-quantity" value="1" min="1" class="modal-input">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn confirm" id="confirm-print-btn">Confirm</button>
+                <button class="modal-btn cancel" id="cancel-print-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    const CSRF_TOKEN = "{{ csrf_token() }}";
+</script>
+<script>
     const items = {{ items|tojson }}; 
+
+    const translations = {
+        en: {
+            title: "Stock",
+            search: "Search",
+            stock: "Stock",
+            description: "Description",
+            edit: 'Edit',
+            withdrw: 'Withdraw',
+            cnf: 'Confirm',
+            cnc: 'Cancel',
+            printOptions: "Print Options",
+            size: "Size",
+            quantity: "Quantity"
+        },
+        th: {
+            title: "คลัง",
+            search: "ค้นหา",
+            stock: "ของคงเหลือ",
+            description: "คำอธิบายรายละเอียด",
+            edit: 'แก้ไข',
+            withdrw: 'เบิก',
+            cnf: 'ยืนยัน',
+            cnc: 'ยกเลิก',
+            printOptions: "ตัวเลือกการพิมพ์",
+            size: "ขนาด",
+            quantity: "จำนวน"
+        }
+    };
 
     function getDisplayHTML(it) {
         let pictureHtml = '';
@@ -184,7 +243,7 @@
         currentX = e.touches[0].clientX;
         let diff = currentX - startX;
 
-        if (Math.abs(diff) > 10) { // Threshold of 10 pixels
+        if (Math.abs(diff) > 10) { 
             isDragging = true;
         }
         
@@ -200,8 +259,8 @@
         content.style.transition = 'transform 0.3s ease'; 
         
         if (!isDragging) {
-            content.style.transform = 'translateX(0px)'; // Ensure it snaps back on a simple tap
-            return; // Exit function if it was just a tap
+            content.style.transform = 'translateX(0px)'; 
+            return; 
         }
 
         let diff = currentX - startX;
@@ -216,8 +275,7 @@
         isDragging = false;
     }
 
-    
-    
+
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
@@ -267,6 +325,99 @@
             hideDeleteModal();
         }
     });
+
+
+    const qrPrintModal = document.getElementById('qr-print-modal');
+    const confirmPrintBtn = document.getElementById('confirm-print-btn');
+    const cancelPrintBtn = document.getElementById('cancel-print-btn');
+    const qrSizeSelect = document.getElementById('qr-size');
+    const qrQuantityInput = document.getElementById('qr-quantity');
+    
+    let qrToPrintSrc = null;
+    let qrToPrintName = null;
+
+    function showQrPrintModal(qrImageSrc, itemName) {
+        qrToPrintSrc = qrImageSrc;
+        qrToPrintName = itemName;
+        
+        qrSizeSelect.value = 'M';
+        qrQuantityInput.value = 1;
+
+        qrPrintModal.classList.add('active');
+    }
+
+    function hideQrPrintModal() {
+        qrPrintModal.classList.remove('active');
+        qrToPrintSrc = null;
+        qrToPrintName = null;
+    }
+
+    confirmPrintBtn.addEventListener('click', async () => {
+        const size = qrSizeSelect.value;
+        const quantity = parseInt(qrQuantityInput.value, 10) || 1;
+        
+        if(!qrToPrintName || !qrToPrintSrc) {
+            console.error('Missing QR data');
+            return;
+        }
+        
+        confirmPrintBtn.textContent = 'Generating . . .' ; 
+        confirmPrintBtn.disabled = true ; 
+        try {
+            const response = await fetch('/print_pdf',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': CSRF_TOKEN
+                },
+                body:JSON.stringify({
+                    qr_image_src : qrToPrintSrc,
+                    item_name : qrToPrintName,
+                    quantity : quantity,
+                    size : size
+                })
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error (${response.status}): ${errorText || response.statusText}`)
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none' ;
+            a.href = url ; 
+
+            const disposition = response.headers.get('content-disposition');
+            let filename = `${qrToPrintName.replace(/ /g,'_')}_${size}.pdf`
+            a.download = filename ;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove()
+        } catch (error) {
+            alert('Failed to print pdf file , please try again.');
+        } finally {
+            if(localStorage.getItem('lang') == 'en'){
+                confirmPrintBtn.textContent = 'Confirm';
+            } else {
+                confirmPrintBtn.textContent = 'ยืนยัน';
+            }
+            confirmPrintBtn.disabled = false ;
+            hideQrPrintModal();
+        };
+
+    });
+
+    cancelPrintBtn.addEventListener('click', hideQrPrintModal);
+
+    qrPrintModal.addEventListener('click', (event) => {
+        if (event.target === qrPrintModal) {
+            hideQrPrintModal();
+        }
+    });
+
+
     async function loadQrCode(itemID, summaryElement) {
         const detailsElement = summaryElement.parentElement;
         if (!detailsElement.open) {
@@ -284,7 +435,11 @@
                         <div class="qr-container-description">
                             <h4>QR Code</h4>
                             <img src="${qrImageSrc}" alt="QR Code for ${data.item_name}">
-                            <button type="button" onclick="printQrForCard('${qrImageSrc}', '${data.item_name}')">Print QR</button>
+                            <!-- 
+                              *** MODIFIED ***
+                              เปลี่ยน onclick ให้เรียก Modal ใหม่
+                            -->
+                            <button type="button" onclick="showQrPrintModal('${qrImageSrc}', '${data.item_name}')">Print QR</button>
                         </div>
                     `;
                 } else { throw new Error(data.error || 'Unknown error occurred.'); }
@@ -294,46 +449,8 @@
             }
         }
     }
-    function printQrForCard(qrImageSrc, itemName) {
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print QR Code - ${itemName}</title>
-                    <style>
-                        @page {
-                            size: auto; 
-                            margin-bottom: 0mm;      
-                        }
-                        body { 
-                            margin: 0; 
-                            padding: 0; 
-                            display: flex; 
-                            flex-direction: column; 
-                            align-items: center; 
-                            font-family: sans-serif;
-                        }
-                        h3 { 
-                            margin-bottom: 20px; 
-                            font-size: 16pt;
-                        }
-                        img { 
-                            width: 8cm;  
-                            height: 8cm;
-                            image-rendering: pixelated; 
-                            image-rendering: crisp-edges; 
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h3>${itemName}</h3>
-                    <img src="${qrImageSrc}" onload="window.print();">
-                </body>
-            </html>
-        `); 
-        printWindow.document.close();
-        printWindow.onafterprint = () => printWindow.close();
-    }
+    
+
     function renderItems(data) {
         $("#item-list").empty();
         if (!data.length) {
@@ -363,39 +480,31 @@
         renderItems(filteredData);
     }
     document.querySelector('.search-bar input').addEventListener('input', (event) => searchCategory(event.target.value.trim()));
-    window.onload = () => filterCategory("all");
-
-    const translations = {
-        en: {
-            title: "Stock",
-            search: "Search",
-            stock: "Stock",
-            description: "Description",
-            edit: 'Edit',
-            withdrw: 'Withdraw',
-            cnf: 'Confirm',
-            cnc: 'Cancel'
-        },
-        th: {
-            title: "คลัง",
-            search: "ค้นหา",
-            stock: "ของคงเหลือ",
-            description: "คำอธิบายรายละเอียด",
-            edit: 'แก้ไข',
-            withdrw: 'เบิก',
-            cnf: 'ยืนยัน',
-            cnc: 'ยกเลิก'
-        }
-    };
 
     function changeLanguage(lang) {
+        if (!translations[lang]) lang = 'en'; // Fallback
+        
         document.querySelector('#title').textContent = (translations[lang].title);
         document.querySelector('#search').placeholder = (translations[lang].search);
-        document.querySelector('#confirm-delete-btn').textContent = (translations[lang].title);
-        document.querySelector('#cancel-delete-btn').placeholder = (translations[lang].search);
+
+        document.querySelector('#confirm-delete-btn').textContent = (translations[lang].cnf);
+        document.querySelector('#cancel-delete-btn').textContent = (translations[lang].cnc);
+
+        document.querySelector('#qr-modal-title').textContent = (translations[lang].printOptions);
+        document.querySelector('#qr-label-size').textContent = (translations[lang].size);
+        document.querySelector('#qr-label-quantity').textContent = (translations[lang].quantity);
+        document.querySelector('#confirm-print-btn').textContent = (translations[lang].cnf);
+        document.querySelector('#cancel-print-btn').textContent = (translations[lang].cnc);
+
+        const currentSearch = document.querySelector('.search-bar input').value.trim();
+        if (currentSearch) {
+            searchCategory(currentSearch);
+        } else {
+            renderItems(items); 
+        }
     }
     
-    changeLanguage(localStorage.getItem('lang'));
+    window.onload = () => {
+        changeLanguage(localStorage.getItem('lang') || 'th');
+    };
 </script>
-</body>
-</html>
