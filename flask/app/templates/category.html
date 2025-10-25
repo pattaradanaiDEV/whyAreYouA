@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/category.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=download" />
     <title>Category Page</title>
 </head>
@@ -31,7 +32,7 @@
         </div>
         <h1 class="page-title" id="title">Category</h1>
         <div class="cart">
-            <a href="{{ url_for('exportStock') }}" class="back-btn export-btn">
+            <a href="{{ url_for('exportStock') }}" class="back-btn export-btn" id="export-btn">
                 <span class="material-symbols-outlined">download</span>
             </a>
             <a href="{{ url_for('cart')}}" class="back-btn">
@@ -116,7 +117,26 @@
             </div>
         </div>
     </div>
-
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-content success-modal-content">
+            <div class="success-icon">
+                <span class="material-icons">check</span>
+            </div>
+            <h3 class="success-title" id="success-title-text">Success!</h3>
+            <p class="modal-message" id="success-message-text">Your PDF has been downloaded.</p>
+            <div class="modal-actions">
+                <button class="modal-btn success" id="success-continue-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="loading-modal">
+        <div class="modal-content success-modal-content">
+            <div class="spinner"></div>
+            
+            <h3 class="success-title" id="loading-title-text">Generating...</h3>
+            <p class="modal-message" id="loading-message-text">Your Excel file is being prepared.</p>
+        </div>
+    </div>
 </body>
 </html>
 
@@ -356,11 +376,12 @@
         const size = qrSizeSelect.value;
         const quantity = parseInt(qrQuantityInput.value, 10) || 1;
         
+
         if(!qrToPrintName || !qrToPrintSrc) {
             console.error('Missing QR data');
             return;
         }
-        
+        showSuccessModal('PDF');
         confirmPrintBtn.textContent = 'Generating . . .' ; 
         confirmPrintBtn.disabled = true ; 
         try {
@@ -393,11 +414,13 @@
             a.download = filename ;
             document.body.appendChild(a);
             a.click();
+            showSuccessModal();
             window.URL.revokeObjectURL(url);
             a.remove()
         } catch (error) {
             alert('Failed to print pdf file , please try again.');
         } finally {
+            hideLoadingModal();
             if(localStorage.getItem('lang') == 'en'){
                 confirmPrintBtn.textContent = 'Confirm';
             } else {
@@ -409,6 +432,53 @@
 
     });
 
+    document.getElementById('export-btn').addEventListener('click', async function(e) {
+        e.preventDefault();
+
+        showLoadingModal('Excel');
+        
+        const exportUrl = this.href; 
+
+        try {
+            const response = await fetch(exportUrl);
+
+            if (!response.ok) {
+                throw new Error(`Server error (${response.status})`);
+            }
+
+            const blob = await response.blob();
+
+            const disposition = response.headers.get('content-disposition');
+            let filename = 'stock.xlsx'; 
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                const matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            
+            document.body.appendChild(a);
+            a.click(); 
+            window.URL.revokeObjectURL(url);
+            a.remove();
+
+            hideLoadingModal();
+            showSuccessModal(); 
+
+        } catch (error) {
+            console.error('Export failed:', error);
+            hideLoadingModal();
+            alert('Failed to export file. Please try again.');
+        }
+    });
+
     cancelPrintBtn.addEventListener('click', hideQrPrintModal);
 
     qrPrintModal.addEventListener('click', (event) => {
@@ -417,6 +487,76 @@
         }
     });
 
+    const successModal = document.getElementById('success-modal');
+    const successContinueBtn = document.getElementById('success-continue-btn');
+    const successMessageText = document.getElementById('success-message-text');
+
+    function showSuccessModal(type = 'PDF') { 
+        const lang = localStorage.getItem('lang') || 'th';
+        let title, message, btnText;
+        if (lang == 'th') {
+            title = 'สำเร็จ!';
+            btnText = 'ดำเนินการต่อ';
+            if (type === 'Excel') {
+                message = 'Excel ของคุณดาวน์โหลดเรียบร้อยแล้ว';
+            } else { 
+                message = 'PDF ของคุณดาวน์โหลดเรียบร้อยแล้ว';
+            }
+        } else {
+            title = 'Success!';
+            btnText = 'Continue';
+            if (type === 'Excel') {
+                message = 'Your Excel has been downloaded.';
+            } else { 
+                message = 'Your PDF has been downloaded.';
+            }
+        }
+        document.getElementById('success-title-text').textContent = title;
+        successMessageText.textContent = message;
+        successContinueBtn.textContent = btnText;
+        successModal.classList.add('active');
+    }
+    function hideSuccessModal() {
+        successModal.classList.remove('active');
+    }
+
+    successContinueBtn.addEventListener('click', hideSuccessModal);
+    successModal.addEventListener('click', (event) => {
+        if (event.target === successModal) {
+            hideSuccessModal();
+        }
+    });
+
+    const loadingModal = document.getElementById('loading-modal');
+
+    function showLoadingModal(type = 'PDF') { 
+        const lang = localStorage.getItem('lang') || 'th';
+        let title, message;
+
+        if (lang == 'th') {
+            title = 'กำลังสร้าง...';
+            if (type === 'Excel') {
+                message = 'ไฟล์ Excel ของคุณกำลังถูกจัดเตรียม';
+            } else { 
+                message = 'ไฟล์ PDF ของคุณกำลังถูกจัดเตรียม';
+            }
+        } else {
+            title = 'Generating...';
+            if (type === 'Excel') {
+                message = 'Your Excel file is being prepared.';
+            } else {
+                message = 'Your PDF file is being prepared.';
+            }
+        }
+        
+        document.getElementById('loading-title-text').textContent = title;
+        document.getElementById('loading-message-text').textContent = message;
+        loadingModal.classList.add('active');
+    }
+
+    function hideLoadingModal() {
+        loadingModal.classList.remove('active');
+    }
 
     async function loadQrCode(itemID, summaryElement) {
         const detailsElement = summaryElement.parentElement;
@@ -435,10 +575,6 @@
                         <div class="qr-container-description">
                             <h4>QR Code</h4>
                             <img src="${qrImageSrc}" alt="QR Code for ${data.item_name}">
-                            <!-- 
-                              *** MODIFIED ***
-                              เปลี่ยน onclick ให้เรียก Modal ใหม่
-                            -->
                             <button type="button" onclick="showQrPrintModal('${qrImageSrc}', '${data.item_name}')">Print QR</button>
                         </div>
                     `;

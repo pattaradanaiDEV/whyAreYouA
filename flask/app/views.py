@@ -737,7 +737,8 @@ def manage_user():
 @app.route("/admin_contact", methods=["GET", "POST"])
 @login_required
 def admin_contact():
-    return render_template("admin_contact.html")
+    #admin = User.query.filter_by(is_admin=True).order_by(User.UserID).all()
+    return render_template("admin_contact.html",)
 
 @app.route("/pending_user", methods=["GET", "POST"])
 @admin_required

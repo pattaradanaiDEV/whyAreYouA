@@ -3,6 +3,7 @@
     --base--color: #FFF;
     --text--color: #000;
     --text3--color: #000;
+    --add--color: #000000;
 }
 
 .darkmode{
@@ -10,6 +11,7 @@
     --base--color: #121212;
     --text--color: #eee;
     --text3--color: #fff;
+    --add--color: #343434;
 }
 
 *, *::before, *::after {
@@ -189,7 +191,7 @@ body {
 
 .add-btn {
   width: 100%;
-  background: #111;
+  background: var(--add--color);
   color: #fff;
   padding: 14px;
   font-size: 1rem;
