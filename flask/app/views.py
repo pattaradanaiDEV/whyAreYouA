@@ -368,7 +368,7 @@ def signup():
         db.session.add(Notification(
             user_id=new_user.UserID,
             ntype="Request",
-            message='m_grant'
+            message='m_request'
         ))
         db.session.commit()
 
@@ -711,7 +711,16 @@ def manage_user():
                 ))
             flash(f"Demoted {user.Fname} from main admin.", "info")
         elif action == "delete":
-            if user.UserID not in [1, 2] and user.UserID != current_user.UserID: 
+            if not user.is_sadmin and user.UserID != current_user.UserID: 
+                if user and user.profile_pic:  
+                    try:
+                        image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], user.profile_pic)
+                        
+                        if os.path.exists(image_path):
+                            os.remove(image_path)
+                            
+                    except Exception as e:
+                        current_app.logger.error(f"Error deleting image file {user.profile_pic}: {e}")
                 db.session.delete(user)
                 flash(f"User {user.Fname} has been deleted.", "success")
             else:
@@ -757,6 +766,17 @@ def pending_user():
         elif action == "decline" and user_id:
             user = User.query.get(int(user_id))
             if user:
+                if user.profile_pic:  
+                    try:
+                        image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], user.profile_pic)
+                        
+                        if os.path.exists(image_path):
+                            os.remove(image_path)
+                            
+                    except Exception as e:
+                        current_app.logger.error(f"Error deleting image file {user.profile_pic}: {e}")
+                db.session.delete(user)
+                flash(f"User {user.Fname} has been deleted.", "success")
                 db.session.delete(user)
 
         elif action == "accept_all":
