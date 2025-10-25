@@ -27,9 +27,11 @@
     </script>
     <div class="top-bar">
         <div class="profile-wrapper">
-            <div class="profile-circle">
-                {% if current_user.profile_pic %}
+            <div class="profile-circle" id="profile_stuff">
+                {% if 'https://' in current_user.profile_pic %}
                     <img src="{{ current_user.profile_pic }}"  class="profile-img">
+                {% elif current_user.profile_pic %}
+                    <img src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" alt="Profile Picture">
                 {% else %}
                     <div class="user-icon">{{ current_user.Fname[0].upper() }}</div>
                 {% endif %}
@@ -331,6 +333,13 @@
         document.querySelectorAll('.edit').forEach(e => {
             e.textContent = (translations[lang].edit);
         });
+    }
+
+    document.getElementById('profile_stuff').addEventListener('click', profile_edit)
+
+    function profile_edit(){
+        console.log("huh???")
+        urlFor("profile_edit")
     }
 
     {% if top_items %}

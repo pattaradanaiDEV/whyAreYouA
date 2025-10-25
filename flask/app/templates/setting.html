@@ -34,8 +34,10 @@
 
     <div class="profile">
         <div class="profile-circle">
-            {% if current_user.profile_pic %}
+            {% if 'https://' in current_user.profile_pic %}
                 <img src="{{ current_user.profile_pic }}"  class="profile-img">
+            {% elif current_user.profile_pic %}
+                <img src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" alt="Profile Picture">
             {% else %}
                 <div class="user-icon">{{ current_user.Fname[0].upper() }}</div>
             {% endif %}

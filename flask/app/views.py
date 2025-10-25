@@ -1171,6 +1171,74 @@ def cate_edit():
 
     return render_template("edit_cate.html", cate=cate, items=items)
 
+@app.route('/profile_edit', methods=["GET", "POST"])
+@login_required
+def profile_edit():
+    if request.method == 'POST':
+        fname = request.form.get('firstname', '').strip()
+        lname = request.form.get('lastname', '').strip()
+        phone = request.form.get('phonenumber', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        profile_pic_file = request.files.get('profile_pic')
+
+        key_list = ["firstname", "lastname", "phonenumber", "email"]
+        kay_list = ["Fname", "Lname", "phoneNum", "email"]
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            flash("Invalid email address format.")
+            return redirect(url_for('profile_edit'))
+
+        if not phone.isdigit():
+            flash("Phone number must contain only digits.")
+            return redirect(url_for('profile_edit'))
+            
+        if password:  # Check if they want to change their password
+            # key_list.append("password")
+            # kay_list.append("password")
+            if len(password) < 8:
+                flash("Password must be at least 8 characters long.")
+                return redirect(url_for('profile_edit'))
+            if not re.search(r"[A-Z]", password):
+                flash("Password must contain at least one uppercase letter.")
+                return redirect(url_for('profile_edit'))
+            if not re.search(r"[0-9]", password):
+                flash("Password must contain at least one number.")
+                return redirect(url_for('profile_edit'))
+            if password != confirm_password:
+                flash("Passwords do not match.")
+                return redirect(url_for('profile_edit'))
+
+        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+        valid_dict = dict()
+        value = request.form.to_dict()
+        for i in range(len(key_list)):
+            valid_dict[kay_list[i]] = value[key_list[i]]
+        if password: # Truly shit coding style by yours truly <3
+            valid_dict["password"] = hashed_password
+        if profile_pic_file:
+            profile_pic_identifier = secure_filename(profile_pic_file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], profile_pic_identifier)
+            profile_pic_file.save(filepath)
+            valid_dict["profile_pic"] = profile_pic_identifier
+        # app.logger.debug(valid_dict)
+        try:
+            boi = User.query.get(int(current_user.UserID))
+            if boi:
+                boi.info_update(**valid_dict)
+            db.session.commit()
+            return redirect(url_for('homepage'))
+        
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Database error: {str(e)}")
+            return render_template("profile_edit.html")
+
+
+    return render_template("profile_edit.html")
+
+
 # @app.route('/test_DB')
 # def test_DB():
 #     forshow = []

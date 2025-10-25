@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginA.css') }}">
+    <title>Profile Editing Page</title>
+</head>
+<body>
+    <div class="app-container">
+        
+        <h1 class="page-title">Editing Profile</h1>
+
+        <form method="post" action="{{ url_for('profile_edit') }}" enctype="multipart/form-data" class="signup-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="profile-pic-upload">
+                <label for="profile_pic_input">
+                    <div class="upload-circle">
+                        <img id="image-preview" src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" alt="Preview" />
+                    </div>
+                </label>
+                <input type="file" id="profile_pic_input" name="profile_pic" accept="image/*" style="display: none;">
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger">
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="input-container">
+                <i class="material-icons">person</i>
+                <input type="text" name="firstname" class="input-field" placeholder="Firstname" required>
+            </div>
+
+            <div class="input-container">
+                <i class="material-icons">person_outline</i>
+                <input type="text" name="lastname" class="input-field" placeholder="Lastname" required>
+            </div>
+
+            <div class="input-container">
+                <i class="material-icons">phone</i>
+                <input 
+                    type="tel" 
+                    name="phonenumber" 
+                    class="input-field" 
+                    placeholder="Phonenumber" 
+                    required
+                    pattern="[0-9]+"
+                    title="กรุณาใส่หมายเลขมือถือให้ถูกต้อง"
+                >
+            </div>
+
+            <div class="input-container">
+                <i class="material-icons">email</i>
+                <input type="email" name="email" class="input-field" placeholder="Email" required>
+            </div>
+
+            <div class="input-container">
+                <i class="material-icons">lock</i>
+                <input 
+                    type="password" 
+                    id="password"
+                    name="password" 
+                    class="input-field" 
+                    placeholder="Password" 
+                    minlength="8"
+                    pattern="(?=.*\d)(?=.*[A-Z]).{8,}"
+                    title="Must be at least 8 characters long, and contain at least one uppercase letter and one number."
+                >
+            </div>
+            
+            <div class="input-container">
+                <i class="material-icons">lock_outline</i>
+                <input type="password" id="confirm_password" name="confirm_password" class="input-field" placeholder="Confirm password">
+            </div>
+            
+            <button type="submit" class="submit-button">Done</button>
+        </form>
+    </div>
+
+    <script>
+        const profilePicInput = document.getElementById('profile_pic_input');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadIcon = document.getElementById('upload-icon');
+
+        profilePicInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    uploadIcon.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        const password = document.getElementById("password");
+        const confirm_password = document.getElementById("confirm_password");
+
+        function validatePassword(){
+          if(password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
+          } else {
+            confirm_password.setCustomValidity('');
+          }
+        }
+        password.onchange = validatePassword;
+        confirm_password.onkeyup = validatePassword;
+
+
+        (function prepopulateform(){
+            const box = document.getElementsByClassName('input-field')
+            box.item(0).value = "{{ current_user.Fname }}"
+            box.item(1).value = "{{ current_user.Lname }}"
+            box.item(2).value = "{{ current_user.phoneNum }}"
+            box.item(3).value = "{{ current_user.email }}"
+            document.getElementsByName("profile_pic").value = "{{ current_user.profile_pic }}"
+            // for(let i = 0; i< box.length; i++){
+            //     box.item(i).value = "{{ current_user.Fname }}"
+            // }
+        })();
+
+
+    </script>
+</body>
+</html>

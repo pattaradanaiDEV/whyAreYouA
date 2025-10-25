@@ -57,4 +57,13 @@ class User(db.Model, UserMixin, SerializerMixin):
         cart_item = CartItem(UserID=self.UserID, ItemID=itemID, Quantity=quantity, Status=status)
         db.session.add(cart_item)
         return cart_item
-
+    
+    def info_update(self, Fname, Lname="", phoneNum="", email="",profile_pic=None,password=""):
+        self.Fname = Fname
+        self.Lname = Lname
+        self.phoneNum = phoneNum
+        self.email = email
+        if profile_pic != None:
+            self.profile_pic=profile_pic
+        if password != "":
+            self.password = password
