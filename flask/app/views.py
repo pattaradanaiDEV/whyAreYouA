@@ -67,7 +67,7 @@ def check_user_available():
     return None
 
 
-def madmin_required(f):
+def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not (current_user.is_admin or current_user.is_sadmin):
@@ -408,6 +408,15 @@ def category():
         item_id = request.form.get('item_id')
         if action == "delete":
             item = Item.query.get(item_id)
+            if item and item.itemPicture:  
+                try:
+                    image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], item.itemPicture)
+                    
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+                        
+                except Exception as e:
+                    current_app.logger.error(f"Error deleting image file {item.itemPicture}: {e}")
             db.session.delete(item)
             db.session.commit()
             return redirect(url_for('category'))
@@ -544,7 +553,7 @@ def history():
     return render_template('history.html', history = history)
 
 @app.route('/newitem', methods=["GET", "POST"])
-@madmin_required
+@admin_required
 def newitem():
     if request.method == "POST":
         action = request.form.get("submit")
@@ -667,21 +676,21 @@ def cart():
             return redirect(url_for('cart'))
     return render_template('cart.html', cart_items=cart_items)
 
-@app.route('/adminlist', methods=["GET", "POST"])
-@madmin_required
-def adminlist():
+@app.route('/manage_user', methods=["GET", "POST"])
+@admin_required
+def manage_user():
     if request.method == "POST":
         action = request.form.get("action")
         user_id = request.form.get("user_id")
         
         if not user_id:
             flash("User ID is missing.", "danger")
-            return redirect(url_for('adminlist'))
+            return redirect(url_for('manage_user'))
             
         user = User.query.get(int(user_id))
         if not user:
             flash("User not found.", "danger")
-            return redirect(url_for('adminlist'))
+            return redirect(url_for('manage_user'))
 
         if action == "promote":
             user.is_admin = True
@@ -702,27 +711,27 @@ def adminlist():
                 ))
             flash(f"Demoted {user.Fname} from main admin.", "info")
         elif action == "delete":
-            if user.UserID not in [1, 2] and user.UserID != current_user.UserID:
+            if user.UserID not in [1, 2] and user.UserID != current_user.UserID: 
                 db.session.delete(user)
                 flash(f"User {user.Fname} has been deleted.", "success")
             else:
                 flash("This user cannot be deleted.", "danger")
 
         db.session.commit()
-        return redirect(url_for('adminlist'))
+        return redirect(url_for('manage_user'))
 
     pending_user_count = User.query.filter_by(availiable=False).count()
     users = User.query.filter_by(availiable=True).order_by(User.UserID).all()
     
-    return render_template("adminlist.html", users=users, pending_count=pending_user_count)
+    return render_template("manage_user.html", users=users, pending_count=pending_user_count)
 
 @app.route("/admin_contact", methods=["GET", "POST"])
 @login_required
 def admin_contact():
     return render_template("admin_contact.html")
 
-@app.route("/pending_admin", methods=["GET", "POST"])
-@madmin_required
+@app.route("/pending_user", methods=["GET", "POST"])
+@admin_required
 def pending_user():
     if request.method == "POST":
         action = request.form.get("action")
@@ -773,7 +782,7 @@ def pending_user():
         return redirect(url_for("pending_user"))
 
     users = User.query.filter_by(availiable=False).all()
-    return render_template("pending_admin.html", users=users, pending_count=len(users))
+    return render_template("pending_user.html", users=users, pending_count=len(users))
 
 @app.route("/withdraw", methods=["GET", "POST"])
 def withdraw():
@@ -846,7 +855,7 @@ def withdraw():
     )
 
 @app.route('/edit', methods=["GET", "POST"])
-@madmin_required
+@admin_required
 def edit():
     ItemID = request.args.get("itemID")
     if not ItemID:
@@ -976,16 +985,6 @@ def languages():
 def appearance():
     return render_template('appearance.html')
 
-@app.route('/delete/item/<int:itemID>', methods=['POST'])
-@madmin_required
-def delete_item_post(itemID):
-    item = Item.query.get(itemID)
-    if item:
-        db.session.delete(item)
-        db.session.commit()
-        return jsonify({"ok": True})
-    return jsonify({"ok": False}), 404
-
 @app.route('/delete/user/<int:UserID>', methods=['POST'])
 def delete_user(UserID):
     user = User.query.get(UserID)
@@ -996,7 +995,7 @@ def delete_user(UserID):
     return jsonify({"ok": False}), 404
 
 @app.route('/delete/item')
-@madmin_required
+@admin_required
 def delete_item():
     return redirect('/category')
 
@@ -1153,7 +1152,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/cate_edit' ,methods=["GET", "POST"])
-@madmin_required
+@admin_required
 def cate_edit():
     cate = Category.query.order_by(Category.cateID).all()
     items = Item.query.all()
@@ -1239,32 +1238,3 @@ def profile_edit():
     return render_template("profile_edit.html")
 
 
-# @app.route('/test_DB')
-# def test_DB():
-#     forshow = []
-#     db_category = Category.query.all()
-#     db_item = Item.query.order_by(Item.itemID).all()
-#     db_user = User.query.order_by(User.UserID).all()
-#     db_cart = CartItem.query.all()
-#     db_WDhis = WithdrawHistory.query.all()
-#     db_noti = Notification.query.all()
-#     db_noti_status = UserNotificationStatus.query.all()
-
-#     category = list(map(lambda x: x.to_dict(), db_category))
-#     item = list(map(lambda x:x.to_dict(), db_item))
-#     users = list(map(lambda x:x.to_dict(), db_user))
-#     cart = list(map(lambda x:x.to_dict(), db_cart))
-#     WDhis = list(map(lambda x:x.to_dict(),db_WDhis))
-#     noti = list(map(lambda x:x.to_dict(),db_noti))
-#     noti_status = list(map(lambda x:x.to_dict(), db_noti_status))
-
-#     forshow=[
-#         {"Category DB": category},
-#         {"item DB": item},
-#         {"User DB": users},
-#         {"Cart": cart},
-#         {"Withdraw-History": WDhis},
-#         {"notification": noti},
-#         {"notification_status": noti_status} # New entry here
-#     ]
-#     return jsonify(forshow)
