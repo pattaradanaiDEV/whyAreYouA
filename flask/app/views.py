@@ -110,15 +110,16 @@ def cleanup_expired_notifications():
 
 def create_low_stock_notification_if_needed(item, actor_user_id=None):
     if item.itemAmount < (item.itemMin if item.itemMin is not None else 0):
-        message = f"{item.itemName} เหลือน้อยแล้ว(มีจำนวนเหลือเพียง {item.itemAmount} ชิ้น)/{item.itemName} is currently low on stock(There is/are only {item.itemAmount} {item.itemName} left)"
+        message = "m_low"
         ntype = "Low_Stock"
         if item.itemAmount == 0 :
-            message = f"{item.itemName} หมดแล้ว(ไม่มี {item.itemAmount} เหลือแล้ว)/{item.itemName} is currently out of stock(There is no {item.itemName} left)"
+            message = f"m_runout"
             ntype="Item_Running_Out"
         db.session.add(Notification(
                     user_id=actor_user_id,
                     ntype=ntype,
-                    message=message
+                    message=message,
+                    item_id=item.itemID
                 ))
 
 @app.route('/service-worker.js')
@@ -284,7 +285,7 @@ def signup():
         db.session.add(Notification(
             user_id=new_user.UserID,
             ntype="Request",
-            message=f'{new_user.Fname} {new_user.Lname} ได้ร้องขอสิทธิ์การเข้าถึง/"{new_user.Fname} {new_user.Lname}" has requested access to the system'
+            message='m_grant'
         ))
         db.session.commit()
 
@@ -378,6 +379,7 @@ def notification():
     bkk_tz = timezone(timedelta(hours=7))
     
     results = []
+    items = []
     for notif, is_read_status in notifications_with_status:
         local_time = notif.created_at.astimezone(bkk_tz).strftime('%Y-%m-%d %H:%M:%S')
         results.append({
@@ -387,8 +389,39 @@ def notification():
             'created_at': local_time,
             'is_read': is_read_status if is_read_status is not None else False
         })
+
+        item = Item.query.filter_by(itemID=notif.item_id).first()
+        if not item:
+            itemName = None
+        else:
+            itemName = item.itemName
+        
+        user = User.query.filter_by(UserID=notif.user_id).first()
+        if not user:
+            Fname = None
+            Lname = None
+        else:
+            Fname = user.Fname
+            Lname = user.Lname
+        
+        r_user = User.query.filter_by(UserID=notif.recipient_id).first()
+        if not r_user:
+            r_Fname = None
+            r_Lname = None
+        else:
+            r_Fname = r_user.Fname
+            r_Lname = r_user.Lname
+
+        items.append({
+            'id': notif.id,
+            'itemName': itemName,
+            'u_Fname': Fname,
+            'u_Lname': Lname,
+            'r_u_Fname': r_Fname,
+            'r_u_Lname': r_Lname
+            })
     
-    return render_template('notification.html', notifications=results)
+    return render_template('notification.html', notifications=results, items=items)
 
 @app.route('/notification/mark_read/<int:noti_id>', methods=['POST'])
 @login_required
@@ -537,7 +570,8 @@ def cart():
                     db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f'{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {c.Quantity} ชิ้น/"{current_user.Fname} {current_user.Lname}" has withdrawn {c.Quantity} {item.itemName}(s)'
+                        message='m_withdraw,'+str(item.itemAmount)+','+str(quantity),
+                        item_id=item.itemID
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
@@ -572,7 +606,7 @@ def adminlist():
                     user_id=current_user.UserID,
                     ntype="Promoted",
                     recipient_id=user.UserID,
-                    message=f"คุณได้รับมอบสิทธิ์เป็นแอดมิน/You have been promoted as an admin"
+                    message="m_promote"
                 ))
             flash(f"Promoted {user.Fname} to main admin.", "success")
         elif action == "demote":
@@ -581,7 +615,7 @@ def adminlist():
                     user_id=current_user.UserID,
                     ntype="Demoted",
                     recipient_id=user.UserID,
-                    message=f"คุณถูกถอนสิทธิ์จากการเป็นแอดมิน/You have been demoted from being an admin"
+                    message="m_demote"
                 ))
             flash(f"Demoted {user.Fname} from main admin.", "info")
         elif action == "delete":
@@ -617,13 +651,15 @@ def pending_user():
                 user.availiable = True
                 db.session.add(Notification(
                     ntype="Grant",
-                    message=f'คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname}/"{current_user.Fname}" grants access for "{user.Fname}"'
+                    message='m_grant',
+                    user_id=user_id,
+                    recipient_id=current_user.UserID
                 ))
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
                     ntype="Access_Granted",
-                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ/You have been granted the access"
+                    message="m_access"
                 ))
         
         elif action == "decline" and user_id:
@@ -641,13 +677,13 @@ def pending_user():
                 user.availiable = True
                 db.session.add(Notification(
                     ntype="Grant",
-                    message=f'คุณ {current_user.Fname} ได้อนุมัติการเข้าใช้งานระบบให้กับคุณ {user.Fname} (อนุมัติทั้งหมด)/"{current_user.Fname}" grants access for "{user.Fname}" (Granted all)'
+                    message='m_grant'
                 ))
                 db.session.add(Notification(
                     user_id=current_user.UserID,
                     recipient_id=user.UserID,
                     ntype="Access_Granted",
-                    message=f"คุณได้ถูกอนุมัติการเข้าใช้งานระบบ/You have been granted the access (Granted all)"
+                    message=f"m_access"
                 ))
         
         db.session.commit()
@@ -711,7 +747,8 @@ def withdraw():
                 db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message=f'{current_user.Fname} {current_user.Lname} ได้เบิก {item.itemName} จำนวน {quantity} ชิ้น/"{current_user.Fname} {current_user.Lname}" has withdrawn {quantity} {item.itemName}(s)'
+                        message='m_withdraw,'+str(item.itemAmount)+','+str(quantity),
+                        item_id=item.itemID
                     ))
                 create_low_stock_notification_if_needed(item, current_user.UserID)
                 db.session.commit()
@@ -1007,12 +1044,14 @@ def google_auth():
                 Lname = userinfo.get('family_name', "")
                 new_user = User(Fname=Fname, Lname=Lname, email=email, profile_pic=picture, password=password)
                 db.session.add(new_user)
+                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
+
                 db.session.add(Notification(
                     user_id=new_user.UserID,
                     ntype="Request",
-                    message=f'{Fname} {Lname} ได้ขอเข้าใช้งานระบบ/"{Fname} {Lname}" requested for access'
+                    message="m_request"
                 ))
-                db.session.flush()  # ทำให้ new_user.UserID ถูก assign แล้ว
+                db.session.commit()
 
     except Exception as ex:
         db.session.rollback()  # Rollback on failure

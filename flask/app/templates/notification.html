@@ -24,6 +24,7 @@
             document.body.classList.remove('darkmode');
           }
         });
+
         const translations = {
             en: {
                 title: "Notification",
@@ -41,7 +42,18 @@
                 Demoted: "😓Demoted from admin",
                 Access_Granted: "🫡Access granted",
                 noNotif: "No notifications yet.",
-                time: "at"
+                time: "at",
+                m_low: " is currently low on stock",
+                m_runout: " is currently out of stock",
+                m_grant: ' grants access for ',
+                m_request: ' has requested access to the system',
+                m_withdraw: ' has withdrawn ',
+                m_withdraw2: ' for ',
+                m_withdraw3: ' unit(s), ',
+                m_withdraw4: ' unit(s) left',
+                m_promote: "You have been promoted as an admin",
+                m_demote: "You have been demoted from being an admin",
+                m_access: "You have been granted for the access to the site",
             },
             th: {
                 title: "ข้อความแจ้งเตือน",
@@ -59,7 +71,18 @@
                 Demoted: "😓ถูกถอนสิทธิ์จากการเป็นแอดมิน",
                 Access_Granted: "🫡สิทธิ์การเข้าสู่ระบบได้รับการอนุมัติแล้ว",
                 noNotif: "ยังไม่มีข้อความแจ้งเตือน ณ ขณะนี้",
-                time: "ณ เวลา"
+                time: "ณ เวลา",
+                m_low: " เหลือน้อยแล้ว",
+                m_runout: " หมดแล้ว",
+                m_grant: ' ได้อนุมัติการเข้าใช้งานระบบให้กับ ',
+                m_request: ' ได้ร้องขอสิทธิ์การเข้าถึง',
+                m_withdraw: ' ได้เบิก ',
+                m_withdraw2: ' จำนวน ',
+                m_withdraw3: ' ชิ้น คงเหลืออยู่ ',
+                m_withdraw4: ' ชิ้น',
+                m_promote: "คุณได้รับมอบสิทธิ์เป็นแอดมิน",
+                m_demote: "คุณถูกถอนสิทธิ์จากการเป็นแอดมิน",
+                m_access: "คุณได้ถูกอนุมัติการเข้าใช้งานระบบ",
             }
         };
     </script>
@@ -70,6 +93,7 @@
         <h1 class="page-title" id="title">Notification</h1>
     </div>
 
+    <!-- <span class="notification-message">{{ items }}</span> -->
     <div class="notification-list">
         {% if notifications %}
             {% for notif in notifications %}
@@ -87,7 +111,77 @@
                                 </button>
                                 {% endif %}
                             </div>
-                            <p class="notification-message">{{ notif.message }}</p>
+                            <p class="notification-message" id="id{{ notif.message.split(',')[0] }}{{ notif.id }}">{{ notif.message.split(",")[0] }}</p>
+                            
+                            {% for i in items %}
+                                {% if notif.id == i.id %}
+                                    {% set m = notif.message.split(",") %}
+                                    {% if m[0] == "m_low" %}
+                                    <script>
+                                        document.querySelector(
+                                            '#id{{ m[0] }}{{ notif.id }}'
+                                        ).textContent =
+                                        "{{ i.itemName|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m[0] }};
+                                    </script>
+                                    {% endif %}
+                                    {% if m[0] == "m_runout" %}
+                                    <script>
+                                        document.querySelector(
+                                            '#id{{ m[0] }}{{ notif.id }}'
+                                        ).textContent =
+                                        "{{ i.itemName|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m[0] }};
+                                    </script>
+                                    {% endif %}
+                                    {% if m[0] == "m_grant" %}
+                                    <script>
+                                        document.querySelector(
+                                            '#id{{ m[0] }}{{ notif.id }}'
+                                        ).textContent =
+                                        "{{ i.r_u_Fname|safe }} {{ i.r_u_Lname|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m[0] }}
+                                        + "{{ i.u_Fname|safe }} {{ i.u_Lname|safe }}";
+                                    </script>
+                                    {% endif %}
+                                    {% if m[0] == "m_request" %}
+                                    <script>
+                                        document.querySelector(
+                                            '#id{{ m[0] }}{{ notif.id }}'
+                                        ).textContent =
+                                        "{{ i.u_Fname|safe }} {{ i.u_Lname|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m[0] }};
+                                    </script>
+                                    {% endif %}
+                                    {% if m[0] == "m_withdraw" %}
+                                    {% set m_w2 = m[0] + "2" %}
+                                    {% set m_w3 = m[0] + "3" %}
+                                    {% set m_w4 = m[0] + "4" %}
+                                    <script>
+                                        document.querySelector(
+                                            '#id{{ m[0] }}{{ notif.id }}'
+                                        ).textContent =
+                                        "{{ i.u_Fname|safe }} {{ i.u_Lname|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m[0] }}
+                                        + "{{ i.itemName|safe }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m_w2 }}
+                                        + "{{ m[2] }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m_w3 }}
+                                        + "{{ m[1] }}"
+                                        + translations[localStorage.getItem('lang')]
+                                        .{{ m_w4 }};
+                                    </script>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor%}
+
                             <span class="notification-timestamp">{{ notif.created_at.split(" ")[0].split("-")[2]}}-{{notif.created_at.split(" ")[0].split("-")[1]}}-{{notif.created_at.split(" ")[0].split("-")[0]}} </span>
                             <span class="notification-timestamp time">at</span>
                             <span class="notification-timestamp"> {{ notif.created_at.split(" ")[1] }}</span>

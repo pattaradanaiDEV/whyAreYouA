@@ -7,7 +7,8 @@ class Notification(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.UserID", ondelete='SET NULL'), nullable=True)
-    recipient_id = db. Column(db.Integer, nullable=True)
+    recipient_id = db.Column(db.Integer, nullable=True)
+    item_id = db.Column(db.Integer, nullable=True)
     ntype = db.Column(db.String(50), nullable=False) 
     message = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
@@ -15,10 +16,11 @@ class Notification(db.Model, SerializerMixin):
    
     actor = db.relationship("User") 
     user_statuses = db.relationship("UserNotificationStatus", back_populates="notification", cascade="all, delete-orphan", passive_deletes=True)
-    serialize_only = ("id", "user_id", "ntype", "message", "created_at", "expire_at", "actor.Fname")
+    serialize_only = ("id", "user_id", "item_id", "ntype", "message", "created_at", "expire_at", "actor.Fname")
 
-    def __init__(self, ntype, message, user_id=None,recipient_id=None):
+    def __init__(self, ntype, message, item_id=None, user_id=None,recipient_id=None):
         self.ntype = ntype
         self.message = message
+        self.item_id = item_id
         self.user_id = user_id
         self.recipient_id = recipient_id
