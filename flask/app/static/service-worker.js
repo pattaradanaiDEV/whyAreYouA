@@ -1,111 +1,7 @@
 const CACHE_NAME = 'stocking-app-cache-v5'; 
 const OFFLINE_URL = '/waiting';
 
-const ASSETS_TO_CACHE = [
-    '/homepage',
-    '/waiting',
-    '/static/css/manage_user.css',
-    '/static/css/appearance.css',
-    '/static/css/cart.css',
-    '/static/css/category.css',
-    '/static/css/createpin.css',
-    '/static/css/history.css',
-    '/static/css/home.css',
-    '/static/css/languages.css',
-    '/static/css/loginA.css',
-    '/static/css/loginB.css',
-    '/static/css/modal.css',
-    '/static/css/newitem.css',
-    '/static/css/notification.css',
-    '/static/css/pending_user.css',
-    '/static/css/setting.css',
-    '/static/css/statistic.css',
-    '/static/css/stockmenu.css',
-    '/static/css/test.css',
-    '/static/fonts/open-iconic.eot',
-    '/static/fonts/open-iconic.otf',
-    '/static/fonts/open-iconic.svg',
-    '/static/fonts/open-iconic.ttf',
-    '/static/fonts/open-iconic.woff',
-    '/static/ico/3p_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/account_circle_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/add_circle_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/addStock.png',
-    '/static/ico/alphabet-thai.svg',
-    '/static/ico/arrow_back_ios_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/bar_chart_4_bars_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/bin.png',
-    '/static/ico/cart.png',
-    '/static/ico/category.png',
-    '/static/ico/check_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/check_circle_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/contact_page_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg',
-    '/static/ico/dark_mode_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/default_image.png',
-    '/static/ico/history_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/inventory_2_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/language_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/light_mode_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/logout_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/notification.png',
-    '/static/ico/notifications_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/pen_top.webp',
-    '/static/ico/person_add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/person_add2.png',
-    '/static/ico/pman.jpg',
-    '/static/ico/profile.png',
-    '/static/ico/qr_code_scanner_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/qr_icon.png',
-    '/static/ico/reply.png',
-    '/static/ico/routine_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/search_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/search_icon.png',
-    '/static/ico/search.png',
-    '/static/ico/settings_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/stock.png',
-    '/static/ico/stock_logo.png',
-    '/static/ico/thailand.png',
-    '/static/ico/translate_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg',
-    '/static/ico/united-kingdom.png',
-    '/static/img/2025-09-28_015248.png',
-    '/static/img/2025-09-28_025152.png',
-    '/static/img/2025-09-28_170205.png',
-    '/static/img/2025-10-13_015603.png',
-    '/static/img/9412918c-6ca6-4ade-8673-53cf6ce97856.gif',
-    '/static/img/Ballpoint_Pen.jpg',
-    '/static/img/duck.png',
-    '/static/img/duck_test.jpeg',
-    '/static/img/edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg',
-    '/static/img/Electric_Drill.jpg',
-    '/static/img/External_HDD_1TB.jpg',
-    '/static/img/Hammer.jpg',
-    '/static/img/Highlighter_Set.jpg',
-    '/static/img/Laptop_Dell_XPS.jpg',
-    '/static/img/Mechanical_Keyboard.jpg',
-    '/static/img/Monitor_24.jpg',
-    '/static/img/Notebook_A5.jpg',
-    '/static/img/Paper_Clips_Box.jpg',
-    '/static/img/pngtree-chubby-emoji-emoticon-rubbing-his-belly-png-image_4708253.png',
-    '/static/img/rabbit.jpg',
-    '/static/img/rsz_s-l1600.png',
-    '/static/img/Screenshot_11.png',
-    '/static/img/Screenshot_13_cropped.png',
-    '/static/img/Screenshot_2.png',
-    '/static/img/Screenshot_2025-05-25_013901.png',
-    '/static/img/Screenshot_3.png',
-    '/static/img/Screwdriver_Set.jpg',
-    '/static/img/s-l1600.png',
-    '/static/img/Stapler.jpg',
-    '/static/img/Strawberry_Stick_Cookie.jpg',
-    '/static/img/sup_bro.jpg',
-    '/static/img/Tape_Measure.jpg',
-    '/static/img/think-emoji.gif',
-    '/static/img/troll.jpg',
-    '/static/img/Wireless_Mouse.jpg',
-    '/static/img/Wrench.jpg',
-    '/static/manifest.json',
-    '/static/service-worker.js'
-];
+// (ASSETS_TO_CACHE ถูกลบออกแล้ว เพราะเราใช้แบบอัตโนมัติ)
 
 // Files to exclude from caching
 const EXCLUDED_FILES = [
@@ -113,9 +9,8 @@ const EXCLUDED_FILES = [
     '/js/language.js'
 ];
 
-// --- ★★★ START: แก้ไขส่วน Install ★★★ ---
-//
-// Install event: cache all assets robustly
+
+// Install event: Fetch the dynamic manifest and cache all assets robustly
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -129,16 +24,28 @@ self.addEventListener('install', event => {
                     console.error('Failed to cache OFFLINE_URL:', err);
                 }
 
-                // 2. Cache all static assets (non-critical)
-                // We loop and cache one-by-one, so one failure doesn't stop the rest.
-                console.log('Caching all static assets...');
-                for (const asset of ASSETS_TO_CACHE) {
-                    try {
-                        await cache.add(new Request(asset, {cache: 'reload'}));
-                    } catch (err) {
-                        // Log a warning, but don't stop the loop
-                        console.warn(`Failed to cache asset: ${asset}`, err);
+                // 2. Fetch the dynamic asset list from our Flask route
+                console.log('Fetching dynamic asset manifest...');
+                try {
+                    const response = await fetch('/asset-manifest.json');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch asset manifest');
                     }
+                    const assetsToCache = await response.json();
+                    
+                    console.log('Caching all assets from manifest...');
+                    
+                    // 3. Loop and cache one-by-one (robust method)
+                    for (const asset of assetsToCache) {
+                        try {
+                            await cache.add(new Request(asset, {cache: 'reload'}));
+                        } catch (err) {
+                            // Log a warning, but don't stop the loop
+                            console.warn(`Failed to cache asset: ${asset}`, err);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Failed to cache dynamic assets:', err);
                 }
                 
                 console.log('All assets processed');
@@ -150,8 +57,6 @@ self.addEventListener('install', event => {
             })
     );
 });
-//
-// --- ★★★ END: แก้ไขส่วน Install ★★★ ---
 
 
 // Activate event: clean up old caches
@@ -179,6 +84,18 @@ self.addEventListener('fetch', event => {
     if (!url.protocol.startsWith('http')) {
         return;
     }
+
+    // ★★★ START: โค้ดที่เพิ่มเข้ามาแก้ไขบั๊ก ★★★
+    //
+    // 0. Only cache GET requests. 
+    // Ignore POST, PUT, DELETE, etc.
+    if (event.request.method !== 'GET') {
+        console.log(`Fetch (skipping cache, non-GET): ${event.request.method} ${event.request.url}`);
+        return; // Let the browser handle it without caching
+    }
+    //
+    // ★★★ END: โค้ดที่เพิ่มเข้ามาแก้ไขบั๊ก ★★★
+
 
     // 1. Exclude specified JS files from caching
     if (EXCLUDED_FILES.includes(url.pathname)) { //
@@ -219,5 +136,3 @@ self.addEventListener('fetch', event => {
         })
     );
 });
-
-// (ลบปีกกา '}' ที่เกินมา 1 ตัวจากบรรทัดนี้)

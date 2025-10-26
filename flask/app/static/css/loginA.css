@@ -9,7 +9,11 @@ body {
     min-height: 100vh;
     box-sizing: border-box;
 }
-
+.mainbox {
+    width: 80%;       
+    max-width: 500px;  
+    margin: 0 auto;   
+}
 .app-container {
     width: 100%;
     
@@ -136,7 +140,6 @@ body {
 
 .profile-pic-upload {
     margin: 2vh auto 3vh auto;
-
 }
 
 .upload-circle {
