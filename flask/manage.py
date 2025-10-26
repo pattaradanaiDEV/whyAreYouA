@@ -94,7 +94,7 @@ def seed_db():
     item = Item(ItemName="Monitor 24", ItemAmount=10, ItemPicture="Monitor_24.jpg", itemMin=5, itemDesc="Computer monitor.")
     item.cateID = 4
     db.session.add(item)
-    item = Item(ItemName="Hammer", ItemAmount=18, ItemPicture="Hammer.jpg", itemMin=20, itemDesc="Not come with sickle.")
+    item = Item(ItemName="Hammer", ItemAmount=18, ItemPicture="Hammer.jpg", itemMin=20, itemDesc="Stop, hammer time.")
     item.cateID = 6
     db.session.add(item)
     item = Item(ItemName="Screwdriver Set", ItemAmount=25, ItemPicture="Screwdriver_Set.jpg", itemMin=10, itemDesc="Suit for every size, but not every shape.")
