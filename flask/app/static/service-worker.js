@@ -1,11 +1,10 @@
-const CACHE_NAME = 'stocking-app-cache-v5'; // Incremented cache version
+const CACHE_NAME = 'stocking-app-cache-v5'; 
 const OFFLINE_URL = '/waiting';
 
-// List of assets to cache on installation
 const ASSETS_TO_CACHE = [
     '/homepage',
     '/waiting',
-    '/static/css/adminlist.css',
+    '/static/css/manage_user.css',
     '/static/css/appearance.css',
     '/static/css/cart.css',
     '/static/css/category.css',
@@ -18,7 +17,7 @@ const ASSETS_TO_CACHE = [
     '/static/css/modal.css',
     '/static/css/newitem.css',
     '/static/css/notification.css',
-    '/static/css/pendingadmin.css',
+    '/static/css/pending_user.css',
     '/static/css/setting.css',
     '/static/css/statistic.css',
     '/static/css/stockmenu.css',
@@ -114,23 +113,46 @@ const EXCLUDED_FILES = [
     '/js/language.js'
 ];
 
-// Install event: cache all assets
+// --- ★★★ START: แก้ไขส่วน Install ★★★ ---
+//
+// Install event: cache all assets robustly
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
+            .then(async (cache) => {
                 console.log('Opened cache');
-                // Cache the offline fallback page
-                cache.add(new Request(OFFLINE_URL, {cache: 'reload'}));
-                // Cache all static assets
-                return cache.addAll(ASSETS_TO_CACHE);
-            })
-            .then(() => {
-                console.log('All assets cached');
+                
+                // 1. Cache the offline fallback page (critical)
+                try {
+                    await cache.add(new Request(OFFLINE_URL, {cache: 'reload'}));
+                } catch (err) {
+                    console.error('Failed to cache OFFLINE_URL:', err);
+                }
+
+                // 2. Cache all static assets (non-critical)
+                // We loop and cache one-by-one, so one failure doesn't stop the rest.
+                console.log('Caching all static assets...');
+                for (const asset of ASSETS_TO_CACHE) {
+                    try {
+                        await cache.add(new Request(asset, {cache: 'reload'}));
+                    } catch (err) {
+                        // Log a warning, but don't stop the loop
+                        console.warn(`Failed to cache asset: ${asset}`, err);
+                    }
+                }
+                
+                console.log('All assets processed');
                 self.skipWaiting();
+            })
+            .catch(err => {
+                // This catch is for errors opening the cache itself
+                console.error('Cache open failed:', err);
             })
     );
 });
+//
+// --- ★★★ END: แก้ไขส่วน Install ★★★ ---
+
 
 // Activate event: clean up old caches
 self.addEventListener('activate', event => {
@@ -159,13 +181,16 @@ self.addEventListener('fetch', event => {
     }
 
     // 1. Exclude specified JS files from caching
-    if (EXCLUDED_FILES.includes(url.pathname)) {
+    if (EXCLUDED_FILES.includes(url.pathname)) { //
         console.log(`Fetch (network only): ${event.request.url}`);
         return;
     }
-
+    if (url.pathname.startsWith('/export/')) {
+        console.log(`Fetch (network only, bypassing SW cache): ${event.request.url}`);
+        return; 
+    }
     // 2. Handle navigation requests (HTML pages)
-    if (event.request.mode === 'navigate') {
+    if (event.request.mode === 'navigate') { //
         event.respondWith(
             fetch(event.request)
                 .catch(() => {
@@ -177,7 +202,7 @@ self.addEventListener('fetch', event => {
     }
 
     // 3. Stale-While-Revalidate for all other requests (CSS, JS, images, etc.)
-    event.respondWith(
+    event.respondWith( //
         caches.open(CACHE_NAME).then(cache => {
             return cache.match(event.request).then(cachedResponse => {
                 const fetchPromise = fetch(event.request).then(networkResponse => {
@@ -194,3 +219,5 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
+// (ลบปีกกา '}' ที่เกินมา 1 ตัวจากบรรทัดนี้)

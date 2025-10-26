@@ -549,7 +549,7 @@ def statistic():
 
 @app.route('/history') 
 def history():
-    history = db.session.query(WithdrawHistory).all()
+    history = db.session.query(WithdrawHistory).order_by(WithdrawHistory.DateTime.desc()).all()
     return render_template('history.html', history = history)
 
 @app.route('/newitem', methods=["GET", "POST"])

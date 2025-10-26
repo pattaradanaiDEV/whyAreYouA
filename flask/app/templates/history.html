@@ -24,6 +24,9 @@
           }
         });
     </script>
+    <script>
+        const CSRF_TOKEN = "{{ csrf_token() }}";
+    </script>
     <div class="top-bar">
         <a href="{{ url_for('homepage') }}">
             <span class="material-icons">arrow_back_ios</span>
@@ -55,7 +58,8 @@
                                 <span class="category">Category</span><span>{{ set.items.category.cateName }}</span>
                             </div>
                             <div class="item-text">
-                                <span class="time">Withdraw time</span><span>{{ (set.DateTime|string)[0:19] }}</span>
+                                <span class="time">Withdraw time</span>
+                                <span class="time-value" data-utc-time="{{ (set.DateTime | string)[0:19] }}"></span>
                             </div>
                         </div>
                     </div>
@@ -76,7 +80,8 @@
                         <span class="category">Category</span><span>{{ set.items.category.cateName }}</span>
                     </div>
                     <div class="item-text">
-                        <span class="time">Withdraw time</span><span>{{ (set.DateTime|string)[0:19] }}</span>
+                        <span class="time">Withdraw time</span>
+                        <span class="time-value" data-utc-time="{{ (set.DateTime | string)[0:19] }}"></span>
                     </div>
                 </div>
             </div>
@@ -200,7 +205,10 @@
         const exportUrl = this.href; 
 
         try {
-            const response = await fetch(exportUrl);
+            const response = await fetch(exportUrl, {
+                headers: { 'X-CSRFToken': CSRF_TOKEN },
+                cache: 'no-store'
+            });
 
             if (!response.ok) {
                 throw new Error(`Server error (${response.status})`);
@@ -238,6 +246,31 @@
             alert('Failed to export file. Please try again.');
         }
     });
-    changeLanguage(localStorage.getItem('lang'));
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.time-value').forEach(span => {
+            const utcTimeString = span.dataset.utcTime; 
+            if (utcTimeString) {
+                
+                const isoUtcString = utcTimeString.replace(' ', 'T') + 'Z';
+                const date = new Date(isoUtcString);
+  
+                const bkkTime = date.toLocaleString('en-CA', {
+                    timeZone: 'Asia/Bangkok',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false 
+                });
+                
+            
+                span.textContent = bkkTime.replace(',', '');
+            }
+        });
+        
+        changeLanguage(localStorage.getItem('lang'));
+    });
 </script>
 
