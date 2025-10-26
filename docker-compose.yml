@@ -1,21 +1,18 @@
-name: "whyareyoua-test"
+version: '3.8'
+
 services:
   flask:
     build: flask
+    image: ${_IMAGE_TAG}
     ports:
       - "56733:8000"
     volumes:
-      - ./flask:/flask_app
+      - ./flask:/flask
     env_file:
       - .env.dev
     depends_on:
       - db
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
+
   db:
     image: postgres:13-alpine
     ports:
@@ -23,16 +20,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_USER: hello_flask
-      POSTGRES_PASSWORD: hello_flask
-      POSTGRES_DB: hello_flask_dev
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Sms_242025
+      POSTGRES_DB: postgres
+
 volumes:
-  # persistent volume on host at
-  # /var/lib/docker/postgres_data
   postgres_data:

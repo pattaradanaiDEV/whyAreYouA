@@ -111,5 +111,26 @@ def seed_db():
     db.session.add(item)
     db.session.commit()
 
+@cli.command("delete_item")
+def delete_item():
+    R_item = Item.query.filter_by(cateID=2)
+    for i in R_item:
+        i["cateID"] = 1
+    R_category = Category.query.filter_by(cateID=2).first()
+    db.session.delete(R_category)
+    db.session.commit()
+
+@cli.command("delete_noti")
+def delete_noti():
+    noti = Notification.query.filter_by(id=2).first()
+    db.session.delete(noti)
+    db.session.commit()
+
+@app.route("/init-db")
+def init_db():
+    create_db()
+    seed_db()
+    add_user()
+
 if __name__ == "__main__":
     cli()

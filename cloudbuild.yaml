@@ -1,0 +1,16 @@
+steps:
+- id: 'Run Docker Compose Script'
+  name: 'docker/compose:1.29.2'
+  entrypoint: '/bin/sh'
+  env:
+    - _IMAGE_TAG=${_IMAGE_TAG}
+  args: [
+    '-c',
+    'chmod +x run_docker_compose.sh && ./run_docker_compose.sh'
+  ]
+
+
+images:
+  - '${_IMAGE_TAG}'
+substitutions:
+  _IMAGE_TAG: 'asia-southeast1-docker.pkg.dev/storagemanage-65ce3/storagemange/storagemanageimage:storagemanagetag'

@@ -19,7 +19,7 @@ from app.models.user import User
 from app.models.item import Item
 from app.models.withdrawHistory import WithdrawHistory
 from app.models.notification import Notification
-from flask import Blueprint
+from flask import Blueprint 
 from flask_login import login_user, login_required, logout_user, current_user
 import pandas as pd
 from flask_wtf.csrf import CSRFProtect
@@ -399,6 +399,7 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        print(request)
         email = request.form.get("email")
         password = request.form.get("password")
         user = User.query.filter_by(email=email.lower()).first()
@@ -595,12 +596,17 @@ def newitem():
                 itemDesc=str(request.form.get("getdes", 0)))
             db.session.add(item)
 
-            if catename.lower() not in catename_list :
-                db.session.add(Category(cateName=catename))
-                item.cateID = len(catename_list)+1
-            else :
-                item.cateID = catename_list.index(catename.lower())+1
-
+            if catename:
+                category = Category.query.filter(func.lower(Category.cateName) == catename.lower()).first()
+                if category:
+                    item.cateID = category.cateID
+                else:
+                    # create category
+                    new_cat = Category(cateName=catename)
+                    db.session.add(new_cat)
+                    db.session.commit()
+                    item.cateID = new_cat.cateID
+                    
             db.session.commit()
             return redirect(url_for('category'))
     category_list = Category.query.all()
@@ -1212,16 +1218,21 @@ def exportStock():
 
 @app.route('/google')
 def google():
+    print(app.config['GOOGLE_CLIENT_ID'])
+    print(app.config['GOOGLE_CLIENT_SECRET'])
     oauth.register(
         name='google',
         client_id=app.config['GOOGLE_CLIENT_ID'],
         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        server_metadata_url=app.config['GOOGLE_DISCOVERY_URL'],
-        client_kwargs={
-            'scope': 'openid email profile'
-        }
+        # 🚨 THESE ARE THE MISSING VALUES 🚨s
+        authorize_url='https://accounts.google.com/o/oauth2/v2/auth', # Required
+        access_token_url='https://oauth2.googleapis.com/token',      # Recommended
+        userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo', # Recommended for user data
+        client_kwargs={'scope': 'openid email profile'},
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration' # Recommended alternative
     )
     redirect_uri = url_for('google_auth', _external=True)
+    print(redirect_uri) 
     return oauth.google.authorize_redirect(redirect_uri)
 
 @app.route('/google/auth')

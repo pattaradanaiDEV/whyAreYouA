@@ -5,8 +5,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from authlib.integrations.flask_client import OAuth
+from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+root_dir = os.path.dirname(basedir)
+load_dotenv(os.path.join(root_dir, '.env.dev'))
+
 app = Flask(__name__, static_folder='static')
 app.url_map.strict_slashes = False
+
+# *** แก้ไข: เพิ่ม ProxyFix เพื่อจัดการ Cloud Run Headers ***
+# Cloud Run ใช้ Proxy 1 ชั้น ดังนั้นเราตั้งค่า x_for=1
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1) 
+# *******************************************************
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'img')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -15,6 +27,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['GOOGLE_CLIENT_ID'] = os.getenv("GOOGLE_CLIENT_ID", None)
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv("GOOGLE_CLIENT_SECRET", None)
 app.config['GOOGLE_DISCOVERY_URL'] = os.getenv("GOOGLE_DISCOVERY_URL", None)
+
+app.config['WTF_CSRF_TRUSTED_ORIGINS'] = [
+    'https://storagemanage-65ce3.web.app/',
+    'https://storagemanage-65ce3.firebaseapp.com/',
+]
 
 app.jinja_options = app.jinja_options.copy()
 app.jinja_options.update({
@@ -29,14 +46,15 @@ app.config['SECRET_KEY'] = \
 app.config['JSON_AS_ASCII'] = False
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite://")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "postgresql://postgres:Sms_242025@/postgres?host=/cloudsql/storagemanage-65ce3:asia-southeast1:storagemanage")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 if app.debug:
-    app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
+    # ตรวจสอบ: DebuggedApplication ควรอยู่หลัง ProxyFix
+    app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True) 
 # Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
 oauth = OAuth(app)
@@ -53,9 +71,8 @@ def load_user(user_id):
 
 @app.before_request
 def remove_trailing_slash():
-   # Check if the path ends with a slash but is not the root "/"
+    # Check if the path ends with a slash but is not the root "/"
     if request.path != '/' and request.path.endswith('/'):
         return redirect(request.path[:-1], code=301)
-
 
 from app import views  # noqa

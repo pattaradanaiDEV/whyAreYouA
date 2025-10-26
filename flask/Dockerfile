@@ -33,10 +33,8 @@ RUN apk update && apk --no-cache add \
 
 # install dependencies
 COPY ./requirements.txt /flask_app
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install --upgrade pip
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
 
 # copy project
