@@ -1,4 +1,32 @@
 
+:root {
+    --basebg--color: #f4f4f8;
+    --card-bg: #ffffff;
+    --text-secondary: #6B7280;
+    --border-color: #e5e7eb;
+    --accent-red: #ef4444;
+    --accent-green: #22c55e;
+    --button-bg: #111827;
+    --button-text: #ffffff;
+    --text--color: #000;
+    --text2--color: #000;
+    --title-color: #C85A1A;
+    --delete-bg: #e53935;
+    --danger-bg: #e53935;
+}
+
+.darkmode {
+    --basebg--color: #121212;
+    --card-bg: #1e1e1e;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    --button-bg: #f9fafb;
+    --button-text: #111827;
+    --title-color: #ffffff;
+}
+.p {
+  color: var(--button-bg);
+}
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
@@ -18,7 +46,7 @@
     transition: transform 0.3s ease;
 }
 .modal-overlay.active .modal-content { transform: scale(1); }
-.modal-message { font-size: 1rem; font-weight: 500; color: var(--text-color, #333); margin: 0 0 24px 0; line-height: 1.5; }
+.modal-message { font-size: 1rem; font-weight: 500; color: var(--button-bg); margin: 0 0 24px 0; line-height: 1.5; }
 .modal-actions { display: flex; gap: 12px; }
 .modal-btn { flex: 1; border: none; padding: 12px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
 .modal-btn:hover { opacity: 0.85; }
@@ -34,7 +62,8 @@
     font-size: 3.5vw;
 }
 .modal-content select, 
-.modal-content input[type="number"] {
+.modal-content input[type="number"]
+.modal-content input[type="text"] {
   width: 100%;
   padding: 10px; 
   border: 1px solid var(--border-color, #ddd); 
@@ -116,4 +145,88 @@
 
 #loading-modal {
   pointer-events: none;
+}
+
+.status.edit {
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: inline-block; /* ทำให้ padding ทำงาน */
+    color: var(--text-color);
+}
+.darkmode .status.edit {
+    background-color: #555;
+    border-color: #777;
+    color: var(--text-color);
+}
+.status.edit:hover {
+    opacity: 0.8;
+}
+
+.modal-content.detail-card {
+    text-align: left;
+    padding-top: 20px;
+}
+.detail-title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+.detail-image-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border: 1px solid #eee;
+}
+.detail-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.detail-field {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 8px;
+}
+.darkmode .detail-field {
+    border-bottom: 1px dashed #444;
+}
+.detail-field.full-width {
+    flex-direction: column;
+    align-items: flex-start;
+}
+.detail-label {
+    font-size: 0.9rem;
+    color: var(--subtext-color);
+    font-weight: 500;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+.detail-value {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+}
+.detail-field.full-width .detail-value {
+    text-align: left;
+    font-weight: 500;
+    margin-top: 4px;
+}
+.detail-card .modal-actions {
+    margin-top: 20px;
+    justify-content: center;
 }

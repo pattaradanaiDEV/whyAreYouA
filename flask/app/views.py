@@ -619,8 +619,8 @@ def cart():
                 cart_item.Quantity += 1
                 
             elif action == 'decrease' and cart_item.Quantity > 1:
-                if cart_item.Status == "e" and cart_item.Quantity - 1 < item.itemAmount:
-                    flash(f"จำเป็นต้องเป็นจำนวนที่มากกว่าหรือเท่ากับเท่านั้น")
+                if cart_item.Status == "e" and cart_item.Quantity - 1 <= 0:
+                    flash(f"จำนวนไม่ถูกต้อง")
                     return redirect(url_for('cart'))
                 cart_item.Quantity -= 1
                 
@@ -635,7 +635,25 @@ def cart():
             db.session.commit()
             flash(f"อัปเดตจำนวนของแล้ว", "success")
             return redirect(url_for('cart'))
+        elif action == 'update_details':
+            cart_item = CartItem.query.get(cart_id)
+            if not cart_item or cart_item.Status != 'e':
+                flash("ไม่สามารถอัปเดตรายการนี้ได้", "danger")
+                return redirect(url_for('cart'))
+            cart_item.new_itemName = request.form.get('new_itemName')
+            cart_item.new_cateName = request.form.get('new_cateName')
+            cart_item.new_itemMin = request.form.get('new_itemMin', type=int)
+            cart_item.new_itemDesc = request.form.get('new_itemDesc')
+            new_quantity = request.form.get('quantity', type=int)
+            if new_quantity is not None and new_quantity >= 0:
+                cart_item.Quantity = new_quantity
+            else:
+                flash("จำนวนที่เพิ่มไม่ถูกต้อง", "danger")
+                return redirect(url_for('cart'))
 
+            db.session.commit()
+            flash(f"อัปเดตรายละเอียด {cart_item.new_itemName} ในตะกร้าแล้ว", "success")
+            return redirect(url_for('cart'))
         elif action == 'delete':
             cart_item = CartItem.query.get(cart_id)
             if cart_item:
@@ -668,13 +686,36 @@ def cart():
                     create_low_stock_notification_if_needed(item, current_user.UserID)
 
                 elif c.Status == 'e':
+                    item.itemName = c.new_itemName
+                    item.itemMin = c.new_itemMin
+                    item.itemDesc = c.new_itemDesc
+                    if c.new_itemPicture != item.itemPicture:
+                        if item.itemPicture and not item.itemPicture.startswith(('http:','https:')):
+                            try:
+                                old_path = os.path.join(current_app.config['UPLOAD_FOLDER'], item.itemPicture)
+                                if os.path.exists(old_path):
+                                    os.remove(old_path)
+                            except Exception as e:
+                                current_app.logger.error(f"Error deleting old pic: {e}")
+
+                        item.itemPicture = c.new_itemPicture #place picture
+                    if c.new_cateName:
+                        category = Category.query.filter(func.lower(Category.cateName) == c.new_cateName.lower()).first()
+                        if category:
+                            item.cateID = category.cateID
+                        else:
+                            new_cat = Category(cateName=c.new_cateName)
+                            db.session.add(new_cat)
+                            db.session.flush()
+                            item.cateID = new_cat.cateID
                     item.itemAmount += c.Quantity
 
                 db.session.delete(c)
             db.session.commit()
             flash("ยืนยันตะกร้าเรียบร้อย!", "success")
             return redirect(url_for('cart'))
-    return render_template('cart.html', cart_items=cart_items)
+    category_list = Category.query.order_by(Category.cateName).all()
+    return render_template('cart.html', cart_items=cart_items,category_list=category_list)
 
 @app.route('/manage_user', methods=["GET", "POST"])
 @admin_required
@@ -896,19 +937,55 @@ def edit():
             file.save(filepath)
 
         if action == "add-to-cart":
-            qty = int(request.form.get("getamount", 1))
-            cart_item = CartItem.query.filter_by(UserID=current_user.UserID, ItemID=item.itemID, Status='e').first()
-            if cart_item:
-                if cart_item.Quantity + qty <= item.itemAmount: # currenetAmount <= itemAmount in cart + qty
-                    flash("ไม่สามรถป้อนจำนวนที่น้อยกว่าได้", "danger")
+            try:
+                new_name = request.form.get("getname", item.itemName)
+                new_cate = request.form.get("getcate")
+                new_min = int(request.form.get("getmin", item.itemMin if item.itemMin is not None else 0))
+                new_desc = request.form.get("getdes", item.itemDesc)
+                new_total_amount = int(request.form.get("getamount", item.itemAmount))
+                current_item_amount = item.itemAmount
+                quantity_to_add = new_total_amount - current_item_amount
+                if quantity_to_add < 0:
+                    flash("จำนวนใหม่ต้องมากกว่าหรือเท่ากับจำนวนปัจจุบัน", "danger")
                     return redirect(url_for('edit', itemID=item.itemID))
-                cart_item.Quantity += qty
-            else:
-                cart_item = CartItem(UserID=current_user.UserID, ItemID=item.itemID, Quantity=qty, Status='e')
-                db.session.add(cart_item)
-            db.session.commit()
-            flash("เพิ่มเข้าตะกร้าเรียบร้อย", "success")
-            return redirect(url_for('category'))
+                cart_item = CartItem.query.filter_by(
+                    UserID=current_user.UserID, 
+                    ItemID=item.itemID, 
+                    Status='e'
+                ).first()
+                if cart_item:
+                    cart_item.new_itemName = new_name
+                    cart_item.new_cateName = new_cate
+                    cart_item.new_itemMin = new_min
+                    cart_item.new_itemDesc = new_desc
+                    cart_item.new_itemPicture = filename
+                    cart_item.Quantity += quantity_to_add 
+                    flash(f"อัปเดตรายการแก้ไขในตะกร้า (เพิ่มอีก {quantity_to_add} ชิ้น)", "success")
+                else:
+                    cart_item = CartItem(
+                        UserID=current_user.UserID,
+                        ItemID=item.itemID,
+                        Quantity=quantity_to_add,
+                        Status='e',
+                        new_itemName=new_name,
+                        new_cateName=new_cate,
+                        new_itemMin=new_min,
+                        new_itemDesc=new_desc,
+                        new_itemPicture=filename
+                    )
+                    db.session.add(cart_item)
+                    flash(f"เพิ่มรายการแก้ไข (เติม {quantity_to_add} ชิ้น) ลงในตะกร้า", "success")
+                    
+                    db.session.commit()
+                    return redirect(url_for('category'))
+            except ValueError:
+                flash("จำนวนไม่ถูกต้อง", "danger")
+                return redirect(url_for('edit', itemID=item.itemID))
+            except Exception as e:
+                db.session.rollback()
+                current_app.logger.error(f"Error in edit/add-to-cart: {e}")
+                flash(f"เกิดข้อผิดพลาด: {e}", "danger")
+                return redirect(url_for('edit', itemID=item.itemID))
 
         else:
             # update database fields

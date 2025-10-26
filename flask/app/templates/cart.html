@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/newitem.css') }}">
 </head>
 <body>
     <script>
@@ -44,9 +46,21 @@
         {% endwith %}
         {% for c in cart_items %}
         <div class="cart-item-wrapper" id="wrapper-{{ c.CartID }}"
-             ontouchstart="startSwipe(event, {{ c.CartID }})"
-             ontouchmove="moveSwipe(event, {{ c.CartID }})"
-             ontouchend="endSwipe(event, {{ c.CartID }})">
+            ontouchstart="startSwipe(event, {{ c.CartID }})"
+            ontouchmove="moveSwipe(event, {{ c.CartID }})"
+            ontouchend="endSwipe(event, {{ c.CartID }}, '{{ c.Status }}')" {% if c.Status == 'e' %}
+            data-cart-id="{{ c.CartID }}"
+            data-quantity="{{ c.Quantity }}"
+            data-new-item-name="{{ c.new_itemName | default('', true) }}"
+            data-new-cate-name="{{ c.new_cateName | default('', true) }}"
+            data-new-item-min="{{ c.new_itemMin | default(0, true) }}"
+            data-new-item-desc="{{ c.new_itemDesc | default('', true) }}"
+            data-original-item-name="{{ c.item.itemName | default('', true) }}"
+            data-original-cate-name="{{ c.item.category.cateName | default('', true) }}"
+            data-original-item-min="{{ c.item.itemMin | default(0, true) }}"
+            data-original-item-desc="{{ c.item.itemDesc | default('', true) }}"
+            {% endif %}
+            >
 
             <div class="delete-action">
                 <form method="POST" id="delete-form-{{ c.CartID }}">
@@ -69,12 +83,15 @@
                 </div>
 
                 <div class="item-info">
-                    <div class="item-name">{{ c.item.itemName }}</div>
+                    <div class="item-name">{{ c.new_itemName if c.new_itemName else c.item.itemName }}</div>
                     <div class="item-stock"><span class="inStock">In stock</span><span>: {{ c.item.itemAmount }}</span></div>
+                    
                     {% if c.Status == 'w' %}
-                    <div class="status withdraw withdrw">Withdraw</div>
+                    <div class="status withdraw">Withdraw</div>
                     {% else %}
-                    <div class="status edit edt">Edit</div>
+                    <div class="status edt">
+                        Edit
+                    </div>
                     {% endif %}
                 </div>
 
@@ -125,6 +142,47 @@
             </div>
         </div>
     </div>
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-content"> 
+            <form method="POST" id="edit-modal-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="update_details">
+                <input type="hidden" name="cart_id" id="edit-modal-cart-id" value="">
+                
+                <h3 class="modal-message" id="edit-modal-title" style="margin-bottom: 20px; text-align: left;">Edit Item</h3>
+
+                <label class="form-label" id="label-item-name">Item Name</label>
+                <input type="text" class="input-box" id="edit-modal-name" name="new_itemName">
+
+                <label class="form-label" id="label-category">Category</label>
+                <div class="dropdown">
+                    <input class="input-box" type="text" id="modal-searchBox"
+                           onkeyup="filterModalFunction()" onclick="toggleModalList()" 
+                           name="new_cateName" autocomplete="off">
+                           
+                    <div id="modal-dropdownList" class="dropdown-list">
+                    {% for cate in category_list %}
+                    <div onclick="selectModalItem('{{ cate.cateName }}')">{{ cate.cateName }}</div>
+                    {% endfor %}
+                    </div>
+                </div>
+                
+                <label class="form-label" id="label-quantity">Quantity (to add)</label>
+                <input type="number" class="input-box" id="edit-modal-quantity" name="quantity" min="0">
+
+                <label class="form-label" id="label-item-min">Item Minimum</label>
+                <input type="number" class="input-box" id="edit-modal-min" name="new_itemMin" min="0">
+
+                <label class="form-label" id="label-desc">Description</label>
+                <input type="text" class="input-box" id="edit-modal-desc" name="new_itemDesc">
+
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="submit" class="modal-btn confirm" id="confirm-edit-btn">Confirm</button>
+                    <button type="button" class="modal-btn cancel" id="cancel-edit-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 
 <script>
@@ -132,12 +190,17 @@
     let currentX = 0;
     let isSwiping = false;      
     let hasMovedEnough = false; 
+    let cartIdToDelete = null;
 
     const MOVE_THRESHOLD = 10;    
     const SWIPE_THRESHOLD = -60;  
     const DELETE_BUTTON_WIDTH = 90; 
 
     function startSwipe(e, id) {
+        if (e.target.closest('.delete-btn') || e.target.closest('.quantity-control')) {
+            isSwiping = false; 
+            return;
+        }
         document.querySelectorAll('.cart-item-content').forEach(content => {
             if (content.id !== `content-${id}`) {
                 content.style.transition = 'transform 0.3s ease-out';
@@ -171,7 +234,8 @@
         }
     }
 
-    function endSwipe(e, id) {
+    function endSwipe(e, id,status) {
+        
         if (!isSwiping) return;
         isSwiping = false;
 
@@ -180,6 +244,10 @@
 
         if (!hasMovedEnough) {
             content.style.transform = 'translateX(0px)';
+            if (status === 'e') {
+                const wrapper = document.getElementById(`wrapper-${id}`);
+                showEditModal(wrapper); 
+            }
             return;
         }
         
@@ -203,11 +271,9 @@
 
     function showDeleteModal(cartID, itemName) {
         cartIdToDelete = cartID;
-        if (localStorage.getItem('lang') == 'en') {
-            RUSure = `Are you sure you want to delete`
-        } else {
-            RUSure = `คุณแน่ใจหรือไม่ที่จะลบ`
-        }
+        let RUSure = (localStorage.getItem('lang') || 'th') === 'en' 
+            ? `Are you sure you want to delete`
+            : `คุณแน่ใจหรือไม่ที่จะลบ`;
         modalMessage.innerHTML = `${RUSure} <strong>${itemName}</strong>?`;
         deleteModal.classList.add('active');
     }
@@ -234,6 +300,66 @@
         }
     });
 
+    const editModal = document.getElementById('edit-modal');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const confirmEditBtn = document.getElementById('confirm-edit-btn');
+
+    function showEditModal(element) { 
+        const data = element.dataset; 
+
+        document.getElementById('edit-modal-cart-id').value = data.cartId;
+        document.getElementById('edit-modal-name').value = data.newItemName !== '' ? data.newItemName : data.originalItemName;
+        document.getElementById('modal-searchBox').value = data.newCateName !== '' ? data.newCateName : data.originalCateName;
+        document.getElementById('edit-modal-min').value = data.newItemMin !== '0' ? data.newItemMin : (data.originalItemMin || 0);
+        document.getElementById('edit-modal-desc').value = data.newItemDesc !== '' ? data.newItemDesc : (data.originalItemDesc || '');
+        
+        document.getElementById('edit-modal-quantity').value = data.quantity;
+
+        const titleName = data.newItemName !== '' ? data.newItemName : data.originalItemName;
+        const lang = localStorage.getItem('lang') || 'th';
+        document.getElementById('edit-modal-title').innerText = (lang === 'th' ? 'แก้ไข ' : 'Edit ') + titleName;
+        
+        editModal.classList.add('active');
+    }
+
+    function hideEditModal() {
+        editModal.classList.remove('active');
+    }
+
+    cancelEditBtn.addEventListener('click', hideEditModal);
+    editModal.addEventListener('click', (event) => {
+        if (event.target === editModal) {
+            hideEditModal();
+        }
+    });
+
+    
+    function toggleModalList() {
+        document.getElementById("modal-dropdownList").style.display = "block";
+    }
+
+    function filterModalFunction() {
+        let input = document.getElementById("modal-searchBox");
+        let filter = input.value.toUpperCase();
+        let div = document.getElementById("modal-dropdownList");
+        let items = div.getElementsByTagName("div");
+        for (let i = 0; i < items.length; i++) {
+            let txtValue = items[i].textContent || items[i].innerText;
+            items[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+    function selectModalItem(value) {
+        let input = document.getElementById("modal-searchBox");
+        input.value = value;
+        document.getElementById("modal-dropdownList").style.display = "none";
+    }
+
+    window.addEventListener('click', function(e) {
+        if (!document.getElementById('modal-searchBox').contains(e.target) && 
+            !document.getElementById('modal-dropdownList').contains(e.target)) {
+            document.getElementById("modal-dropdownList").style.display = "none";
+        }
+    })
     const translations = {
         en: {
             title: "Cart",
@@ -244,7 +370,14 @@
             confirmCart: 'Confirm Cart',
             delMes: 'Are you sure?',
             delBtn: 'Delete',
-            cncBtn: 'Cancel'
+            cncBtn: 'Cancel',
+            editTitle: 'Edit Item',
+            itemName: 'Item Name',
+            category: 'Category',
+            quantityAdd: 'Quantity (to add)',
+            itemMin: 'Item Minimum',
+            desc: 'Description',
+            confirm: 'Confirm'
         },
         th: {
             title: "ตะกร้า",
@@ -253,34 +386,51 @@
             edt: 'แก้ไข',
             noItem: 'ยังไม่มีของในตะกร้า ณ ขณะนี้',
             confirmCart: 'ยืนยันตะกร้า',
-            delMes: 'คุณแน่ใจหรือไม่?',
+            delMes: 'คุณแนใจหรือไม่?',
             delBtn: 'ลบ',
-            cncBtn: 'ยกเลิก'
+            cncBtn: 'ยกเลิก',
+            editTitle: 'แก้ไขรายการ',
+            itemName: 'ชื่อของ',
+            category: 'ประเภท',
+            quantityAdd: 'จำนวน (ที่จะเพิ่ม)',
+            itemMin: 'จำนวนขั้นต่ำ',
+            desc: 'คำอธิบาย',
+            confirm: 'ยืนยัน'
         }
     };
-
     function changeLanguage(lang) {
-        document.querySelector('#title_').textContent = (translations[lang].title);
-        document.querySelectorAll('.inStock').forEach(e => {
-            e.textContent = (translations[lang].inStock);
-        });
-        document.querySelectorAll('.withdrw').forEach(e => {
-            e.textContent = (translations[lang].withdrw);
-        });
-        document.querySelectorAll('.edt').forEach(e => {
-            e.textContent = (translations[lang].edt);
-        });
+        const currentLang = lang || 'th'; 
+        const tr = translations[currentLang];
+
+        document.querySelector('#title_').textContent = tr.title;
+        document.querySelectorAll('.inStock').forEach(e => e.textContent = tr.inStock);
+        document.querySelectorAll('.withdrw').forEach(e => e.textContent = tr.withdrw);
+        document.querySelectorAll('.edt').forEach(e => e.textContent = tr.edt);
+        
+        document.querySelector('#label-item-name').textContent = tr.itemName;
+        document.querySelector('#label-category').textContent = tr.category;
+        document.querySelector('#label-quantity').textContent = tr.quantityAdd;
+        document.querySelector('#label-item-min').textContent = tr.itemMin;
+        document.querySelector('#label-desc').textContent = tr.desc;
+        document.querySelector('#confirm-edit-btn').textContent = tr.confirm;
+        document.querySelector('#cancel-edit-btn').textContent = tr.cncBtn; 
+        document.querySelector('#delete-modal-message').textContent = tr.delMes;
+        document.querySelector('#confirm-delete-btn').textContent = tr.delBtn;
+        document.querySelector('#cancel-delete-btn').textContent = tr.cncBtn;
     }
     
     changeLanguage(localStorage.getItem('lang'));
-
     {% if not cart_items %}
-        document.querySelector('#noItem').textContent = (translations[localStorage.getItem('lang')].noItem);
+    {
+        const lang = localStorage.getItem('lang') || 'th';
+        document.querySelector('#noItem').textContent = translations[lang].noItem;
+    }
     {% else %}
-        document.querySelector('#confirmCart').textContent = (translations[localStorage.getItem('lang')].confirmCart);
-        document.querySelector('#delete-modal-message').textContent = (translations[localStorage.getItem('lang')].delMes);
-        document.querySelector('#confirm-delete-btn').textContent = (translations[localStorage.getItem('lang')].delBtn);
-        document.querySelector('#cancel-delete-btn').textContent = (translations[localStorage.getItem('lang')].cncBtn);
+    {
+        const lang = localStorage.getItem('lang') || 'th';
+        document.querySelector('#confirmCart').textContent = translations[lang].confirmCart;
+    }
     {% endif %}
+
 </script>
 </html>
