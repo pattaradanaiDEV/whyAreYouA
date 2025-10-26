@@ -13,7 +13,7 @@
 <body class="">
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-          const mode = localStorage.getItem('darkmode');
+          const mode = localStorage.getItem('darkmode') || 'lightmode';
           if (mode === 'dark') {
             document.body.classList.add('darkmode');
             document.body.classList.remove('lightmode');
