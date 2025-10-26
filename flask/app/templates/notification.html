@@ -123,9 +123,7 @@
                             {% for i in items %}
                                 {% if notif.id == i.id %}
                                     {% set m = notif.message.split(",") %}
-                                    {% if m[0] == "m_low" %}
-                                    {% endif %}
-                                    {% if m[0] == "m_runout" %}
+                                    {% if m[0] == "m_runout" or m[0] == "m_low" %}
                                     <script>
                                         document.querySelector(
                                             '#id{{ m[0] }}{{ notif.id }}'
