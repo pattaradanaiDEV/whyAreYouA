@@ -182,8 +182,8 @@ body {
 .text {color: var(--text--color);}
 .item-actions {
   display: flex;
-  flex-direction: column; /* <-- จัดเรียงปุ่มในแนวตั้ง */
-  align-items: flex-end;   /* <-- จัดปุ่มชิดขวา */
+  flex-direction: column; 
+  align-items: flex-end; 
   gap: 8px;
 }
 .btn { padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; }

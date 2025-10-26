@@ -1,4 +1,3 @@
-
 :root {
     --basebg--color: #f4f4f8;
     --card-bg: #ffffff;
@@ -8,11 +7,11 @@
     --accent-green: #22c55e;
     --button-bg: #111827;
     --button-text: #ffffff;
-    --text--color: #000;
-    --text2--color: #000;
     --title-color: #C85A1A;
     --delete-bg: #e53935;
     --danger-bg: #e53935;
+    --text-color: #000;
+    --text2-color: #000;
 }
 
 .darkmode {
@@ -23,10 +22,10 @@
     --button-bg: #f9fafb;
     --button-text: #111827;
     --title-color: #ffffff;
+    --text-color: #f9fafb;
+    --text2-color: #f9fafb;
 }
-.p {
-  color: var(--button-bg);
-}
+
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
@@ -45,6 +44,20 @@
     transform: scale(0.95);
     transition: transform 0.3s ease;
 }
+#edit-modal .modal-content {
+    max-width: 60%;
+}
+.modal-content h3{
+    color: var(--text2-color, #333);
+}
+.modal-content label{
+    color: var(--text2-color, #333);
+}
+.modal-content label{
+    color: var(--text2-color, #333);
+}
+
+
 .modal-overlay.active .modal-content { transform: scale(1); }
 .modal-message { font-size: 1rem; font-weight: 500; color: var(--button-bg); margin: 0 0 24px 0; line-height: 1.5; }
 .modal-actions { display: flex; gap: 12px; }
@@ -62,7 +75,7 @@
     font-size: 3.5vw;
 }
 .modal-content select, 
-.modal-content input[type="number"]
+.modal-content input[type="number"],
 .modal-content input[type="text"] {
   width: 100%;
   padding: 10px; 
@@ -83,6 +96,7 @@
   font-weight: 500;
   color: var(--text-color, #333); 
 }
+
 
 .success-icon {
   width: 60px;
@@ -154,7 +168,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.8rem;
-    display: inline-block; /* ทำให้ padding ทำงาน */
+    display: inline-block;
     color: var(--text-color);
 }
 .darkmode .status.edit {

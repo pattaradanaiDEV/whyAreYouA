@@ -55,10 +55,10 @@
             data-new-cate-name="{{ c.new_cateName | default('', true) }}"
             data-new-item-min="{{ c.new_itemMin | default(0, true) }}"
             data-new-item-desc="{{ c.new_itemDesc | default('', true) }}"
+            data-new-item-picture="{{ c.new_itemPicture | default('', true) }}"
             data-original-item-name="{{ c.item.itemName | default('', true) }}"
+            data-original-item-picture="{{ c.item.itemPicture | default('', true) }}" 
             data-original-cate-name="{{ c.item.category.cateName | default('', true) }}"
-            data-original-item-min="{{ c.item.itemMin | default(0, true) }}"
-            data-original-item-desc="{{ c.item.itemDesc | default('', true) }}"
             {% endif %}
             >
 
@@ -75,10 +75,12 @@
 
             <div class="cart-item-content" id="content-{{ c.CartID }}">
                 <div class="item-image">
-                    {% if c.item.itemPicture %}
-                    <img src="{{ url_for('static', filename='img/' ~ c.item.itemPicture) }}" alt="{{ c.item.itemName }}">
+                    {% if c.new_itemPicture %}
+                        <img src="{{ url_for('static', filename='img/' ~ c.new_itemPicture) }}" alt="New Pic">
+                    {% elif c.item.itemPicture %}
+                        <img src="{{ url_for('static', filename='img/' ~ c.item.itemPicture) }}" alt="{{ c.item.itemName }}">
                     {% else %}
-                    <div class="placeholder">{{ c.item.itemName[0] }}</div>
+                        <div class="placeholder">{{ (c.new_itemName or c.item.itemName)[0] }}</div>
                     {% endif %}
                 </div>
 
@@ -144,13 +146,17 @@
     </div>
     <div class="modal-overlay" id="edit-modal">
         <div class="modal-content"> 
-            <form method="POST" id="edit-modal-form">
+            <form method="POST" id="edit-modal-form" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="action" value="update_details">
                 <input type="hidden" name="cart_id" id="edit-modal-cart-id" value="">
                 
                 <h3 class="modal-message" id="edit-modal-title" style="margin-bottom: 20px; text-align: left;">Edit Item</h3>
-
+                <div id="edit-modal-pic-preview-wrapper" style="width: 100px; height: 100px; margin: 0 auto 10px auto; background: #eee; border-radius: 8px; overflow: hidden; display: none;">
+                    <img id="edit-modal-pic-preview" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <input type="file" class="input-box" id="edit-modal-pic" name="new_itemPicture" accept="image/*" style="padding: 10px;">
+                
                 <label class="form-label" id="label-item-name">Item Name</label>
                 <input type="text" class="input-box" id="edit-modal-name" name="new_itemName">
 
@@ -187,31 +193,35 @@
 
 <script>
     let startX = 0;
+    let startY = 0;    
     let currentX = 0;
+    let currentY = 0;      
     let isSwiping = false;      
     let hasMovedEnough = false; 
     let cartIdToDelete = null;
-
+    let swipeDirection = null; 
     const MOVE_THRESHOLD = 10;    
     const SWIPE_THRESHOLD = -60;  
-    const DELETE_BUTTON_WIDTH = 90; 
+    const DELETE_BUTTON_WIDTH = 90;
 
     function startSwipe(e, id) {
         if (e.target.closest('.delete-btn') || e.target.closest('.quantity-control')) {
             isSwiping = false; 
             return;
         }
+
         document.querySelectorAll('.cart-item-content').forEach(content => {
             if (content.id !== `content-${id}`) {
-                content.style.transition = 'transform 0.3s ease-out';
+                content.style.transition = 'transform 0.8s ease-out';
                 content.style.transform = 'translateX(0px)';
             }
         });
 
         isSwiping = true;
         hasMovedEnough = false; 
+        swipeDirection = null;
         startX = e.touches[0].clientX;
-        
+        startY = e.touches[0].clientY; 
         const content = document.getElementById(`content-${id}`);
         content.style.transition = 'none'; 
     }
@@ -220,47 +230,80 @@
         if (!isSwiping) return;
 
         currentX = e.touches[0].clientX;
-        let diff = currentX - startX;
+        currentY = e.touches[0].clientY;
+        let diffX = currentX - startX;
+        let diffY = currentY - startY;
 
-        if (!hasMovedEnough && Math.abs(diff) > MOVE_THRESHOLD) {
-            hasMovedEnough = true;
+        if (!swipeDirection) { 
+            if (Math.abs(diffX) > MOVE_THRESHOLD || Math.abs(diffY) > MOVE_THRESHOLD) {
+                swipeDirection = (Math.abs(diffX) > Math.abs(diffY)) ? 'h' : 'v';
+            }
         }
 
-        if (hasMovedEnough) {
-            if (diff < 0 && diff > -DELETE_BUTTON_WIDTH - 20) {
-                const content = document.getElementById(`content-${id}`);
-                content.style.transform = `translateX(${diff}px)`;
+        if (swipeDirection === 'h') {
+
+            if (e.cancelable) {
+                e.preventDefault(); 
+            }
+
+            hasMovedEnough = true; 
+            
+            const content = document.getElementById(`content-${id}`);
+
+            const style = window.getComputedStyle(content);
+            const matrix = new DOMMatrix(style.transform);
+            const currentTranslateX = matrix.m41; 
+
+            if (currentTranslateX < 0) { 
+                let newX = -DELETE_BUTTON_WIDTH + diffX;
+                if (newX > 0) newX = 0; 
+                content.style.transform = `translateX(${newX}px)`;
+            
+            } else if (diffX < 0 && diffX > -DELETE_BUTTON_WIDTH - 20) { 
+                content.style.transform = `translateX(${diffX}px)`;
             }
         }
     }
 
-    function endSwipe(e, id,status) {
+    function endSwipe(e, id, status) {
         
-        if (!isSwiping) return;
-        isSwiping = false;
+        if (!isSwiping) {
+            isSwiping = false; 
+            return; 
+        }
+        isSwiping = false; 
 
         const content = document.getElementById(`content-${id}`);
         content.style.transition = 'transform 0.3s ease-out';
 
-        if (!hasMovedEnough) {
+        let diff = currentX - startX;
+        
+        if (hasMovedEnough) {
+            if (diff < SWIPE_THRESHOLD) {
+
+                content.style.transform = `translateX(-${DELETE_BUTTON_WIDTH}px)`;
+            } else {
+                content.style.transform = 'translateX(0px)';
+            }
+           
+        } else {
             content.style.transform = 'translateX(0px)';
             if (status === 'e') {
+                if (e.cancelable) {
+                    e.preventDefault(); 
+                }
                 const wrapper = document.getElementById(`wrapper-${id}`);
                 showEditModal(wrapper); 
             }
-            return;
         }
         
-        let diff = currentX - startX;
-        
-        if (diff < SWIPE_THRESHOLD) {
-            content.style.transform = `translateX(-${DELETE_BUTTON_WIDTH}px)`;
-        } else {
-            content.style.transform = 'translateX(0px)';
-        }
         
         startX = 0;
+        startY = 0; 
         currentX = 0;
+        currentY = 0; 
+        hasMovedEnough = false; 
+        swipeDirection = null; 
     }
 
     // --- Modal Logic ---
@@ -315,6 +358,22 @@
         
         document.getElementById('edit-modal-quantity').value = data.quantity;
 
+        const picPreview = document.getElementById('edit-modal-pic-preview');
+        const picWrapper = document.getElementById('edit-modal-pic-preview-wrapper');
+        const picInput = document.getElementById('edit-modal-pic');
+        picInput.value = null;
+        let currentPic = data.newItemPicture || data.originalItemPicture;
+        if (currentPic) {
+            if (currentPic.startsWith('http')) {
+                picPreview.src = currentPic;
+            } else {
+                picPreview.src = `/static/img/${currentPic}`;
+            }
+            picWrapper.style.display = 'block'; 
+        } else {
+            picWrapper.style.display = 'none'; 
+            picPreview.src = '';
+        }
         const titleName = data.newItemName !== '' ? data.newItemName : data.originalItemName;
         const lang = localStorage.getItem('lang') || 'th';
         document.getElementById('edit-modal-title').innerText = (lang === 'th' ? 'แก้ไข ' : 'Edit ') + titleName;
@@ -330,6 +389,20 @@
     editModal.addEventListener('click', (event) => {
         if (event.target === editModal) {
             hideEditModal();
+        }
+    });
+    const modalPicInput = document.getElementById('edit-modal-pic');
+    const modalPicPreview = document.getElementById('edit-modal-pic-preview');
+    const modalPicWrapper = document.getElementById('edit-modal-pic-preview-wrapper');
+
+    modalPicInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                modalPicPreview.src = e.target.result;
+                modalPicWrapper.style.display = 'block'; 
+            };
+            reader.readAsDataURL(this.files[0]);
         }
     });
 
