@@ -102,6 +102,7 @@
                         <div class="notification-content">
                             <div class="notification-header">
                                 <span class="notification-type" id="id{{ notif.id }}">{{ notif.ntype }}</span>
+                                
                                 <script>
                                     document.querySelector('#id{{ notif.id }}').textContent = translations[localStorage.getItem('lang')].{{ notif.ntype }};
                                 </script>
@@ -113,6 +114,8 @@
                             </div>
                             <p class="notification-message" id="id{{ notif.message.split(',')[0] }}{{ notif.id }}">{{ notif.message.split(",")[0] }}</p>
                     
+                            <!-- <span class="notification-message">{{ notif.message }}</span> -->
+
                             <script>
                                 document.querySelector('#id{{ notif.message.split(",")[0] }}{{ notif.id }}')
                                 .textContent = translations[localStorage.getItem('lang')].{{ notif.message }};

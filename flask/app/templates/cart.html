@@ -364,7 +364,7 @@
         en: {
             title: "Cart",
             inStock: "In stock",
-            withdrw: "Withdraw",
+            withdraw: "Withdraw",
             edt: 'Edit',
             noItem: 'No items in cart.',
             confirmCart: 'Confirm Cart',
@@ -382,7 +382,7 @@
         th: {
             title: "ตะกร้า",
             inStock: "ยอดของในคลัง",
-            withdrw: "เบิก",
+            withdraw: "เบิก",
             edt: 'แก้ไข',
             noItem: 'ยังไม่มีของในตะกร้า ณ ขณะนี้',
             confirmCart: 'ยืนยันตะกร้า',
@@ -404,7 +404,7 @@
 
         document.querySelector('#title_').textContent = tr.title;
         document.querySelectorAll('.inStock').forEach(e => e.textContent = tr.inStock);
-        document.querySelectorAll('.withdrw').forEach(e => e.textContent = tr.withdrw);
+        document.querySelectorAll('.withdraw').forEach(e => e.textContent = tr.withdraw);
         document.querySelectorAll('.edt').forEach(e => e.textContent = tr.edt);
         
         document.querySelector('#label-item-name').textContent = tr.itemName;

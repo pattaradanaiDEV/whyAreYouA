@@ -680,7 +680,7 @@ def cart():
                     db.session.add(Notification(
                         user_id=current_user.UserID,
                         ntype="Withdraw",
-                        message='m_withdraw,'+str(item.itemAmount)+','+str(quantity),
+                        message='m_withdraw,'+str(item.itemAmount)+','+str(c.Quantity),
                         item_id=item.itemID
                     ))
                     create_low_stock_notification_if_needed(item, current_user.UserID)

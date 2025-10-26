@@ -4,86 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/newitem.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginA.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/category.css') }}">
     <title>Profile Editing Page</title>
 </head>
 <body>
-    <div class="app-container">
-        
-        <h1 class="page-title">Editing Profile</h1>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mode = localStorage.getItem('darkmode');
+          if (mode === 'dark') {
+            document.body.classList.add('darkmode');
+            document.body.classList.remove('lightmode');
+          } else {
+            document.body.classList.add('lightmode');
+            document.body.classList.remove('darkmode');
+          }
+        });
+    </script>
+    <div class="header">
+        <a href="{{ url_for('homepage') }}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+        </a>
+        <h2 id="title">Profile Edit</h2>
+    </div>
+    <div class="center">
+        <div class="mainbox">
+            <form method="post" action="{{ url_for('profile_edit') }}" enctype="multipart/form-data" class="signup-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-        <form method="post" action="{{ url_for('profile_edit') }}" enctype="multipart/form-data" class="signup-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="profile-pic-upload">
+                    <label for="profile_pic_input">
+                        <div class="upload-circle">
+                            {% if 'https://' in current_user.profile_pic %}
+                                <img src="{{ current_user.profile_pic }}" id="image-preview">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" id="image-preview" alt="Profile Picture">
+                            {% endif %}
+                            <input type="file" name="file" accept="image/*" id="img-file" hidden>
+                        </div>
+                    </label>
+                    <input type="file" id="profile_pic_input" name="profile_pic" accept="image/*" hidden>
+                </div>
 
-            <div class="profile-pic-upload">
-                <label for="profile_pic_input">
-                    <div class="upload-circle">
-                        <img id="image-preview" src="{{ url_for('static', filename='img/' + current_user.profile_pic) }}" alt="Preview" />
-                    </div>
-                </label>
-                <input type="file" id="profile_pic_input" name="profile_pic" accept="image/*" style="display: none;">
-            </div>
+                
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0] }}
+                </div>
+                {% endif %}
+                {% endwith %}
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div class="notification is-danger">
-                {{ messages[0] }}
-            </div>
-            {% endif %}
-            {% endwith %}
+                <div class="input-container">
+                    <i class="material-icons">person</i>
+                    <input type="text" id="Fname" name="firstname" class="input-field" placeholder="Firstname" required>
+                </div>
 
-            <div class="input-container">
-                <i class="material-icons">person</i>
-                <input type="text" name="firstname" class="input-field" placeholder="Firstname" required>
-            </div>
+                <div class="input-container">
+                    <i class="material-icons">person_outline</i>
+                    <input type="text" id="Lname" name="lastname" class="input-field" placeholder="Lastname" required>
+                </div>
 
-            <div class="input-container">
-                <i class="material-icons">person_outline</i>
-                <input type="text" name="lastname" class="input-field" placeholder="Lastname" required>
-            </div>
+                <div class="input-container">
+                    <i class="material-icons">phone</i>
+                    <input 
+                        type="tel"
+                        id="phonenum"
+                        name="phonenumber" 
+                        class="input-field" 
+                        placeholder="Phone Number" 
+                        required
+                        pattern="[0-9]+"
+                        title="กรุณาใส่หมายเลขมือถือให้ถูกต้อง"
+                    >
+                </div>
 
-            <div class="input-container">
-                <i class="material-icons">phone</i>
-                <input 
-                    type="tel" 
-                    name="phonenumber" 
-                    class="input-field" 
-                    placeholder="Phonenumber" 
-                    required
-                    pattern="[0-9]+"
-                    title="กรุณาใส่หมายเลขมือถือให้ถูกต้อง"
-                >
-            </div>
+                <div class="input-container">
+                    <i class="material-icons">email</i>
+                    <input type="email" id="email" name="email" class="input-field" placeholder="Email" required>
+                </div>
 
-            <div class="input-container">
-                <i class="material-icons">email</i>
-                <input type="email" name="email" class="input-field" placeholder="Email" required>
-            </div>
-
-            <div class="input-container">
-                <i class="material-icons">lock</i>
-                <input 
-                    type="password" 
-                    id="password"
-                    name="password" 
-                    class="input-field" 
-                    placeholder="Password" 
-                    minlength="8"
-                    pattern="(?=.*\d)(?=.*[A-Z]).{8,}"
-                    title="Must be at least 8 characters long, and contain at least one uppercase letter and one number."
-                >
-            </div>
-            
-            <div class="input-container">
-                <i class="material-icons">lock_outline</i>
-                <input type="password" id="confirm_password" name="confirm_password" class="input-field" placeholder="Confirm password">
-            </div>
-            
-            <button type="submit" class="submit-button">Done</button>
-        </form>
+                <div class="input-container">
+                    <i class="material-icons">lock</i>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password" 
+                        class="input-field" 
+                        placeholder="Password" 
+                        minlength="8"
+                        pattern="(?=.*\d)(?=.*[A-Z]).{8,}"
+                        title="Must be at least 8 characters long, and contain at least one uppercase letter and one number."
+                    >
+                </div>
+                
+                <div class="input-container">
+                    <i class="material-icons">lock_outline</i>
+                    <input type="password" id="confirm_password" name="confirm_password" class="input-field" placeholder="Confirm password">
+                </div>
+                
+                <button type="submit" class="submit-button" id="done">Done</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -130,7 +155,41 @@
             // }
         })();
 
+        const translations = {
+            en: {
+                title: "Profile Edit",
+                Fname: "Firstname",
+                Lname: "Lastname",
+                phonenum: "Phone Number",
+                email: "Email",
+                password: "Password",
+                confirm_password: "Confirm",
+                done: "Done",
+            },
+            th: {
+                title: "แก้ไขโปรไฟล์",
+                Fname: "ชื่อจริง",
+                Lname: "ชื่อสกุล",
+                phonenum: "เบอร์โทรศัพท์",
+                email: "อีเมล",
+                password: "กรอกรหัส",
+                confirm_password: "กรอกรหัสอีกครั้ง",
+                done: "ยืนยัน",
+            }
+        };
 
+        function changeLanguage(lang) {
+            document.querySelector('#title').textContent = (translations[lang].title);
+            document.querySelector('#Fname').placeholder = (translations[lang].Fname);
+            document.querySelector('#Lname').placeholder = (translations[lang].Lname);
+            document.querySelector('#phonenum').placeholder = (translations[lang].phonenum);
+            document.querySelector('#email').placeholder = (translations[lang].email);
+            document.querySelector('#password').placeholder = (translations[lang].password);
+            document.querySelector('#confirm_password').placeholder = (translations[lang].confirm_password);
+            document.querySelector('#done').textContent = (translations[lang].done);
+        }
+
+        changeLanguage(localStorage.getItem('lang'));
     </script>
 </body>
 </html>

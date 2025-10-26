@@ -80,6 +80,10 @@ svg {
   /* transition: background 0.5s ease, color 0.5s ease; */
 }
 
+#profile_stuff {
+  cursor: pointer;
+}
+
 .show_select_delta{
   display: flex;
   justify-content: center;
