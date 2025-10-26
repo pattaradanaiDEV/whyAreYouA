@@ -60,13 +60,32 @@ def check_user_available():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    if not current_user.availiable:
+    if not current_user.available:
         if endpoint != 'waiting' or endpoint != 'login':
             return redirect(url_for('waiting'))
 
     return None
 
+@app.route('/asset-manifest.json')
+def asset_manifest():
+    try:
+        static_folder = os.path.join(current_app.root_path, 'static')
+        assets = [
+            '/homepage',
+            '/waiting'
+        ]
 
+        for root, dirs, files in os.walk(static_folder):
+            for file in files:
+                full_path = os.path.join(root, file)
+                relative_path = '/' + os.path.relpath(full_path, current_app.root_path).replace(os.sep, '/')
+                assets.append(relative_path)
+                
+        return jsonify(assets)
+    
+    except Exception as e:
+        current_app.logger.error(f"Error generating asset manifest: {e}")
+        return jsonify({"error": str(e)}), 500
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -225,7 +244,7 @@ def landing():
 
 @app.route('/waiting')
 def waiting():
-    if current_user.availiable == True:
+    if current_user.available == True:
         return redirect(url_for('homepage'))
     return render_template('waiting.html')
 
@@ -775,8 +794,8 @@ def manage_user():
         db.session.commit()
         return redirect(url_for('manage_user'))
 
-    pending_user_count = User.query.filter_by(availiable=False).count()
-    users = User.query.filter_by(availiable=True).order_by(User.UserID).all()
+    pending_user_count = User.query.filter_by(available=False).count()
+    users = User.query.filter_by(available=True).order_by(User.UserID).all()
     
     return render_template("manage_user.html", users=users, pending_count=pending_user_count)
 
@@ -796,7 +815,7 @@ def pending_user():
         if action == "accept" and user_id:
             user = User.query.get(int(user_id))
             if user:
-                user.availiable = True
+                user.available = True
                 db.session.add(Notification(
                     ntype="Grant",
                     message='m_grant',
@@ -827,13 +846,13 @@ def pending_user():
                 db.session.delete(user)
 
         elif action == "accept_all":
-            pending_users = User.query.filter_by(availiable=False).all()
+            pending_users = User.query.filter_by(available=False).all()
             if not pending_users:
                 flash("No pending users to accept.", "info")
                 return redirect(url_for("pending_user"))
                 
             for user in pending_users:
-                user.availiable = True
+                user.available = True
                 db.session.add(Notification(
                     ntype="Grant",
                     message='m_grant'
@@ -848,7 +867,7 @@ def pending_user():
         db.session.commit()
         return redirect(url_for("pending_user"))
 
-    users = User.query.filter_by(availiable=False).all()
+    users = User.query.filter_by(available=False).all()
     return render_template("pending_user.html", users=users, pending_count=len(users))
 
 @app.route("/withdraw", methods=["GET", "POST"])

@@ -14,7 +14,7 @@ class User(db.Model, UserMixin, SerializerMixin):
     is_sadmin = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(50), nullable= True)
     phoneNum = db.Column(db.String(10), nullable = True)
-    availiable = db.Column(db.Boolean,default=False)
+    available = db.Column(db.Boolean,default=False)
     password = db.Column(db.String(255))
     profile_pic = db.Column(db.String(255), nullable=True)
     

@@ -39,10 +39,10 @@ def add_user():
     db.session.commit()
     User.query.get_or_404(1).is_sadmin=True
     User.query.get_or_404(1).is_admin=True
-    User.query.get_or_404(1).availiable=True
+    User.query.get_or_404(1).available=True
     User.query.get_or_404(2).is_sadmin=True
     User.query.get_or_404(2).is_admin=True
-    User.query.get_or_404(2).availiable=True
+    User.query.get_or_404(2).available=True
     db.session.commit()
 
 @cli.command("seed_db")

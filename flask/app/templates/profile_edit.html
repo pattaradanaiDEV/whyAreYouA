@@ -10,6 +10,37 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginA.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/category.css') }}">
     <title>Profile Editing Page</title>
+    <style>
+        .input-container i.material-icons {
+            color: #999;
+            font-size: 3vw;
+            margin-right: 10px;
+        }
+        .input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 14px 5px;
+            font-size: 3vw;
+            outline: none;
+        }
+        .profile-pic-upload {
+            margin: 2vh auto 2vh auto;
+        }
+
+        .upload-circle {
+            width: 24vw;
+            height: 24vw;
+            background-color: #F0F0F0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <script>

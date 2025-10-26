@@ -71,6 +71,7 @@
                         <div class="user-info">
                             <div class="user-name">{{ user.Fname }} {{ user.Lname }}</div>
                             <div class="user-email">{{ user.email }}</div>
+                            <div class="user-email">Tel : {{ user.phoneNum }}</div>
                         </div>
                         
                         {% if not user.is_sadmin and current_user.UserID != user.UserID and current_user.is_sadmin %}
