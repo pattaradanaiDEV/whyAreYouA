@@ -5,8 +5,8 @@ from sqlalchemy import PrimaryKeyConstraint
 class UserNotificationStatus(db.Model, SerializerMixin):
     __tablename__ = 'user_notification_status'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.UserID'), nullable=False)
-    notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.UserID', ondelete='CASCADE'), nullable=False)
+    notification_id = db.Column(db.Integer, db.ForeignKey('notification.id', ondelete='CASCADE'), nullable=False)
     
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
