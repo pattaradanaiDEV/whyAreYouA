@@ -1,5 +1,5 @@
-This is a project of 204361 Software Engineering course.
-This project is for making a program for managing materials and other one-time use tools.
+This is a project of 204361 Software Engineering course.<br>
+This project is for making a program for managing materials and other one-time use tools.<br>
 We decided to make it as a web application, so users can easily access via mobile device.
 
 Developers:
