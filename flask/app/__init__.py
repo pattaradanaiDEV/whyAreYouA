@@ -50,9 +50,7 @@ csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 if app.debug:
-    # ตรวจสอบ: DebuggedApplication ควรอยู่หลัง ProxyFix
     app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True) 
-# Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
 oauth = OAuth(app)
 
@@ -60,7 +58,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
-#ถ้าเกิด circular import ให้ย้ายบรรทัด 40-43 ยกเว้น42 ไปใส่ใน models/init แทน
 @login_manager.user_loader
 def load_user(user_id):
     from app.models.user import User
@@ -68,8 +65,7 @@ def load_user(user_id):
 
 @app.before_request
 def remove_trailing_slash():
-    # Check if the path ends with a slash but is not the root "/"
     if request.path != '/' and request.path.endswith('/'):
         return redirect(request.path[:-1], code=301)
 
-from app import views  # noqa
+from app import views
