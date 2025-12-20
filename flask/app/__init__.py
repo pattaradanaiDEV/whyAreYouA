@@ -15,10 +15,7 @@ load_dotenv(os.path.join(root_dir, '.env.dev'))
 app = Flask(__name__, static_folder='static')
 app.url_map.strict_slashes = False
 
-# *** แก้ไข: เพิ่ม ProxyFix เพื่อจัดการ Cloud Run Headers ***
-# Cloud Run ใช้ Proxy 1 ชั้น ดังนั้นเราตั้งค่า x_for=1
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1) 
-# *******************************************************
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'img')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -46,7 +43,7 @@ app.config['SECRET_KEY'] = \
 app.config['JSON_AS_ASCII'] = False
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "postgresql://postgres:Sms_242025@/postgres?host=/cloudsql/storagemanage-65ce3:asia-southeast1:storagemanage")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", None)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 csrf = CSRFProtect(app)
